@@ -1,19 +1,37 @@
 /*
- * Design: Bazaar Digital — Checkout simples com Order Bump
- * Formulário de dados, order bumps, resumo do pedido, CTA de finalização
+ * Design: Bazaar Digital — Checkout simples com Order Bump dinâmico
+ * Formulário de dados, order bumps contextuais, opções de frete, resumo do pedido
  * Nicho: Ferramentas
  */
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useCart } from "@/contexts/CartContext";
-import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame } from "lucide-react";
-import { checkoutSuccessImage, orderBumpItems } from "@/lib/data";
+import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck } from "lucide-react";
+import { checkoutSuccessImage, getOrderBumpsForCart, shippingOptions, type ShippingOption } from "@/lib/data";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
   const [, navigate] = useLocation();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [selectedBumps, setSelectedBumps] = useState<Set<number>>(new Set());
+
+  // Determine which shipping options are available based on cart items
+  const productIds = useMemo(() => items.map((i) => i.product.id), [items]);
+  const currentBumps = useMemo(() => getOrderBumpsForCart(productIds), [productIds]);
+
+  // Shipping: check if any product has custom shipping
+  const hasCustomShipping = useMemo(() => {
+    return productIds.some((id) => shippingOptions[id]);
+  }, [productIds]);
+
+  const customShippingOpts: ShippingOption[] = useMemo(() => {
+    for (const id of productIds) {
+      if (shippingOptions[id]) return shippingOptions[id];
+    }
+    return [];
+  }, [productIds]);
+
+  const [selectedShippingIdx, setSelectedShippingIdx] = useState(0);
 
   const [form, setForm] = useState({
     name: "",
@@ -28,11 +46,17 @@ export default function Checkout() {
     state: "",
   });
 
-  const bumpTotal = orderBumpItems
+  const bumpTotal = currentBumps
     .filter((b) => selectedBumps.has(b.id))
     .reduce((sum, b) => sum + b.price, 0);
 
-  const shippingCost = totalPrice + bumpTotal >= 99 ? 0 : 14.90;
+  // Shipping cost logic
+  const shippingCost = hasCustomShipping
+    ? customShippingOpts[selectedShippingIdx]?.price ?? 19.85
+    : totalPrice + bumpTotal >= 99
+      ? 0
+      : 14.90;
+
   const finalTotal = totalPrice + bumpTotal + shippingCost;
 
   const formatPrice = (price: number) =>
@@ -296,6 +320,47 @@ export default function Checkout() {
                   </div>
                 </div>
 
+                {/* SHIPPING OPTIONS (only for products with custom shipping) */}
+                {hasCustomShipping && (
+                  <div className="bg-white rounded-sm p-4 md:p-6">
+                    <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                      <Truck className="w-5 h-5" style={{ color: "#EE4D2D" }} />
+                      Opções de Frete
+                    </h2>
+                    <div className="space-y-2">
+                      {customShippingOpts.map((opt, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSelectedShippingIdx(idx)}
+                          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left ${
+                            selectedShippingIdx === idx
+                              ? "border-[#EE4D2D] bg-orange-50"
+                              : "border-gray-200 hover:border-orange-200"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                              selectedShippingIdx === idx ? "border-[#EE4D2D]" : "border-gray-300"
+                            }`}>
+                              {selectedShippingIdx === idx && (
+                                <div className="w-2 h-2 rounded-full" style={{ background: "#EE4D2D" }} />
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-800">{opt.label}</p>
+                              <p className="text-xs text-gray-500">{opt.days}</p>
+                            </div>
+                          </div>
+                          <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
+                            {formatPrice(opt.price)}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* ORDER BUMP */}
                 <div className="bg-white rounded-sm overflow-hidden border-2 border-dashed" style={{ borderColor: "#EE4D2D" }}>
                   <div className="px-4 py-3 flex items-center gap-2" style={{ background: "linear-gradient(135deg, #EE4D2D 0%, #FF6633 100%)" }}>
@@ -307,9 +372,11 @@ export default function Checkout() {
                   </div>
                   <div className="p-4 space-y-3">
                     <p className="text-xs text-gray-500 mb-2">
-                      Clientes que compraram ferramentas também levaram estes itens com desconto exclusivo:
+                      {productIds.includes(21)
+                        ? "Quem comprou a Roçadeira Nakasaki também levou estes itens essenciais com desconto exclusivo:"
+                        : "Clientes que compraram ferramentas também levaram estes itens com desconto exclusivo:"}
                     </p>
-                    {orderBumpItems.map((bump) => {
+                    {currentBumps.map((bump) => {
                       const isSelected = selectedBumps.has(bump.id);
                       return (
                         <button
@@ -396,7 +463,7 @@ export default function Checkout() {
                         <Zap className="w-3 h-3" /> Itens adicionais
                       </p>
                       <div className="space-y-2">
-                        {orderBumpItems
+                        {currentBumps
                           .filter((b) => selectedBumps.has(b.id))
                           .map((bump) => (
                             <div key={bump.id} className="flex justify-between text-xs">
@@ -420,14 +487,26 @@ export default function Checkout() {
                       </div>
                     )}
                     <div className="flex justify-between text-gray-600">
-                      <span>Frete</span>
+                      <span>
+                        Frete
+                        {hasCustomShipping && customShippingOpts[selectedShippingIdx] && (
+                          <span className="text-[10px] text-gray-400 ml-1">
+                            ({customShippingOpts[selectedShippingIdx].label})
+                          </span>
+                        )}
+                      </span>
                       <span className={shippingCost === 0 ? "text-[#00BFA5] font-semibold" : ""}>
                         {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
                       </span>
                     </div>
-                    {shippingCost > 0 && (
+                    {!hasCustomShipping && shippingCost > 0 && (
                       <p className="text-[10px] text-gray-400">
                         Frete grátis para compras acima de R$ 99,00
+                      </p>
+                    )}
+                    {hasCustomShipping && customShippingOpts[selectedShippingIdx] && (
+                      <p className="text-[10px] text-gray-400">
+                        Entrega em {customShippingOpts[selectedShippingIdx].days}
                       </p>
                     )}
                     <div className="border-t border-gray-100 pt-2 flex justify-between">

@@ -45,6 +45,7 @@ export const categories = [
   { id: 7, name: "Elétricas", icon: "Zap" },
   { id: 8, name: "Acessórios", icon: "Package" },
   { id: 9, name: "Manuais", icon: "Hammer" },
+  { id: 10, name: "Roçadeiras", icon: "Flame" },
 ];
 
 export const products: Product[] = [
@@ -592,10 +593,63 @@ export const products: Product[] = [
       { label: "Voltagem", options: ["110V", "220V"] },
     ],
   },
+  {
+    id: 21,
+    name: "Roçadeira Multifuncional 75cc Nakasaki A Gasolina Profissional 3.5HP 5 em 1 com Acessórios",
+    price: 89.90,
+    originalPrice: 349.85,
+    discount: 74,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rocadeira-nakasaki-main_60af2003.jpeg",
+    images: [
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rocadeira-nakasaki-main_60af2003.jpeg",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/Up6A7FzEAIH7_ae80e5a9.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/Dn2CytPKyDTJ_f2b70613.jpg",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/gUewNqeHP9DH_c7f708f9.jpg",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/yewP8kXnBgpY_e5d1e64f.jpg",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/de2LHXt6ddjj_75a5d5c2.jpg",
+    ],
+    rating: 4.4,
+    sold: 15873,
+    freeShipping: false,
+    category: "Roçadeiras",
+    description: "Roçadeira Multifuncional Nakasaki 75CC a Gasolina — sua aliada profissional para enfrentar os maiores desafios de jardinagem e manutenção de terrenos. Equipada com motor 2 tempos de 75cc e potência de 3.5HP (2.238 KW a 9000 RPM), oferece alto desempenho mesmo em vegetação densa e terrenos exigentes. Sistema de transmissão com embreagem automática centrífuga e eixo rígido para máxima eficiência. Carburador tipo diafragma e ignição TCI garantem partida fácil e funcionamento estável. Tanque de combustível com capacidade de 1 litro para trabalho prolongado. Design ergonômico com guidão de fácil ajuste e cinto de proteção incluso. Acompanha kit completo de acessórios: carretel de nylon, disco 3 pontas, disco facão, motopoda, misturador de óleo, vela de ignição, kit de ferramentas de montagem e cabo de conexão bi partido. Estrutura robusta e resistente com proteção única para faca de corte. Manutenção fácil, rápida e econômica com baixo consumo de combustível. Ideal para limpeza de áreas com vegetação densa e alta como sítios, fazendas e terrenos amplos. Pode ser acoplada com enxada rotativa, cerca viva e outros equipamentos. Produto com garantia e nota fiscal. Assistência técnica e todas as peças de reposição disponíveis. ATENÇÃO: Não utilizar óleo 2 tempos da marca Stihl — recomendamos apenas óleo Lubrax. Produto enviado desmontado. Combustível: gasolina misturada com óleo lubrificante na relação 25:1.",
+    specifications: [
+      { label: "Motor", value: "75cc 2 tempos" },
+      { label: "Potência", value: "3.5HP / 2.238 KW / 9000 RPM" },
+      { label: "Transmissão", value: "Embreagem automática centrífuga, eixo rígido" },
+      { label: "Carburador", value: "Tipo diafragma" },
+      { label: "Ignição", value: "TCI" },
+      { label: "Arranque", value: "Recoil (puxador)" },
+      { label: "Combustível", value: "Gasolina + óleo 2T (25:1)" },
+      { label: "Tanque", value: "1 Litro" },
+      { label: "Peso", value: "6.5 kg" },
+      { label: "Redução", value: "16:19" },
+      { label: "Rotação Lâminas", value: "Anti-horário" },
+      { label: "Cor", value: "Laranja" },
+    ],
+    variations: [
+      { label: "Modelo", options: ["5 em 1 (Padrão)", "6 em 1 (com Motopoda Extra)"] },
+    ],
+  },
 ];
 
+// Shipping options for Roçadeira
+export interface ShippingOption {
+  label: string;
+  price: number;
+  days: string;
+}
+
+export const shippingOptions: Record<number, ShippingOption[]> = {
+  21: [
+    { label: "Frete Normal", price: 19.85, days: "12 a 20 dias úteis" },
+    { label: "Frete Expresso", price: 34.85, days: "5 a 8 dias úteis" },
+  ],
+};
+
 // Order Bump items - produtos complementares sugeridos no checkout
-export const orderBumpItems: OrderBumpItem[] = [
+// Default bumps (ferramentas gerais)
+export const defaultOrderBumps: OrderBumpItem[] = [
   {
     id: 101,
     name: "Kit 10 Brocas Aço Rápido HSS 1mm a 10mm",
@@ -633,6 +687,57 @@ export const orderBumpItems: OrderBumpItem[] = [
     shortDescription: "Proteção nível 5 contra cortes. Aderência em superfícies úmidas.",
   },
 ];
+
+// Order bumps específicos para Roçadeira Nakasaki
+export const rocadeiraOrderBumps: OrderBumpItem[] = [
+  {
+    id: 201,
+    name: "Óleo Lubrax 2 Tempos 500ml para Roçadeira",
+    price: 17.85,
+    originalPrice: 39.90,
+    discount: 55,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/de2LHXt6ddjj_75a5d5c2.jpg",
+    shortDescription: "Óleo 2T recomendado pelo fabricante. Mistura 25:1. Rende até 25 litros.",
+  },
+  {
+    id: 202,
+    name: "Carretel de Nylon Reserva 3mm x 15m para Roçadeira",
+    price: 12.85,
+    originalPrice: 29.90,
+    discount: 57,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/gUewNqeHP9DH_c7f708f9.jpg",
+    shortDescription: "Nylon quadrado 3mm resistente. Compatível com roçadeiras Nakasaki.",
+  },
+  {
+    id: 203,
+    name: "Kit EPI Roçadeira: Óculos + Protetor Facial + Abafador",
+    price: 34.85,
+    originalPrice: 79.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/tnJY1AmReIxK_01cb35ba.jpg",
+    shortDescription: "Kit proteção completo para uso de roçadeira. Norma NR-6.",
+  },
+  {
+    id: 204,
+    name: "Disco de Corte 80 Dentes 255mm para Roçadeira",
+    price: 24.85,
+    originalPrice: 54.90,
+    discount: 55,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/Dn2CytPKyDTJ_f2b70613.jpg",
+    shortDescription: "Disco 80 dentes para vegetação densa e arbustos. Aço temperado.",
+  },
+];
+
+// Função para obter order bumps baseado nos itens do carrinho
+export function getOrderBumpsForCart(productIds: number[]): OrderBumpItem[] {
+  if (productIds.includes(21)) {
+    return rocadeiraOrderBumps;
+  }
+  return defaultOrderBumps;
+}
+
+// Manter compatibilidade com import antigo
+export const orderBumpItems = defaultOrderBumps;
 
 export const bannerImages = [
   {

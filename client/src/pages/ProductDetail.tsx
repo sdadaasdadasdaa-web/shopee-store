@@ -9,7 +9,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/contexts/CartContext";
-import { products } from "@/lib/data";
+import { products, shippingOptions } from "@/lib/data";
 import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package } from "lucide-react";
 import { toast } from "sonner";
 
@@ -266,6 +266,32 @@ export default function ProductDetail() {
                   </div>
                 </div>
 
+                {/* Shipping options for products with custom shipping */}
+                {shippingOptions[product.id] && (
+                  <div className="mt-4 p-4 rounded border border-orange-100" style={{ background: "#FFF5F0" }}>
+                    <span className="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-3">
+                      <Truck className="w-4 h-4" style={{ color: "#EE4D2D" }} />
+                      Opções de Frete
+                    </span>
+                    <div className="space-y-2">
+                      {shippingOptions[product.id].map((opt, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between bg-white rounded p-3 border border-gray-100"
+                        >
+                          <div>
+                            <p className="text-sm font-bold text-gray-800">{opt.label}</p>
+                            <p className="text-xs text-gray-500">{opt.days}</p>
+                          </div>
+                          <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
+                            {opt.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Trust badges */}
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 rounded p-2.5">
@@ -371,29 +397,52 @@ export default function ProductDetail() {
                 <Package className="w-4 h-4" style={{ color: "#EE4D2D" }} />
                 Informações de Envio
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-gray-600">
-                <div className="flex items-start gap-2">
-                  <Truck className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-gray-700">Frete Grátis</p>
-                    <p>Para compras acima de R$ 49,90</p>
+              {shippingOptions[product.id] ? (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {shippingOptions[product.id].map((opt, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-gray-600">
+                        <Truck className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-gray-700">{opt.label} — {opt.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+                          <p>{opt.days}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-start gap-2 text-xs text-gray-600">
+                    <RotateCcw className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-gray-700">Devolução Grátis</p>
+                      <p>7 dias após o recebimento</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Package className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-gray-700">Prazo de Entrega</p>
-                    <p>5 a 15 dias úteis</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-gray-600">
+                  <div className="flex items-start gap-2">
+                    <Truck className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-gray-700">Frete Grátis</p>
+                      <p>Para compras acima de R$ 49,90</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Package className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-gray-700">Prazo de Entrega</p>
+                      <p>5 a 15 dias úteis</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <RotateCcw className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-gray-700">Devolução Grátis</p>
+                      <p>7 dias após o recebimento</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <RotateCcw className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-gray-700">Devolução Grátis</p>
-                    <p>7 dias após o recebimento</p>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
