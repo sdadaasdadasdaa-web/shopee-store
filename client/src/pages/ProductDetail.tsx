@@ -250,12 +250,12 @@ export default function ProductDetail() {
                 <div className="mt-4 p-4 rounded" style={{ background: "#FFF5F0" }}>
                   {product.originalPrice > product.price && (
                     <span className="text-sm text-gray-400 line-through block">
-                      {formatPrice(product.originalPrice)}
+                      {formatPrice(product.originalPrice * quantity)}
                     </span>
                   )}
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl md:text-3xl font-extrabold" style={{ color: "#EE4D2D" }}>
-                      {formatPrice(product.price)}
+                      {formatPrice(product.price * quantity)}
                     </span>
                     {product.discount > 0 && (
                       <span className="text-xs font-bold text-white px-2 py-0.5 rounded"
@@ -264,9 +264,16 @@ export default function ProductDetail() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    ou 3x de {formatPrice(product.price / 3)} sem juros
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-xs text-gray-500">
+                      ou 3x de {formatPrice((product.price * quantity) / 3)} sem juros
+                    </p>
+                    {quantity > 1 && (
+                      <span className="text-xs text-gray-400">
+                        ({formatPrice(product.price)} cada)
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Variations */}
