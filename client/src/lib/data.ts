@@ -34,6 +34,15 @@ export interface OrderBumpItem {
   shortDescription: string;
 }
 
+export interface Review {
+  id: number;
+  name: string;
+  rating: number;
+  date: string;
+  text: string;
+  verified: boolean;
+}
+
 export const categories = [
   { id: 0, name: "Todos", icon: "Sparkles" },
   { id: 1, name: "Kits de Ferramentas", icon: "Wrench" },
@@ -642,8 +651,84 @@ export interface ShippingOption {
 
 export const shippingOptions: Record<number, ShippingOption[]> = {
   21: [
+    { label: "Frete Grátis", price: 0, days: "20 a 30 dias úteis" },
     { label: "Frete Normal", price: 19.85, days: "12 a 20 dias úteis" },
     { label: "Frete Expresso", price: 34.85, days: "5 a 8 dias úteis" },
+  ],
+};
+
+// Vídeo do produto Roçadeira Nakasaki
+export const productVideos: Record<number, string> = {
+  21: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/br-11110105-6v65g-mlm31qg3l2py96.16000081773059220_511a1d68.mp4",
+};
+
+// Depoimentos / Avaliações de clientes
+export const productReviews: Record<number, Review[]> = {
+  21: [
+    {
+      id: 1,
+      name: "Carlos M.",
+      rating: 5,
+      date: "15/02/2026",
+      text: "Comprei essa roçadeira e estou impressionado com a potência. Motor está liso, já usei ao extremo usando capinadeira rotativa. Nos primeiros usos usei ela bem de leve pra ir amaciando. Recomendo demais!",
+      verified: true,
+    },
+    {
+      id: 2,
+      name: "Roberto S.",
+      rating: 5,
+      date: "08/02/2026",
+      text: "Máquina excelente, ótimo custo-benefício. Facilidade de montagem e a qualidade surpreendeu. Uso no sítio para limpar terreno com vegetação densa e ela dá conta de tudo.",
+      verified: true,
+    },
+    {
+      id: 3,
+      name: "Marcos A.",
+      rating: 4,
+      date: "28/01/2026",
+      text: "Depois de usar por mais de um ano, posso dizer que a máquina é muito boa. Potência de sobra para o trabalho pesado. Veio com todos os acessórios conforme anunciado. Só tirei uma estrela porque o manual poderia ser mais detalhado.",
+      verified: true,
+    },
+    {
+      id: 4,
+      name: "José H.",
+      rating: 5,
+      date: "20/01/2026",
+      text: "Roçadeira muito potente, dá conta de mato alto e vegetação densa sem esforço. O kit de acessórios é completo e veio tudo certinho. Entrega rápida e bem embalada. Superou minhas expectativas!",
+      verified: true,
+    },
+    {
+      id: 5,
+      name: "Anderson L.",
+      rating: 4,
+      date: "12/01/2026",
+      text: "Comprei pra usar na fazenda e não me arrependo. Motor forte, aguenta trabalho pesado o dia todo. Só precisa seguir a mistura certa de combustível 25:1 com óleo Lubrax, como recomendado.",
+      verified: true,
+    },
+    {
+      id: 6,
+      name: "Fernando P.",
+      rating: 5,
+      date: "05/01/2026",
+      text: "Produto chegou antes do prazo, muito bem embalado. Montagem fácil seguindo o manual. Já testei e a potência é impressionante, corta tudo! Melhor investimento que fiz para o sítio.",
+      verified: true,
+    },
+    {
+      id: 7,
+      name: "Paulo R.",
+      rating: 5,
+      date: "22/12/2025",
+      text: "Excelente roçadeira pelo preço. Uso profissionalmente em manutenção de terrenos e ela dá conta do recado tranquilamente. Os acessórios que acompanham são de boa qualidade.",
+      verified: true,
+    },
+    {
+      id: 8,
+      name: "Diego F.",
+      rating: 5,
+      date: "15/12/2025",
+      text: "Melhor compra que fiz! A roçadeira é muito potente e os acessórios são ótimos. Recomendo usar óleo Lubrax conforme orientação do fabricante. Produto top, vendedor confiável!",
+      verified: true,
+    },
   ],
 };
 
@@ -696,7 +781,7 @@ export const rocadeiraOrderBumps: OrderBumpItem[] = [
     price: 17.85,
     originalPrice: 39.90,
     discount: 55,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/de2LHXt6ddjj_75a5d5c2.jpg",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/zYBOFsxFRths_f08a9fea.jpg",
     shortDescription: "Óleo 2T recomendado pelo fabricante. Mistura 25:1. Rende até 25 litros.",
   },
   {
@@ -705,7 +790,7 @@ export const rocadeiraOrderBumps: OrderBumpItem[] = [
     price: 12.85,
     originalPrice: 29.90,
     discount: 57,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/gUewNqeHP9DH_c7f708f9.jpg",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/tatVBTw7gyiq_6596a5b9.jpg",
     shortDescription: "Nylon quadrado 3mm resistente. Compatível com roçadeiras Nakasaki.",
   },
   {
@@ -714,7 +799,7 @@ export const rocadeiraOrderBumps: OrderBumpItem[] = [
     price: 34.85,
     originalPrice: 79.90,
     discount: 56,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/tnJY1AmReIxK_01cb35ba.jpg",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/RSPTRCTR6zX0_77bc7b92.jpg",
     shortDescription: "Kit proteção completo para uso de roçadeira. Norma NR-6.",
   },
   {
@@ -723,7 +808,7 @@ export const rocadeiraOrderBumps: OrderBumpItem[] = [
     price: 24.85,
     originalPrice: 54.90,
     discount: 55,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/Dn2CytPKyDTJ_f2b70613.jpg",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/H5aOToYR6i1T_391012f7.jpg",
     shortDescription: "Disco 80 dentes para vegetação densa e arbustos. Aço temperado.",
   },
 ];

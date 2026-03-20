@@ -328,35 +328,46 @@ export default function Checkout() {
                       Opções de Frete
                     </h2>
                     <div className="space-y-2">
-                      {customShippingOpts.map((opt, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setSelectedShippingIdx(idx)}
-                          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left ${
-                            selectedShippingIdx === idx
-                              ? "border-[#EE4D2D] bg-orange-50"
-                              : "border-gray-200 hover:border-orange-200"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                              selectedShippingIdx === idx ? "border-[#EE4D2D]" : "border-gray-300"
-                            }`}>
-                              {selectedShippingIdx === idx && (
-                                <div className="w-2 h-2 rounded-full" style={{ background: "#EE4D2D" }} />
-                              )}
+                      {customShippingOpts.map((opt, idx) => {
+                        const isFree = opt.price === 0;
+                        const isSelected = selectedShippingIdx === idx;
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedShippingIdx(idx)}
+                            className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left ${
+                              isSelected
+                                ? isFree ? "border-green-500 bg-green-50" : "border-[#EE4D2D] bg-orange-50"
+                                : "border-gray-200 hover:border-orange-200"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                isSelected ? (isFree ? "border-green-500" : "border-[#EE4D2D]") : "border-gray-300"
+                              }`}>
+                                {isSelected && (
+                                  <div className="w-2 h-2 rounded-full" style={{ background: isFree ? "#22c55e" : "#EE4D2D" }} />
+                                )}
+                              </div>
+                              <div>
+                                <p className={`text-sm font-bold ${isFree ? "text-green-700" : "text-gray-800"}`}>
+                                  {opt.label}
+                                  {isFree && (
+                                    <span className="ml-2 text-[10px] font-bold text-white px-1.5 py-0.5 rounded bg-green-500">
+                                      GRÁTIS
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="text-xs text-gray-500">{opt.days}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-bold text-gray-800">{opt.label}</p>
-                              <p className="text-xs text-gray-500">{opt.days}</p>
-                            </div>
-                          </div>
-                          <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
-                            {formatPrice(opt.price)}
-                          </span>
-                        </button>
-                      ))}
+                            <span className={`text-sm font-extrabold ${isFree ? "text-green-600" : ""}`} style={!isFree ? { color: "#EE4D2D" } : {}}>
+                              {isFree ? "R$ 0,00" : formatPrice(opt.price)}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

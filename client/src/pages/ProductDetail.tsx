@@ -1,6 +1,6 @@
 /*
  * Design: Bazaar Digital — Landing Page de Produto estilo Shopee
- * Galeria de imagens, variações, quantidade, especificações, CTAs sticky no mobile
+ * Galeria de imagens + vídeo, variações, quantidade, especificações, depoimentos, CTAs sticky no mobile
  * Nicho: Ferramentas
  */
 import { useState, useMemo } from "react";
@@ -9,8 +9,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/contexts/CartContext";
-import { products, shippingOptions } from "@/lib/data";
-import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package } from "lucide-react";
+import { products, shippingOptions, productVideos, productReviews } from "@/lib/data";
+import type { Review } from "@/lib/data";
+import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package, Play, User, BadgeCheck, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProductDetail() {
@@ -28,6 +29,8 @@ export default function ProductDetail() {
   const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({});
   const [addedToCart, setAddedToCart] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   if (!product) {
     return (
@@ -48,6 +51,13 @@ export default function ProductDetail() {
       </div>
     );
   }
+
+  const videoUrl = productVideos[product.id];
+  const reviews = productReviews[product.id] || [];
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : product.rating.toFixed(1);
+  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 4);
 
   const relatedProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
@@ -83,6 +93,21 @@ export default function ProductDetail() {
   const nextImage = () => setCurrentImage((p) => (p + 1) % product.images.length);
   const prevImage = () => setCurrentImage((p) => (p - 1 + product.images.length) % product.images.length);
 
+  const renderStars = (rating: number, size = "w-4 h-4") => (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`${size} ${
+            star <= Math.round(rating)
+              ? "fill-yellow-400 text-yellow-400"
+              : "fill-gray-200 text-gray-200"
+          }`}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F5F5F5]">
       <Header />
@@ -105,54 +130,91 @@ export default function ProductDetail() {
         <div className="container">
           <div className="bg-white rounded-sm overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-6 p-0 md:p-6">
-              {/* Image gallery */}
+              {/* Image gallery + Video */}
               <div>
-                <div className="relative aspect-square bg-gray-50 overflow-hidden group">
-                  <img
-                    src={product.images[currentImage]}
-                    alt={product.name}
-                    className="w-full h-full object-contain p-4"
-                  />
-                  {product.images.length > 1 && (
-                    <>
+                {showVideo && videoUrl ? (
+                  <div className="relative aspect-square bg-black overflow-hidden">
+                    <video
+                      src={videoUrl}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain"
+                    />
+                    <button
+                      onClick={() => setShowVideo(false)}
+                      className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white text-xs font-bold px-3 py-1.5 rounded transition-colors"
+                    >
+                      Ver Fotos
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative aspect-square bg-gray-50 overflow-hidden group">
+                    <img
+                      src={product.images[currentImage]}
+                      alt={product.name}
+                      className="w-full h-full object-contain p-4"
+                    />
+                    {product.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                    {/* Discount badge */}
+                    {product.discount > 0 && (
+                      <div className="absolute top-3 left-3 text-white text-sm font-bold px-3 py-1 rounded"
+                        style={{ background: "#EE4D2D" }}>
+                        -{product.discount}% OFF
+                      </div>
+                    )}
+                    {/* Video play button */}
+                    {videoUrl && (
                       <button
-                        onClick={prevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setShowVideo(true)}
+                        className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 hover:bg-black/90 text-white text-xs font-bold px-4 py-2 rounded-full transition-colors"
                       >
-                        <ChevronLeft className="w-4 h-4" />
+                        <Play className="w-4 h-4 fill-white" /> Ver Vídeo
                       </button>
-                      <button
-                        onClick={nextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
-                  {/* Discount badge */}
-                  {product.discount > 0 && (
-                    <div className="absolute top-3 left-3 text-white text-sm font-bold px-3 py-1 rounded"
-                      style={{ background: "#EE4D2D" }}>
-                      -{product.discount}% OFF
-                    </div>
-                  )}
-                </div>
-                {/* Thumbnails */}
-                {product.images.length > 1 && (
-                  <div className="flex gap-2 p-3 overflow-x-auto scrollbar-hide">
-                    {product.images.map((img, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentImage(i)}
-                        className={`shrink-0 w-16 h-16 rounded border-2 overflow-hidden transition-all ${
-                          i === currentImage ? "border-[#EE4D2D] opacity-100" : "border-transparent opacity-60 hover:opacity-100"
-                        }`}
-                      >
-                        <img src={img} alt="" className="w-full h-full object-contain bg-gray-50 p-1" />
-                      </button>
-                    ))}
+                    )}
                   </div>
                 )}
+                {/* Thumbnails + Video thumb */}
+                <div className="flex gap-2 p-3 overflow-x-auto scrollbar-hide">
+                  {videoUrl && (
+                    <button
+                      onClick={() => setShowVideo(true)}
+                      className={`shrink-0 w-16 h-16 rounded border-2 overflow-hidden transition-all relative ${
+                        showVideo ? "border-[#EE4D2D] opacity-100" : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img src={product.images[0]} alt="Vídeo" className="w-full h-full object-contain bg-gray-50 p-1" />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Play className="w-5 h-5 text-white fill-white" />
+                      </div>
+                    </button>
+                  )}
+                  {product.images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setCurrentImage(i); setShowVideo(false); }}
+                      className={`shrink-0 w-16 h-16 rounded border-2 overflow-hidden transition-all ${
+                        !showVideo && i === currentImage ? "border-[#EE4D2D] opacity-100" : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img src={img} alt="" className="w-full h-full object-contain bg-gray-50 p-1" />
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Product info */}
@@ -171,20 +233,17 @@ export default function ProductDetail() {
                 {/* Rating & sold */}
                 <div className="flex items-center gap-3 mt-2 text-sm">
                   <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`w-4 h-4 ${
-                          star <= Math.round(product.rating)
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "fill-gray-200 text-gray-200"
-                        }`}
-                      />
-                    ))}
-                    <span className="text-gray-500 ml-1">{product.rating}</span>
+                    {renderStars(product.rating)}
+                    <span className="text-gray-500 ml-1">{avgRating}</span>
                   </div>
                   <span className="text-gray-300">|</span>
                   <span className="text-gray-500">{formatSold(product.sold)} vendidos</span>
+                  {reviews.length > 0 && (
+                    <>
+                      <span className="text-gray-300">|</span>
+                      <span className="text-gray-500">{reviews.length} avaliações</span>
+                    </>
+                  )}
                 </div>
 
                 {/* Price */}
@@ -266,7 +325,7 @@ export default function ProductDetail() {
                   </div>
                 </div>
 
-                {/* Shipping options for products with custom shipping */}
+                {/* Shipping options */}
                 {shippingOptions[product.id] && (
                   <div className="mt-4 p-4 rounded border border-orange-100" style={{ background: "#FFF5F0" }}>
                     <span className="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-3">
@@ -277,14 +336,23 @@ export default function ProductDetail() {
                       {shippingOptions[product.id].map((opt, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between bg-white rounded p-3 border border-gray-100"
+                          className={`flex items-center justify-between bg-white rounded p-3 border ${
+                            opt.price === 0 ? "border-green-200 bg-green-50" : "border-gray-100"
+                          }`}
                         >
                           <div>
-                            <p className="text-sm font-bold text-gray-800">{opt.label}</p>
+                            <p className={`text-sm font-bold ${opt.price === 0 ? "text-green-700" : "text-gray-800"}`}>
+                              {opt.label}
+                              {opt.price === 0 && (
+                                <span className="ml-2 text-[10px] font-bold text-white px-1.5 py-0.5 rounded bg-green-500">
+                                  GRÁTIS
+                                </span>
+                              )}
+                            </p>
                             <p className="text-xs text-gray-500">{opt.days}</p>
                           </div>
-                          <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
-                            {opt.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                          <span className={`text-sm font-extrabold ${opt.price === 0 ? "text-green-600" : ""}`} style={opt.price > 0 ? { color: "#EE4D2D" } : {}}>
+                            {opt.price === 0 ? "R$ 0,00" : formatPrice(opt.price)}
                           </span>
                         </div>
                       ))}
@@ -399,12 +467,14 @@ export default function ProductDetail() {
               </h3>
               {shippingOptions[product.id] ? (
                 <div className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {shippingOptions[product.id].map((opt, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-xs text-gray-600">
-                        <Truck className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                        <Truck className={`w-4 h-4 shrink-0 mt-0.5 ${opt.price === 0 ? "text-green-500" : "text-[#00BFA5]"}`} />
                         <div>
-                          <p className="font-semibold text-gray-700">{opt.label} — {opt.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+                          <p className={`font-semibold ${opt.price === 0 ? "text-green-700" : "text-gray-700"}`}>
+                            {opt.label} — {opt.price === 0 ? "Grátis" : formatPrice(opt.price)}
+                          </p>
                           <p>{opt.days}</p>
                         </div>
                       </div>
@@ -445,6 +515,94 @@ export default function ProductDetail() {
               )}
             </div>
           </div>
+
+          {/* Customer Reviews / Depoimentos */}
+          {reviews.length > 0 && (
+            <div className="bg-white rounded-sm mt-3 p-4 md:p-6">
+              <h2 className="text-base md:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="w-1 h-5 rounded-full" style={{ background: "#EE4D2D" }} />
+                Avaliações dos Clientes
+              </h2>
+
+              {/* Rating summary */}
+              <div className="flex items-center gap-6 mb-6 p-4 rounded" style={{ background: "#FFF5F0" }}>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-extrabold" style={{ color: "#EE4D2D" }}>
+                    {avgRating}
+                  </div>
+                  <div className="text-xs text-gray-500">de 5</div>
+                  {renderStars(Number(avgRating), "w-4 h-4")}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <ThumbsUp className="w-4 h-4" style={{ color: "#EE4D2D" }} />
+                    <span className="font-semibold">{reviews.filter(r => r.rating >= 4).length} de {reviews.length}</span>
+                    <span>compradores recomendam este produto</span>
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    {[5, 4, 3, 2, 1].map((star) => {
+                      const count = reviews.filter(r => r.rating === star).length;
+                      const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                      return (
+                        <div key={star} className="flex items-center gap-2 text-xs">
+                          <span className="w-3 text-gray-500">{star}</span>
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${pct}%`, background: "#EE4D2D" }}
+                            />
+                          </div>
+                          <span className="w-6 text-right text-gray-400">{count}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Individual reviews */}
+              <div className="space-y-4">
+                {displayedReviews.map((review: Review) => (
+                  <div key={review.id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                        <User className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-gray-700">{review.name}</span>
+                          {review.verified && (
+                            <span className="flex items-center gap-0.5 text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                              <BadgeCheck className="w-3 h-3" /> Compra Verificada
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {renderStars(review.rating, "w-3 h-3")}
+                          <span className="text-xs text-gray-400">{review.date}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 leading-relaxed ml-12">
+                      {review.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Show more reviews */}
+              {reviews.length > 4 && !showAllReviews && (
+                <button
+                  onClick={() => setShowAllReviews(true)}
+                  className="mt-4 w-full py-2.5 text-sm font-semibold rounded border border-gray-200 hover:bg-gray-50 transition-colors"
+                  style={{ color: "#EE4D2D" }}
+                >
+                  Ver Todas as {reviews.length} Avaliações
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Related products */}
           {relatedProducts.length > 0 && (
