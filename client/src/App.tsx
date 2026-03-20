@@ -9,14 +9,16 @@ import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-
+import PaymentPix from "./pages/PaymentPix";
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/produto/:id" component={ProductDetail} />
       <Route path="/carrinho" component={Cart} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/pagamento/:transactionId" component={PaymentPix} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -1,19 +1,21 @@
 /*
- * Design: Bazaar Digital — Checkout simples com Order Bump dinâmico
+ * Design: Bazaar Digital — Checkout simples com Order Bump dinâmico + Pagamento BYNET PIX
  * Formulário de dados, order bumps contextuais, opções de frete, resumo do pedido
  * Nicho: Ferramentas
  */
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useCart } from "@/contexts/CartContext";
-import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck, Loader2 } from "lucide-react";
 import { checkoutSuccessImage, getOrderBumpsForCart, shippingOptions, type ShippingOption } from "@/lib/data";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
   const [, navigate] = useLocation();
-  const [orderPlaced, setOrderPlaced] = useState(false);
   const [selectedBumps, setSelectedBumps] = useState<Set<number>>(new Set());
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [cpf, setCpf] = useState("");
 
   // Determine which shipping options are available based on cart items
   const productIds = useMemo(() => items.map((i) => i.product.id), [items]);
@@ -65,6 +67,14 @@ export default function Checkout() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    // Clear error on change
+    if (formErrors[name]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const handleCepBlur = async () => {
@@ -97,54 +107,90 @@ export default function Checkout() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setOrderPlaced(true);
-    clearCart();
+  // tRPC mutation for creating PIX payment
+  const createPixMutation = trpc.payment.createPix.useMutation({
+    onSuccess: (data) => {
+      // Save PIX data to localStorage for the payment page
+      if (data.pix) {
+        localStorage.setItem(
+          `pix_${data.transactionId}`,
+          JSON.stringify(data.pix)
+        );
+      }
+      clearCart();
+      // Navigate to payment page with transaction ID
+      navigate(`/pagamento/${data.transactionId}`);
+    },
+    onError: (error) => {
+      alert(`Erro ao processar pagamento: ${error.message}`);
+    },
+  });
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    if (!form.name.trim()) errors.name = "Nome é obrigatório";
+    if (!form.email.trim() || !form.email.includes("@")) errors.email = "E-mail inválido";
+    if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 10) errors.phone = "Telefone inválido";
+    if (!cpf.trim() || cpf.replace(/\D/g, "").length < 11) errors.cpf = "CPF inválido";
+    if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) errors.cep = "CEP inválido";
+    if (!form.street.trim()) errors.street = "Rua é obrigatória";
+    if (!form.number.trim()) errors.number = "Número é obrigatório";
+    if (!form.neighborhood.trim()) errors.neighborhood = "Bairro é obrigatório";
+    if (!form.city.trim()) errors.city = "Cidade é obrigatória";
+    if (!form.state.trim()) errors.state = "Estado é obrigatório";
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  if (items.length === 0 && !orderPlaced) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    // Build items array (cart items + selected bumps)
+    const paymentItems = [
+      ...items.map((item) => ({
+        title: item.product.name,
+        unitPrice: Math.round(item.product.price * 100), // centavos
+        quantity: item.quantity,
+        tangible: true,
+        externalRef: `product-${item.product.id}`,
+      })),
+      ...currentBumps
+        .filter((b) => selectedBumps.has(b.id))
+        .map((bump) => ({
+          title: bump.name,
+          unitPrice: Math.round(bump.price * 100),
+          quantity: 1,
+          tangible: true,
+          externalRef: `bump-${bump.id}`,
+        })),
+    ];
+
+    createPixMutation.mutate({
+      customer: {
+        name: form.name,
+        email: form.email,
+        cpf: cpf,
+        phone: form.phone,
+        address: {
+          street: form.street,
+          streetNumber: form.number,
+          complement: form.complement,
+          zipCode: form.cep,
+          neighborhood: form.neighborhood,
+          city: form.city,
+          state: form.state,
+          country: "br",
+        },
+      },
+      items: paymentItems,
+      shippingFee: Math.round(shippingCost * 100),
+    });
+  };
+
+  if (items.length === 0 && !createPixMutation.isSuccess) {
     navigate("/");
     return null;
-  }
-
-  // Success screen
-  if (orderPlaced) {
-    return (
-      <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
-        <header className="bg-white border-b border-gray-100">
-          <div className="container flex items-center gap-3 py-3">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EE4D2D" }}>
-                <ShoppingCart className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-extrabold" style={{ color: "#EE4D2D" }}>AchaShop</span>
-            </Link>
-          </div>
-        </header>
-
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-8 md:p-12 text-center max-w-md w-full shadow-sm">
-            <img
-              src={checkoutSuccessImage}
-              alt="Pedido confirmado"
-              className="w-40 h-40 mx-auto mb-6 object-contain"
-            />
-            <h1 className="text-2xl font-extrabold text-gray-800 mb-2">Pedido Confirmado!</h1>
-            <p className="text-gray-500 mb-6">
-              Seu pedido foi recebido com sucesso. Em breve você receberá um e-mail com os detalhes e o código de rastreamento.
-            </p>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-8 py-3 rounded text-white font-bold text-sm"
-              style={{ background: "#EE4D2D" }}
-            >
-              Continuar Comprando
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -193,9 +239,10 @@ export default function Checkout() {
                         value={form.name}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.name ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Seu nome completo"
                       />
+                      {formErrors.name && <p className="text-red-500 text-[10px] mt-1">{formErrors.name}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">E-mail *</label>
@@ -205,9 +252,32 @@ export default function Checkout() {
                         value={form.email}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.email ? "border-red-400" : "border-gray-200"}`}
                         placeholder="seu@email.com"
                       />
+                      {formErrors.email && <p className="text-red-500 text-[10px] mt-1">{formErrors.email}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">CPF *</label>
+                      <input
+                        type="text"
+                        value={cpf}
+                        onChange={(e) => {
+                          setCpf(e.target.value);
+                          if (formErrors.cpf) {
+                            setFormErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.cpf;
+                              return next;
+                            });
+                          }
+                        }}
+                        required
+                        maxLength={14}
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.cpf ? "border-red-400" : "border-gray-200"}`}
+                        placeholder="000.000.000-00"
+                      />
+                      {formErrors.cpf && <p className="text-red-500 text-[10px] mt-1">{formErrors.cpf}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Telefone / WhatsApp *</label>
@@ -217,9 +287,10 @@ export default function Checkout() {
                         value={form.phone}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.phone ? "border-red-400" : "border-gray-200"}`}
                         placeholder="(11) 99999-9999"
                       />
+                      {formErrors.phone && <p className="text-red-500 text-[10px] mt-1">{formErrors.phone}</p>}
                     </div>
                   </div>
                 </div>
@@ -241,9 +312,10 @@ export default function Checkout() {
                         onBlur={handleCepBlur}
                         required
                         maxLength={9}
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.cep ? "border-red-400" : "border-gray-200"}`}
                         placeholder="00000-000"
                       />
+                      {formErrors.cep && <p className="text-red-500 text-[10px] mt-1">{formErrors.cep}</p>}
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Rua *</label>
@@ -253,9 +325,10 @@ export default function Checkout() {
                         value={form.street}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.street ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Nome da rua"
                       />
+                      {formErrors.street && <p className="text-red-500 text-[10px] mt-1">{formErrors.street}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Número *</label>
@@ -265,9 +338,10 @@ export default function Checkout() {
                         value={form.number}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.number ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Nº"
                       />
+                      {formErrors.number && <p className="text-red-500 text-[10px] mt-1">{formErrors.number}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Complemento</label>
@@ -288,9 +362,10 @@ export default function Checkout() {
                         value={form.neighborhood}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.neighborhood ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Bairro"
                       />
+                      {formErrors.neighborhood && <p className="text-red-500 text-[10px] mt-1">{formErrors.neighborhood}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Cidade *</label>
@@ -300,9 +375,10 @@ export default function Checkout() {
                         value={form.city}
                         onChange={handleChange}
                         required
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.city ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Cidade"
                       />
+                      {formErrors.city && <p className="text-red-500 text-[10px] mt-1">{formErrors.city}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Estado *</label>
@@ -313,9 +389,10 @@ export default function Checkout() {
                         onChange={handleChange}
                         required
                         maxLength={2}
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all uppercase"
+                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all uppercase ${formErrors.state ? "border-red-400" : "border-gray-200"}`}
                         placeholder="UF"
                       />
+                      {formErrors.state && <p className="text-red-500 text-[10px] mt-1">{formErrors.state}</p>}
                     </div>
                   </div>
                 </div>
@@ -531,13 +608,36 @@ export default function Checkout() {
                     </p>
                   </div>
 
+                  {/* Payment method indicator */}
+                  <div className="mt-4 p-3 rounded-lg bg-green-50 border border-green-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                      <span className="text-sm font-bold text-green-700">Pagamento via PIX</span>
+                    </div>
+                    <p className="text-[10px] text-green-600">
+                      Após finalizar, você receberá o QR Code PIX para pagamento instantâneo.
+                    </p>
+                  </div>
+
                   <button
                     type="submit"
-                    className="w-full mt-5 py-3.5 rounded text-white font-bold text-sm transition-all hover:opacity-90 flex items-center justify-center gap-2"
+                    disabled={createPixMutation.isPending}
+                    className="w-full mt-5 py-3.5 rounded text-white font-bold text-sm transition-all hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-60"
                     style={{ background: "#EE4D2D" }}
                   >
-                    <Check className="w-4 h-4" />
-                    Finalizar Compra
+                    {createPixMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Processando...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-4 h-4" />
+                        Pagar com PIX — {formatPrice(finalTotal)}
+                      </>
+                    )}
                   </button>
 
                   <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
