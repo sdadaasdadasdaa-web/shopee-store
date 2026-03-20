@@ -17,7 +17,7 @@ export default function Footer() {
               <span className="text-white text-lg font-extrabold">AchaShop</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Os melhores achadinhos com preços imbatíveis. Compre com segurança e receba em casa.
+              As melhores ferramentas com preços imbatíveis. Kits profissionais, parafusadeiras, serras e muito mais. Compre com segurança e receba em casa.
             </p>
           </div>
 

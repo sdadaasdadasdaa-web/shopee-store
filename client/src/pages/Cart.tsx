@@ -68,7 +68,7 @@ export default function Cart() {
                     <img
                       src={item.product.image}
                       alt={item.product.name}
-                      className="w-20 h-20 md:w-24 md:h-24 rounded object-cover shrink-0"
+                      className="w-20 h-20 md:w-24 md:h-24 rounded object-contain bg-gray-50 p-1 shrink-0"
                     />
                   </Link>
 

@@ -1,6 +1,7 @@
 /*
  * Design: Bazaar Digital — Landing Page de Produto estilo Shopee
- * Galeria de imagens, variações, quantidade, CTAs sticky no mobile
+ * Galeria de imagens, variações, quantidade, especificações, CTAs sticky no mobile
+ * Nicho: Ferramentas
  */
 import { useState, useMemo } from "react";
 import { useRoute, useLocation } from "wouter";
@@ -9,7 +10,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/contexts/CartContext";
 import { products } from "@/lib/data";
-import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check } from "lucide-react";
+import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProductDetail() {
@@ -26,6 +27,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({});
   const [addedToCart, setAddedToCart] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
 
   if (!product) {
     return (
@@ -50,6 +52,11 @@ export default function ProductDetail() {
   const relatedProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 5);
+
+  const moreProducts = products
+    .filter((p) => p.id !== product.id)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 10);
 
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -104,7 +111,7 @@ export default function ProductDetail() {
                   <img
                     src={product.images[currentImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-4"
                   />
                   {product.images.length > 1 && (
                     <>
@@ -141,7 +148,7 @@ export default function ProductDetail() {
                           i === currentImage ? "border-[#EE4D2D] opacity-100" : "border-transparent opacity-60 hover:opacity-100"
                         }`}
                       >
-                        <img src={img} alt="" className="w-full h-full object-cover" />
+                        <img src={img} alt="" className="w-full h-full object-contain bg-gray-50 p-1" />
                       </button>
                     ))}
                   </div>
@@ -198,6 +205,9 @@ export default function ProductDetail() {
                       </span>
                     )}
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    ou 3x de {formatPrice(product.price / 3)} sem juros
+                  </p>
                 </div>
 
                 {/* Variations */}
@@ -257,14 +267,22 @@ export default function ProductDetail() {
                 </div>
 
                 {/* Trust badges */}
-                <div className="mt-5 flex flex-wrap gap-4 text-xs text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <ShieldCheck className="w-4 h-4 text-[#00BFA5]" />
-                    Compra Segura
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 rounded p-2.5">
+                    <ShieldCheck className="w-4 h-4 text-[#00BFA5] shrink-0" />
+                    <span>Compra 100% Segura</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Truck className="w-4 h-4 text-[#00BFA5]" />
-                    Entrega Garantida
+                  <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 rounded p-2.5">
+                    <Truck className="w-4 h-4 text-[#00BFA5] shrink-0" />
+                    <span>Entrega Garantida</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 rounded p-2.5">
+                    <RotateCcw className="w-4 h-4 text-[#00BFA5] shrink-0" />
+                    <span>7 Dias para Troca</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 rounded p-2.5">
+                    <Award className="w-4 h-4 text-[#00BFA5] shrink-0" />
+                    <span>Garantia de Qualidade</span>
                   </div>
                 </div>
 
@@ -297,15 +315,86 @@ export default function ProductDetail() {
             </div>
           </div>
 
+          {/* Specifications */}
+          {product.specifications && product.specifications.length > 0 && (
+            <div className="bg-white rounded-sm mt-3 p-4 md:p-6">
+              <h2 className="text-base md:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="w-1 h-5 rounded-full" style={{ background: "#EE4D2D" }} />
+                Especificações Técnicas
+              </h2>
+              <div className="border rounded overflow-hidden">
+                {product.specifications.map((spec, i) => (
+                  <div
+                    key={spec.label}
+                    className={`grid grid-cols-3 text-sm ${
+                      i % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
+                  >
+                    <div className="p-3 font-semibold text-gray-600 border-r border-gray-100">
+                      {spec.label}
+                    </div>
+                    <div className="p-3 text-gray-700 col-span-2">
+                      {spec.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Description */}
           <div className="bg-white rounded-sm mt-3 p-4 md:p-6">
             <h2 className="text-base md:text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
               <div className="w-1 h-5 rounded-full" style={{ background: "#EE4D2D" }} />
               Descrição do Produto
             </h2>
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-              {product.description}
-            </p>
+            <div className="relative">
+              <p className={`text-sm text-gray-600 leading-relaxed whitespace-pre-line ${
+                !showFullDesc ? "line-clamp-4 md:line-clamp-none" : ""
+              }`}>
+                {product.description}
+              </p>
+              {!showFullDesc && (
+                <button
+                  onClick={() => setShowFullDesc(true)}
+                  className="md:hidden mt-2 text-sm font-semibold"
+                  style={{ color: "#EE4D2D" }}
+                >
+                  Ver descrição completa
+                </button>
+              )}
+            </div>
+
+            {/* Shipping info */}
+            <div className="mt-6 p-4 bg-gray-50 rounded border border-gray-100">
+              <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                <Package className="w-4 h-4" style={{ color: "#EE4D2D" }} />
+                Informações de Envio
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-gray-600">
+                <div className="flex items-start gap-2">
+                  <Truck className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-gray-700">Frete Grátis</p>
+                    <p>Para compras acima de R$ 49,90</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Package className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-gray-700">Prazo de Entrega</p>
+                    <p>5 a 15 dias úteis</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <RotateCcw className="w-4 h-4 text-[#00BFA5] shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-gray-700">Devolução Grátis</p>
+                    <p>7 dias após o recebimento</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Related products */}
@@ -324,6 +413,21 @@ export default function ProductDetail() {
               </div>
             </div>
           )}
+
+          {/* More products you might like */}
+          <div className="mt-3 md:mt-4">
+            <div className="bg-white rounded-sm p-4 md:p-6">
+              <h2 className="text-base md:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="w-1 h-5 rounded-full" style={{ background: "#EE4D2D" }} />
+                Você Também Pode Gostar
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
+                {moreProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 

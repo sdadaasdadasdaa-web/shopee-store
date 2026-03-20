@@ -66,7 +66,7 @@ export default function Home() {
               ? selectedCategory
               : searchQuery
               ? `Resultados para "${searchQuery}"`
-              : "Achadinhos Para Você"}
+              : "Ferramentas em Oferta"}
           </h2>
           {(selectedCategory || searchQuery) && (
             <button

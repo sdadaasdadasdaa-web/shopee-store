@@ -72,7 +72,7 @@ export default function Header({ onSearch }: HeaderProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar produtos, marcas e muito mais..."
+              placeholder="Buscar ferramentas, kits, parafusadeiras..."
               className="w-full h-10 md:h-11 pl-4 pr-12 rounded-sm bg-white text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
             />
             <button
