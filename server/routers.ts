@@ -3,6 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { createTransaction, getTransactionById } from "./bynet";
+import { sendUtmifyPendingOrder, sendUtmifyPaidOrder } from "./utmify";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 
@@ -36,7 +37,25 @@ const createPixTransactionSchema = z.object({
   items: z.array(itemSchema).min(1),
   shippingFee: z.number().int().default(0),
   metadata: z.string().optional(),
+  trackingParams: z.object({
+    src: z.string().nullable().optional(),
+    sck: z.string().nullable().optional(),
+    utm_source: z.string().nullable().optional(),
+    utm_campaign: z.string().nullable().optional(),
+    utm_medium: z.string().nullable().optional(),
+    utm_content: z.string().nullable().optional(),
+    utm_term: z.string().nullable().optional(),
+  }).optional(),
 });
+
+// In-memory store for order data (for UTMify paid event)
+const orderStore = new Map<string, {
+  createdAt: string;
+  customer: { name: string; email: string; phone: string; cpf: string };
+  products: { id: string; name: string; quantity: number; priceInCents: number }[];
+  totalInCents: number;
+  trackingParams?: any;
+}>();
 
 export const appRouter = router({
   system: systemRouter,
@@ -109,17 +128,55 @@ export const appRouter = router({
           }),
         });
 
-        // BYNET returns PIX code in two places:
-        // 1. data.qrCode (root level) - the copia-e-cola code
-        // 2. data.pix.qrcode (lowercase 'c') - same code
-        // 3. data.pix.url - QR Code image URL (may be null)
         const pixCode = result.data.qrCode || result.data.pix?.qrcode || null;
         const pixImageUrl = result.data.pix?.url || null;
         const pixExpiration = result.data.pix?.expirationDate || null;
+        const transactionId = result.data.id;
+
+        // Formatar data UTC para UTMify
+        const createdAtUTC = new Date().toISOString().replace("T", " ").substring(0, 19);
+
+        // Preparar produtos para UTMify
+        const utmifyProducts = input.items.map((item, idx) => ({
+          id: item.externalRef || `item-${idx + 1}`,
+          name: item.title,
+          quantity: item.quantity,
+          priceInCents: item.unitPrice * item.quantity,
+        }));
+
+        // Salvar dados do pedido para uso posterior (quando pagar)
+        orderStore.set(transactionId, {
+          createdAt: createdAtUTC,
+          customer: {
+            name: input.customer.name,
+            email: input.customer.email,
+            phone: cleanPhone,
+            cpf: cleanCpf,
+          },
+          products: utmifyProducts,
+          totalInCents: totalAmount,
+          trackingParams: input.trackingParams,
+        });
+
+        // Enviar evento "waiting_payment" para UTMify (fire-and-forget)
+        sendUtmifyPendingOrder({
+          orderId: externalRef,
+          customer: {
+            name: input.customer.name,
+            email: input.customer.email,
+            phone: cleanPhone,
+            cpf: cleanCpf,
+          },
+          products: utmifyProducts,
+          totalInCents: totalAmount,
+          trackingParams: input.trackingParams,
+        }).catch((err) => {
+          console.error("[UTMify] Error sending pending order:", err);
+        });
 
         return {
           success: true,
-          transactionId: result.data.id,
+          transactionId,
           status: result.data.status,
           amount: result.data.amount,
           pix: {
@@ -135,6 +192,29 @@ export const appRouter = router({
       .input(z.object({ transactionId: z.string() }))
       .query(async ({ input }) => {
         const result = await getTransactionById(input.transactionId);
+        const status = result.data.status;
+
+        // Se o status mudou para "paid", enviar evento para UTMify
+        if (status === "paid" || status === "PAID") {
+          const orderData = orderStore.get(input.transactionId);
+          if (orderData) {
+            // Enviar evento "paid" para UTMify (fire-and-forget)
+            sendUtmifyPaidOrder({
+              orderId: (typeof result.data.metadata === 'string' && result.data.metadata) ? JSON.parse(result.data.metadata).order_number : input.transactionId,
+              createdAt: orderData.createdAt,
+              customer: orderData.customer,
+              products: orderData.products,
+              totalInCents: orderData.totalInCents,
+              trackingParams: orderData.trackingParams,
+            }).catch((err) => {
+              console.error("[UTMify] Error sending paid order:", err);
+            });
+
+            // Remover do store após enviar (evitar duplicatas)
+            orderStore.delete(input.transactionId);
+          }
+        }
+
         return {
           status: result.data.status,
           paidAt: result.data.paidAt,

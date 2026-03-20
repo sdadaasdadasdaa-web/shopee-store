@@ -18,3 +18,10 @@
 - [x] Adicionar campo CPF ao formulário de checkout
 - [x] Validação de formulário com mensagens de erro
 - [x] Bug: QR Code e código copia-e-cola PIX não aparecem na página de pagamento
+- [x] Adicionar script pixel UTMify no head de todas as páginas
+- [x] Configurar credencial API UTMify como secret
+- [x] Criar módulo backend para enviar eventos à API UTMify
+- [x] Enviar evento "pedido pendente" quando cliente gera PIX
+- [x] Enviar evento "pedido pago" quando pagamento é confirmado
+- [x] Capturar UTM parameters da URL e enviar para UTMify
+- [x] Testar integração completa UTMify

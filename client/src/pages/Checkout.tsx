@@ -170,6 +170,18 @@ export default function Checkout() {
         })),
     ];
 
+    // Capturar UTM parameters da URL para enviar à UTMify
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackingParams = {
+      src: urlParams.get("src") || null,
+      sck: urlParams.get("sck") || null,
+      utm_source: urlParams.get("utm_source") || null,
+      utm_campaign: urlParams.get("utm_campaign") || null,
+      utm_medium: urlParams.get("utm_medium") || null,
+      utm_content: urlParams.get("utm_content") || null,
+      utm_term: urlParams.get("utm_term") || null,
+    };
+
     createPixMutation.mutate({
       customer: {
         name: form.name,
@@ -189,6 +201,7 @@ export default function Checkout() {
       },
       items: paymentItems,
       shippingFee: Math.round(shippingCost * 100),
+      trackingParams,
     });
   };
 
