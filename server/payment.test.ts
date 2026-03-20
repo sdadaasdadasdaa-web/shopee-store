@@ -54,11 +54,13 @@ describe("payment.createPix", () => {
     expect(result.transactionId).not.toBe("");
     expect(result.status).toBe("WAITING_PAYMENT");
     expect(result.externalRef).toMatch(/^ACHA-/);
-    // PIX data should be returned (may be null if BYNET doesn't return it for test transactions)
-    // The important thing is the transaction was created successfully
-    if (result.pix) {
-      // If pix is returned, it should be an object
-      expect(typeof result.pix).toBe("object");
+    // PIX data should be returned with qrCode for the payment page
+    expect(result.pix).toBeDefined();
+    expect(typeof result.pix).toBe("object");
+    // The qrCode (copia-e-cola) should be a non-empty string
+    if (result.pix?.qrCode) {
+      expect(typeof result.pix.qrCode).toBe("string");
+      expect(result.pix.qrCode.length).toBeGreaterThan(10);
     }
   });
 

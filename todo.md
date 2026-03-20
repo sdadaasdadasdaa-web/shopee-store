@@ -17,3 +17,4 @@
 - [x] Testar fluxo completo de pagamento
 - [x] Adicionar campo CPF ao formulário de checkout
 - [x] Validação de formulário com mensagens de erro
+- [x] Bug: QR Code e código copia-e-cola PIX não aparecem na página de pagamento

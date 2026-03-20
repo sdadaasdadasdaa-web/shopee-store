@@ -114,7 +114,11 @@ export default function Checkout() {
       if (data.pix) {
         localStorage.setItem(
           `pix_${data.transactionId}`,
-          JSON.stringify(data.pix)
+          JSON.stringify({
+            qrCode: data.pix.qrCode,
+            qrCodeImageUrl: data.pix.qrCodeImageUrl,
+            expirationDate: data.pix.expirationDate,
+          })
         );
       }
       clearCart();

@@ -1,19 +1,30 @@
 /*
  * Design: Bazaar Digital — Página de Pagamento PIX
- * Exibe QR Code, código copia-e-cola, timer de expiração e verificação automática de status
+ * Exibe QR Code gerado a partir do código PIX, código copia-e-cola, timer de expiração
+ * e verificação automática de status via polling
  */
-import { useState, useEffect, useCallback } from "react";
-import { Link, useParams, useLocation } from "wouter";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Link, useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { QRCodeSVG } from "qrcode.react";
 import { ShoppingCart, Copy, Check, Clock, Loader2, CheckCircle, AlertCircle } from "lucide-react";
-import { checkoutSuccessImage } from "@/lib/data";
 
 export default function PaymentPix() {
   const { transactionId } = useParams<{ transactionId: string }>();
-  const [, navigate] = useLocation();
   const [copied, setCopied] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(24 * 60 * 60); // 24h in seconds
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+
+  // Get PIX data from localStorage (saved during checkout)
+  const pixData = useMemo(() => getPixDataFromStorage(transactionId || ""), [transactionId]);
+
+  // Calculate time left from expiration date
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (pixData?.expirationDate) {
+      const diff = Math.floor((new Date(pixData.expirationDate).getTime() - Date.now()) / 1000);
+      return Math.max(0, diff);
+    }
+    return 24 * 60 * 60; // Default 24h
+  });
 
   // Fetch transaction status periodically
   const statusQuery = trpc.payment.checkStatus.useQuery(
@@ -120,7 +131,7 @@ export default function PaymentPix() {
   }
 
   // Loading state
-  if (statusQuery.isLoading && !statusQuery.data) {
+  if (statusQuery.isLoading && !statusQuery.data && !pixData) {
     return (
       <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
         <div className="text-center">
@@ -131,8 +142,8 @@ export default function PaymentPix() {
     );
   }
 
-  // Error state
-  if (statusQuery.isError) {
+  // Error state - no PIX data at all
+  if (!pixData?.qrCode && statusQuery.isError) {
     return (
       <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
         <div className="bg-white rounded-lg p-8 text-center max-w-md w-full shadow-sm">
@@ -150,9 +161,6 @@ export default function PaymentPix() {
       </div>
     );
   }
-
-  // We need to get the PIX data from localStorage (saved during checkout)
-  const pixData = getPixDataFromStorage(transactionId || "");
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
@@ -193,14 +201,16 @@ export default function PaymentPix() {
             </div>
           )}
 
-          {/* QR Code */}
-          {pixData?.qrCodeUrl && (
+          {/* QR Code - Generated from PIX code using qrcode.react */}
+          {pixData?.qrCode && (
             <div className="flex justify-center mb-6">
               <div className="p-4 bg-white border-2 border-gray-200 rounded-lg">
-                <img
-                  src={pixData.qrCodeUrl}
-                  alt="QR Code PIX"
-                  className="w-48 h-48 md:w-56 md:h-56"
+                <QRCodeSVG
+                  value={pixData.qrCode}
+                  size={220}
+                  level="M"
+                  bgColor="#FFFFFF"
+                  fgColor="#000000"
                 />
               </div>
             </div>
@@ -210,7 +220,7 @@ export default function PaymentPix() {
           {pixData?.qrCode && (
             <div className="mb-6">
               <p className="text-xs font-semibold text-gray-500 mb-2 text-center">
-                Ou copie o código PIX:
+                Ou copie o código PIX Copia e Cola:
               </p>
               <div className="flex gap-2">
                 <input
@@ -276,7 +286,7 @@ export default function PaymentPix() {
 }
 
 // Helper to get PIX data from localStorage
-function getPixDataFromStorage(transactionId: string): { qrCode: string; qrCodeUrl: string } | null {
+function getPixDataFromStorage(transactionId: string): { qrCode: string; qrCodeImageUrl: string | null; expirationDate: string | null } | null {
   try {
     const stored = localStorage.getItem(`pix_${transactionId}`);
     if (stored) return JSON.parse(stored);

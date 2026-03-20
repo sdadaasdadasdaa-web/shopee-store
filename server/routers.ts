@@ -109,12 +109,24 @@ export const appRouter = router({
           }),
         });
 
+        // BYNET returns PIX code in two places:
+        // 1. data.qrCode (root level) - the copia-e-cola code
+        // 2. data.pix.qrcode (lowercase 'c') - same code
+        // 3. data.pix.url - QR Code image URL (may be null)
+        const pixCode = result.data.qrCode || result.data.pix?.qrcode || null;
+        const pixImageUrl = result.data.pix?.url || null;
+        const pixExpiration = result.data.pix?.expirationDate || null;
+
         return {
           success: true,
           transactionId: result.data.id,
           status: result.data.status,
           amount: result.data.amount,
-          pix: result.data.pix,
+          pix: {
+            qrCode: pixCode,
+            qrCodeImageUrl: pixImageUrl,
+            expirationDate: pixExpiration,
+          },
           externalRef,
         };
       }),

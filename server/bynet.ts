@@ -66,9 +66,10 @@ export interface BynetTransactionResponse {
     amount: number;
     paymentMethod: string;
     status: string;
+    qrCode: string | null; // PIX copia-e-cola code at root level
     pix: {
-      qrCode: string;
-      qrCodeUrl: string;
+      qrcode: string; // lowercase 'c' — PIX copia-e-cola code
+      url: string | null; // QR Code image URL (may be null)
       expirationDate: string;
     } | null;
     boleto: {
