@@ -50,3 +50,4 @@
 - [x] Corrigir preço da Máquina de Solda de R$ 629,00 para R$ 89,90
 - [x] Reorganizar fotos dos depoimentos: pessoas no perfil, produto nas imagens do review
 - [x] Atualizar preços das variantes: Padrão R$ 89,57 e Arame Extra R$ 119,68
+- [x] Substituir imagens do carrossel do produto 22 pelas 9 imagens corretas da Dobevi
