@@ -35,6 +35,20 @@ export default function ProductDetail() {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [reviewVideoUrl, setReviewVideoUrl] = useState<string | null>(null);
 
+  // Preço dinâmico baseado na variante selecionada
+  const currentPrice = (() => {
+    if (!product) return 0;
+    for (const variation of product.variations) {
+      if (variation.prices && selectedVariations[variation.label]) {
+        const idx = variation.options.indexOf(selectedVariations[variation.label]);
+        if (idx >= 0 && variation.prices[idx] !== undefined) {
+          return variation.prices[idx];
+        }
+      }
+    }
+    return product.price;
+  })();
+
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col bg-[#F5F5F5]">
@@ -258,12 +272,12 @@ export default function ProductDetail() {
                   <div className="p-4" style={{ background: "#FFF5F0" }}>
                   {product.originalPrice > product.price && (
                     <span className="text-sm text-gray-400 line-through block">
-                      {formatPrice(product.originalPrice * quantity)}
+                      {formatPrice(product.originalPrice)}
                     </span>
                   )}
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl md:text-3xl font-extrabold" style={{ color: "#EE4D2D" }}>
-                      {formatPrice(product.price * quantity)}
+                      {formatPrice(currentPrice * quantity)}
                     </span>
                     {product.discount > 0 && (
                       <span className="text-xs font-bold text-white px-2 py-0.5 rounded"
@@ -274,11 +288,11 @@ export default function ProductDetail() {
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-xs text-gray-500">
-                      ou 3x de {formatPrice((product.price * quantity) / 3)} sem juros
+                      ou 3x de {formatPrice((currentPrice * quantity) / 3)} sem juros
                     </p>
                     {quantity > 1 && (
                       <span className="text-xs text-gray-400">
-                        ({formatPrice(product.price)} cada)
+                        ({formatPrice(currentPrice)} cada)
                       </span>
                     )}
                   </div>

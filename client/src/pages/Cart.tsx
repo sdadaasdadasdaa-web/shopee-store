@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
+import { getItemPrice } from "@/lib/pricing";
 
 export default function Cart() {
   const { items, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
@@ -94,7 +95,7 @@ export default function Cart() {
                     {/* Price */}
                     <div className="mt-2 flex items-center justify-between">
                       <span className="text-base font-extrabold" style={{ color: "#EE4D2D" }}>
-                        {formatPrice(item.product.price)}
+                        {formatPrice(getItemPrice(item))}
                       </span>
                     </div>
 

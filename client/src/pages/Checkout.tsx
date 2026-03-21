@@ -11,6 +11,7 @@ import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck, Loader
 import { checkoutSuccessImage, getOrderBumpsForCart, shippingOptions, type ShippingOption } from "@/lib/data";
 import UrgencyTimer from "@/components/UrgencyTimer";
 import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
+import { getItemPrice } from "@/lib/pricing";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
@@ -156,7 +157,7 @@ export default function Checkout() {
     const paymentItems = [
       ...items.map((item) => ({
         title: item.product.name,
-        unitPrice: Math.round(item.product.price * 100), // centavos
+        unitPrice: Math.round(getItemPrice(item) * 100), // centavos
         quantity: item.quantity,
         tangible: true,
         externalRef: `product-${item.product.id}`,
@@ -549,7 +550,7 @@ export default function Checkout() {
                           <p className="text-xs text-gray-700 line-clamp-2">{item.product.name}</p>
                           <p className="text-xs text-gray-400 mt-0.5">Qtd: {item.quantity}</p>
                           <p className="text-sm font-bold mt-0.5" style={{ color: "#EE4D2D" }}>
-                            {formatPrice(item.product.price * item.quantity)}
+                            {formatPrice(getItemPrice(item) * item.quantity)}
                           </p>
                         </div>
                       </div>

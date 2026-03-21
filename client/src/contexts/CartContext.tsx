@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import type { Product, CartItem } from "@/lib/data";
+import { getItemPrice } from "@/lib/pricing";
 
 interface CartContextType {
   items: CartItem[];
@@ -55,7 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + getItemPrice(item) * item.quantity,
     0
   );
 

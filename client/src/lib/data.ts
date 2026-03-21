@@ -15,6 +15,7 @@ export interface Product {
   variations: {
     label: string;
     options: string[];
+    prices?: number[];
   }[];
 }
 
@@ -647,7 +648,7 @@ export const products: Product[] = [
   {
     id: 22,
     name: "Máquina Solda Inversor IGBT 250A Sem Gás 3 Em 1 Multifuncional 110V/220V Dobevi",
-    price: 89.90,
+    price: 89.57,
     originalPrice: 249.90,
     discount: 64,
     image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-main_5903500b.webp",
@@ -682,7 +683,7 @@ export const products: Product[] = [
       { label: "Garantia", value: "12 meses" },
     ],
     variations: [
-      { label: "Modelo", options: ["MIG 250A (Padrão)", "MIG 250A + Arame Extra 1kg"] },
+      { label: "Modelo", options: ["MIG 250A (Padrão)", "MIG 250A + Arame Extra 1kg"], prices: [89.57, 119.68] },
     ],
   },
 ];
