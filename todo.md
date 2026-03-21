@@ -35,3 +35,10 @@
 - [x] Implementar proxy server-side para eventos UTMify (PageView, IC) via tRPC
 - [x] Atualizar UtmifyTracker frontend para enviar eventos via proxy server-side
 - [x] Persistir sck no localStorage (utms/latest.js não salva sck)
+- [x] Coletar imagens do produto Máquina de Solda IGBT 250A da Shopee
+- [x] Coletar depoimentos com fotos/vídeos e fotos de perfil dos compradores
+- [x] Fazer upload de todas as mídias para CDN
+- [x] Adicionar produto ao data.ts com todas as informações
+- [x] Configurar order bumps específicos para a Máquina de Solda
+- [x] Adicionar depoimentos com fotos/vídeos ao productReviews
+- [x] Testar página do produto e fluxo de compra

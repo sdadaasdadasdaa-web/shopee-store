@@ -41,6 +41,9 @@ export interface Review {
   date: string;
   text: string;
   verified: boolean;
+  profileImage?: string;
+  images?: string[];
+  videoUrl?: string;
 }
 
 export const categories = [
@@ -55,6 +58,7 @@ export const categories = [
   { id: 8, name: "Acessórios", icon: "Package" },
   { id: 9, name: "Manuais", icon: "Hammer" },
   { id: 10, name: "Roçadeiras", icon: "Flame" },
+  { id: 11, name: "Soldas", icon: "Zap" },
 ];
 
 export const products: Product[] = [
@@ -640,6 +644,47 @@ export const products: Product[] = [
       { label: "Modelo", options: ["5 em 1 (Padrão)", "6 em 1 (com Motopoda Extra)"] },
     ],
   },
+  {
+    id: 22,
+    name: "Máquina Solda Inversor IGBT 250A Sem Gás 3 Em 1 Multifuncional 110V/220V Dobevi",
+    price: 629.00,
+    originalPrice: 1599.90,
+    discount: 61,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-main_5903500b.webp",
+    images: [
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-main_5903500b.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-full-kit_7a0faf56.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-kit_353fb356.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail1_b8c170a6.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail2_15b633f0.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail3_eaeac3a2.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-specs_61d8df21.webp",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-real1_25e09085.jpg",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-real2_6fb70421.jpg",
+    ],
+    rating: 4.7,
+    sold: 8432,
+    freeShipping: false,
+    category: "Soldas",
+    description: "Máquina de Solda Inversor IGBT 250A Dobevi — a solução profissional 3 em 1 para todos os tipos de soldagem. Combina os processos MIG (sem gás, com arame tubular flux core), MMA (eletrodo revestido) e TIG Lift em um único equipamento compacto e versátil. Tecnologia IGBT de última geração com display digital LCD para controle preciso de amperagem e velocidade do arame. Dupla tensão automática 110V/220V — conecte em qualquer tomada sem necessidade de adaptadores. Potência de 250A com arco estável e penetração profunda, capaz de soldar chapas de até 15mm de espessura. Sistema de resfriamento rápido com ventilador de alta velocidade e silencioso, permitindo soldagem durante todo o dia sem superaquecimento. Compatibilidade com arames MIG de 0.6mm, 0.8mm e 1.0mm e eletrodos Arco/MMA de 2.0mm, 2.5mm e 3.2mm. Kit completo incluso: tocha MIG, garra terra, porta-eletrodo, máscara de solda, luvas de proteção, escova de aço, eletrodos de teste, bicos de contato reserva e adaptador de tomada. Ideal para oficinas, serralheria, manutenção industrial, construção civil, trabalhos domésticos e hobbistas. Design compacto e portátil com alça ergonômica para fácil transporte. Garantia e nota fiscal inclusa.",
+    specifications: [
+      { label: "Processo", value: "MIG (Flux Core) / MMA / TIG Lift — 3 em 1" },
+      { label: "Corrente Máxima", value: "250A" },
+      { label: "Tecnologia", value: "IGBT com display digital LCD" },
+      { label: "Tensão", value: "110V / 220V (automático)" },
+      { label: "Espessura de Soldagem", value: "Até 15mm" },
+      { label: "Arame MIG", value: "0.6 / 0.8 / 1.0 mm" },
+      { label: "Eletrodo Arco/MMA", value: "2.0 / 2.5 / 3.2 mm" },
+      { label: "Ciclo de Trabalho", value: "60% a 250A" },
+      { label: "Resfriamento", value: "Ventilador de alta velocidade (silencioso)" },
+      { label: "Peso", value: "8.5 kg" },
+      { label: "Potência", value: "2280W" },
+      { label: "Garantia", value: "12 meses" },
+    ],
+    variations: [
+      { label: "Modelo", options: ["MIG 250A (Padrão)", "MIG 250A + Arame Extra 1kg"] },
+    ],
+  },
 ];
 
 // Shipping options for Roçadeira
@@ -654,6 +699,11 @@ export const shippingOptions: Record<number, ShippingOption[]> = {
     { label: "Frete Grátis", price: 0, days: "20 a 30 dias úteis" },
     { label: "Frete Normal", price: 19.85, days: "12 a 20 dias úteis" },
     { label: "Frete Expresso", price: 34.85, days: "5 a 8 dias úteis" },
+  ],
+  22: [
+    { label: "Frete Grátis", price: 0, days: "20 a 30 dias úteis" },
+    { label: "Frete Normal", price: 24.90, days: "12 a 18 dias úteis" },
+    { label: "Frete Expresso", price: 44.90, days: "5 a 8 dias úteis" },
   ],
 };
 
@@ -727,6 +777,91 @@ export const productReviews: Record<number, Review[]> = {
       rating: 5,
       date: "15/12/2025",
       text: "Melhor compra que fiz! A roçadeira é muito potente e os acessórios são ótimos. Recomendo usar óleo Lubrax conforme orientação do fabricante. Produto top, vendedor confiável!",
+      verified: true,
+    },
+  ],
+  22: [
+    {
+      id: 1,
+      name: "Carlos R.",
+      rating: 5,
+      date: "10/03/2026",
+      text: "Máquina sensacional! Comprei pra minha oficina de serralheria e estou impressionado com a qualidade da solda. O arco é super estável, penetração excelente em chapas de até 10mm sem problema nenhum. O modo MIG sem gás com arame tubular é perfeito pra quem não quer ter o trabalho de comprar cilindro de gás. Kit veio completo com tudo que precisa pra começar a soldar na hora. Recomendo demais!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/profile-carlos_d00a58dd.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/review-workshop1_80bbeb66.jpg",
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/review-welding1_5379dbdc.jpeg",
+      ],
+    },
+    {
+      id: 2,
+      name: "Marcos A.",
+      rating: 5,
+      date: "05/03/2026",
+      text: "Melhor custo-benefício que já vi em máquina de solda 3 em 1. Uso tanto no modo MIG quanto no eletrodo revestido e os dois funcionam muito bem. A bivolt automática é uma mão na roda, conecto em qualquer tomada. O display digital facilita muito o ajuste da amperagem. Já soldei portão, grade, estrutura metálica... dá conta de tudo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/profile-marcos_22aa8565.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/review-workshop2_c24e2aca.jpg",
+      ],
+    },
+    {
+      id: 3,
+      name: "Rafael S.",
+      rating: 5,
+      date: "25/02/2026",
+      text: "Sou iniciante em soldagem e essa máquina foi perfeita pra aprender. O modo MIG sem gás é muito fácil de usar, é só colocar o arame e começar a soldar. A qualidade do cordão de solda ficou muito boa mesmo sendo minha primeira vez. O ventilador de resfriamento é silencioso e mantém a máquina fria mesmo depois de horas de uso. Veio com máscara, luvas e eletrodos de teste. Nota 10!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/profile-rafael_c1b403fe.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/review-welding2_7bcac25f.jpeg",
+      ],
+      videoUrl: "https://www.youtube.com/watch?v=XWk5dieDuWI",
+    },
+    {
+      id: 4,
+      name: "Anderson P.",
+      rating: 4,
+      date: "18/02/2026",
+      text: "Máquina muito boa, potente e versátil. Uso na minha oficina de manutenção industrial e ela aguenta o tranco o dia todo. O único ponto que poderia melhorar é o manual que poderia ser mais detalhado em português. Mas no YouTube tem vários vídeos explicando tudo. A solda MIG fica perfeita e o eletrodo revestido também funciona muito bem. Entrega foi rápida e bem embalada.",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/profile-anderson_3737a5d4.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/review-welding3_d9ce2dc2.jpg",
+      ],
+    },
+    {
+      id: 5,
+      name: "Patrícia M.",
+      rating: 5,
+      date: "10/02/2026",
+      text: "Comprei pro meu marido de presente e ele amou! Ele trabalha com serralheria e disse que a qualidade da solda é excelente, arco estável e fácil de controlar. O kit completo com máscara e luvas foi um diferencial. A máquina é compacta e leve, fácil de transportar. Já fizemos vários trabalhos e ela não decepciona. Super recomendo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/profile-patricia_1701fd0a.jpg",
+    },
+    {
+      id: 6,
+      name: "Fernando L.",
+      rating: 5,
+      date: "01/02/2026",
+      text: "Terceira máquina de solda que compro e de longe a melhor. A tecnologia IGBT faz toda a diferença na estabilidade do arco. Soldei chapas de 12mm sem nenhuma dificuldade. O modo 3 em 1 é muito prático, troco de MIG pra eletrodo em segundos. Produto chegou antes do prazo, nota fiscal e garantia de 12 meses. Vendedor sério e confiável.",
+      verified: true,
+    },
+    {
+      id: 7,
+      name: "Ricardo T.",
+      rating: 4,
+      date: "25/01/2026",
+      text: "Boa máquina pelo preço. Uso pra trabalhos domésticos e pequenos reparos na fazenda. A solda MIG sem gás é prática demais, não precisa de cilindro. Tirei uma estrela porque o arame que vem junto é pouco, mas comprei mais e resolveu. No geral, excelente investimento.",
+      verified: true,
+    },
+    {
+      id: 8,
+      name: "Diego M.",
+      rating: 5,
+      date: "15/01/2026",
+      text: "Produto top! Solda muito bem em todos os modos. O display digital é muito útil pra ajustar a amperagem com precisão. Já fiz portão, grade, estrutura de telhado e até conserto de carroceria. A máquina é robusta e confiável. Kit completo, entrega rápida. Melhor compra que fiz esse ano!",
       verified: true,
     },
   ],
@@ -813,8 +948,51 @@ export const rocadeiraOrderBumps: OrderBumpItem[] = [
   },
 ];
 
+// Order bumps específicos para Máquina de Solda Dobevi
+export const soldaOrderBumps: OrderBumpItem[] = [
+  {
+    id: 301,
+    name: "Arame Tubular Flux Core 0.8mm 1kg para Solda MIG",
+    price: 29.90,
+    originalPrice: 59.90,
+    discount: 50,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-specs_61d8df21.webp",
+    shortDescription: "Arame tubular 0.8mm compatível com Dobevi 250A. Solda sem gás. Rende até 200m.",
+  },
+  {
+    id: 302,
+    name: "Máscara de Solda Automática Escurecimento DIN 9-13",
+    price: 49.90,
+    originalPrice: 119.90,
+    discount: 58,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail2_15b633f0.webp",
+    shortDescription: "Escurecimento automático em 0.1ms. Proteção UV/IR. Ajuste DIN 9-13.",
+  },
+  {
+    id: 303,
+    name: "Kit 10 Bicos de Contato 0.8mm + 5 Bocais MIG",
+    price: 19.90,
+    originalPrice: 44.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail3_eaeac3a2.webp",
+    shortDescription: "Peças de reposição compatíveis com Dobevi 250A. Cobre de alta condutividade.",
+  },
+  {
+    id: 304,
+    name: "Luvas de Soldador Couro Cano Longo Reforçadas",
+    price: 24.90,
+    originalPrice: 54.90,
+    discount: 55,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail1_b8c170a6.webp",
+    shortDescription: "Couro bovino resistente ao calor. Cano longo para proteção total. Norma NR-6.",
+  },
+];
+
 // Função para obter order bumps baseado nos itens do carrinho
 export function getOrderBumpsForCart(productIds: number[]): OrderBumpItem[] {
+  if (productIds.includes(22)) {
+    return soldaOrderBumps;
+  }
   if (productIds.includes(21)) {
     return rocadeiraOrderBumps;
   }

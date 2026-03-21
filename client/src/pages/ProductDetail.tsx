@@ -581,9 +581,17 @@ export default function ProductDetail() {
                 {displayedReviews.map((review: Review) => (
                   <div key={review.id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                        <User className="w-5 h-5 text-gray-400" />
-                      </div>
+                      {review.profileImage ? (
+                        <img
+                          src={review.profileImage}
+                          alt={review.name}
+                          className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                          <User className="w-5 h-5 text-gray-400" />
+                        </div>
+                      )}
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-gray-700">{review.name}</span>
@@ -602,6 +610,34 @@ export default function ProductDetail() {
                     <p className="text-sm text-gray-600 leading-relaxed ml-12">
                       {review.text}
                     </p>
+                    {/* Review images */}
+                    {review.images && review.images.length > 0 && (
+                      <div className="flex gap-2 mt-2 ml-12 flex-wrap">
+                        {review.images.map((img, idx) => (
+                          <a key={idx} href={img} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={img}
+                              alt={`Foto do ${review.name}`}
+                              className="w-20 h-20 md:w-24 md:h-24 rounded object-cover border border-gray-200 hover:opacity-80 transition-opacity cursor-pointer"
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                    {/* Review video */}
+                    {review.videoUrl && (
+                      <div className="mt-2 ml-12">
+                        <a
+                          href={review.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                        >
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                          Ver vídeo da avaliação
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
