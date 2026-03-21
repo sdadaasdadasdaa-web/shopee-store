@@ -5,13 +5,14 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { CartProvider } from "./contexts/CartContext";
+import UtmifyTracker from "./components/UtmifyTracker";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import PaymentPix from "./pages/PaymentPix";
+
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -32,6 +33,8 @@ function App() {
         <CartProvider>
           <TooltipProvider>
             <Toaster position="top-center" richColors />
+            {/* UTMify Tracker — dispara PageView, InitiateCheckout, Purchase em cada rota */}
+            <UtmifyTracker />
             <Router />
           </TooltipProvider>
         </CartProvider>

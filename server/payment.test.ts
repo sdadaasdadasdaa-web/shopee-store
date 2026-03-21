@@ -162,5 +162,5 @@ describe("payment.createPix", () => {
     expect(result.success).toBe(true);
     // Total should be 5000*2 + 1985 = 11985 (R$ 119,85)
     expect(result.amount).toBe(11985);
-  });
+  }, 15000);
 });

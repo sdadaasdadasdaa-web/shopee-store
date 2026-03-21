@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/CartContext";
 import { trpc } from "@/lib/trpc";
 import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck, Loader2 } from "lucide-react";
 import { checkoutSuccessImage, getOrderBumpsForCart, shippingOptions, type ShippingOption } from "@/lib/data";
+import UrgencyTimer from "@/components/UrgencyTimer";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
@@ -241,6 +242,8 @@ export default function Checkout() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Form */}
               <div className="lg:col-span-2 space-y-4">
+                {/* Timer de Urgência */}
+                <UrgencyTimer variant="checkout" durationMinutes={30} />
                 {/* Contact */}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">

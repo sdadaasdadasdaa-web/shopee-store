@@ -13,6 +13,7 @@ import { products, shippingOptions, productVideos, productReviews } from "@/lib/
 import type { Review } from "@/lib/data";
 import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package, Play, User, BadgeCheck, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
+import UrgencyTimer from "@/components/UrgencyTimer";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/produto/:id");
@@ -246,8 +247,11 @@ export default function ProductDetail() {
                   )}
                 </div>
 
-                {/* Price */}
-                <div className="mt-4 p-4 rounded" style={{ background: "#FFF5F0" }}>
+                {/* Timer de Urgência — acima do preço */}
+                <div className="mt-4 rounded overflow-hidden">
+                  <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
+                  {/* Price */}
+                  <div className="p-4" style={{ background: "#FFF5F0" }}>
                   {product.originalPrice > product.price && (
                     <span className="text-sm text-gray-400 line-through block">
                       {formatPrice(product.originalPrice * quantity)}
@@ -273,6 +277,7 @@ export default function ProductDetail() {
                         ({formatPrice(product.price)} cada)
                       </span>
                     )}
+                  </div>
                   </div>
                 </div>
 

@@ -25,3 +25,7 @@
 - [x] Enviar evento "pedido pago" quando pagamento é confirmado
 - [x] Capturar UTM parameters da URL e enviar para UTMify
 - [x] Testar integração completa UTMify
+- [x] Corrigir pixel UTMify para disparar em TODAS as páginas (Home, Produto, Carrinho, Checkout, Pagamento)
+- [x] Disparar eventos UTMify corretos: PageView, InitiateCheckout, Purchase
+- [x] Adicionar timer de urgência 30 minutos na página do produto (acima do preço)
+- [x] Adicionar timer de urgência 30 minutos no checkout (lugar estratégico)
