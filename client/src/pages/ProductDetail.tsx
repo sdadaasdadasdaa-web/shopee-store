@@ -33,6 +33,7 @@ export default function ProductDetail() {
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [reviewVideoUrl, setReviewVideoUrl] = useState<string | null>(null);
 
   if (!product) {
     return (
@@ -627,15 +628,13 @@ export default function ProductDetail() {
                     {/* Review video */}
                     {review.videoUrl && (
                       <div className="mt-2 ml-12">
-                        <a
-                          href={review.videoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                        <button
+                          onClick={() => setReviewVideoUrl(review.videoUrl!)}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
                         >
                           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                           Ver vídeo da avaliação
-                        </a>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -716,6 +715,33 @@ export default function ProductDetail() {
       </div>
 
       <Footer />
+
+      {/* Video Modal */}
+      {reviewVideoUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setReviewVideoUrl(null)}
+        >
+          <div
+            className="relative w-full max-w-2xl bg-black rounded-lg overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setReviewVideoUrl(null)}
+              className="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <video
+              src={reviewVideoUrl}
+              controls
+              autoPlay
+              className="w-full max-h-[80vh]"
+              playsInline
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -42,3 +42,8 @@
 - [x] Configurar order bumps específicos para a Máquina de Solda
 - [x] Adicionar depoimentos com fotos/vídeos ao productReviews
 - [x] Testar página do produto e fluxo de compra
+- [x] Upload das novas fotos reais de clientes para CDN (18 fotos)
+- [x] Atualizar depoimentos com fotos reais de pessoas como perfil
+- [x] Atualizar depoimentos com fotos do produto em uso como imagens do review
+- [x] Configurar vídeos da Shopee para abrir em modal/player ao clicar
+- [x] Testar depoimentos atualizados na página do produto
