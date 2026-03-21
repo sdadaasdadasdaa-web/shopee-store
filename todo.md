@@ -47,3 +47,5 @@
 - [x] Atualizar depoimentos com fotos do produto em uso como imagens do review
 - [x] Configurar vídeos da Shopee para abrir em modal/player ao clicar
 - [x] Testar depoimentos atualizados na página do produto
+- [x] Corrigir preço da Máquina de Solda de R$ 629,00 para R$ 89,90
+- [x] Reorganizar fotos dos depoimentos: pessoas no perfil, produto nas imagens do review
