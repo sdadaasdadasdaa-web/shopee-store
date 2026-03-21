@@ -29,3 +29,9 @@
 - [x] Disparar eventos UTMify corretos: PageView, InitiateCheckout, Purchase
 - [x] Adicionar timer de urgência 30 minutos na página do produto (acima do preço)
 - [x] Adicionar timer de urgência 30 minutos no checkout (lugar estratégico)
+- [x] Bug: Notificações UTMify não estão sendo enviadas (pedido pendente e pago)
+- [x] Verificar formato correto da API UTMify e corrigir envio
+- [x] Verificar se pixel UTMify está disparando eventos corretamente no frontend
+- [x] Implementar proxy server-side para eventos UTMify (PageView, IC) via tRPC
+- [x] Atualizar UtmifyTracker frontend para enviar eventos via proxy server-side
+- [x] Persistir sck no localStorage (utms/latest.js não salva sck)

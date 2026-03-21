@@ -2,6 +2,8 @@ import axios from "axios";
 import { ENV } from "./_core/env";
 
 const UTMIFY_API_URL = "https://api.utmify.com.br/api-credentials/orders";
+const UTMIFY_TRACKING_URL = "https://tracking.utmify.com.br/tracking/v1";
+const PIXEL_ID = "69251f2e83c0b0e4729553f9";
 
 interface UtmifyCustomer {
   name: string;
@@ -204,4 +206,87 @@ export async function sendUtmifyPaidOrder(params: {
   };
 
   return sendUtmifyOrder(payload);
+}
+
+// ============================================================
+// Server-side Tracking via tracking.utmify.com.br
+// Proxy para eventos de pixel (PageView, InitiateCheckout)
+// Garante que os eventos são registrados mesmo quando o pixel
+// é bloqueado por ad blockers no browser do visitante.
+// ============================================================
+
+interface TrackingLead {
+  _id?: string;
+  pixelId: string;
+  userAgent: string;
+  locale: string;
+  ip?: string;
+  parameters?: Record<string, string>;
+}
+
+interface TrackingEvent {
+  pageTitle: string;
+  sourceUrl: string;
+}
+
+interface TrackingResponse {
+  lead?: {
+    _id: string;
+    [key: string]: any;
+  };
+  event?: {
+    _id: string;
+    type: string;
+    [key: string]: any;
+  };
+}
+
+/**
+ * Envia um evento de tracking (PageView, InitiateCheckout, etc.)
+ * para a API de tracking do UTMify via server-side.
+ * Isso funciona como proxy para contornar ad blockers.
+ */
+export async function sendUtmifyTrackingEvent(params: {
+  type: "PageView" | "InitiateCheckout" | "ViewContent";
+  lead: TrackingLead;
+  event: TrackingEvent;
+  clientIp?: string;
+}): Promise<{ success: boolean; lead?: any; error?: string }> {
+  try {
+    const leadData: any = {
+      ...params.lead,
+      pixelId: PIXEL_ID,
+    };
+    // Adicionar IP do cliente se disponível
+    if (params.clientIp) {
+      leadData.ip = params.clientIp;
+    }
+
+    const response = await axios.post(
+      `${UTMIFY_TRACKING_URL}/events`,
+      {
+        type: params.type,
+        lead: leadData,
+        event: params.event,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        timeout: 10000,
+      }
+    );
+
+    const data: TrackingResponse = response.data;
+    console.log(
+      `[UTMify Tracking] ${params.type} sent — Lead: ${data.lead?._id}, Event: ${data.event?._id}`
+    );
+
+    return { success: true, lead: data.lead };
+  } catch (error: any) {
+    const errorMsg =
+      error?.response?.data?.message || error?.message || "Unknown error";
+    console.error(
+      `[UTMify Tracking] Failed to send ${params.type}: ${errorMsg}`
+    );
+    return { success: false, error: errorMsg };
+  }
 }

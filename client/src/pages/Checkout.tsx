@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck, Loader2 } from "lucide-react";
 import { checkoutSuccessImage, getOrderBumpsForCart, shippingOptions, type ShippingOption } from "@/lib/data";
 import UrgencyTimer from "@/components/UrgencyTimer";
+import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart } = useCart();
@@ -171,17 +172,8 @@ export default function Checkout() {
         })),
     ];
 
-    // Capturar UTM parameters da URL para enviar à UTMify
-    const urlParams = new URLSearchParams(window.location.search);
-    const trackingParams = {
-      src: urlParams.get("src") || null,
-      sck: urlParams.get("sck") || null,
-      utm_source: urlParams.get("utm_source") || null,
-      utm_campaign: urlParams.get("utm_campaign") || null,
-      utm_medium: urlParams.get("utm_medium") || null,
-      utm_content: urlParams.get("utm_content") || null,
-      utm_term: urlParams.get("utm_term") || null,
-    };
+    // Capturar UTM parameters (URL + localStorage + cookies) para enviar à UTMify
+    const trackingParams = getUtmifyTrackingParams();
 
     createPixMutation.mutate({
       customer: {

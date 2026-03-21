@@ -14,6 +14,7 @@ import type { Review } from "@/lib/data";
 import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package, Play, User, BadgeCheck, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 import UrgencyTimer from "@/components/UrgencyTimer";
+import { useSendInitiateCheckout } from "@/components/UtmifyTracker";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/produto/:id");
@@ -86,8 +87,10 @@ export default function ProductDetail() {
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
+  const sendIC = useSendInitiateCheckout();
   const handleBuyNow = () => {
     addItem(product, quantity, selectedVariations);
+    sendIC(); // Enviar InitiateCheckout para UTMify via proxy server-side
     navigate("/checkout");
   };
 

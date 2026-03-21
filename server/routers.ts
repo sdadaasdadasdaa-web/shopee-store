@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { createTransaction, getTransactionById } from "./bynet";
-import { sendUtmifyPendingOrder, sendUtmifyPaidOrder } from "./utmify";
+import { sendUtmifyPendingOrder, sendUtmifyPaidOrder, sendUtmifyTrackingEvent } from "./utmify";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 
@@ -68,6 +68,51 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+  }),
+
+  // Proxy server-side para eventos de tracking UTMify
+  // Contorna ad blockers que bloqueiam tracking.utmify.com.br
+  tracking: router({
+    sendEvent: publicProcedure
+      .input(
+        z.object({
+          type: z.enum(["PageView", "InitiateCheckout", "ViewContent"]),
+          lead: z.object({
+            _id: z.string().optional(),
+            userAgent: z.string(),
+            locale: z.string(),
+            parameters: z.record(z.string(), z.string()).optional(),
+          }),
+          event: z.object({
+            pageTitle: z.string(),
+            sourceUrl: z.string(),
+          }),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        // Capturar IP real do cliente
+        const clientIp =
+          (ctx.req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+          ctx.req.socket.remoteAddress ||
+          "";
+
+        const result = await sendUtmifyTrackingEvent({
+          type: input.type,
+          lead: {
+            ...input.lead,
+            pixelId: "69251f2e83c0b0e4729553f9",
+            ip: clientIp,
+          },
+          event: input.event,
+          clientIp,
+        });
+
+        return {
+          success: result.success,
+          lead: result.lead || null,
+          error: result.error || null,
+        };
+      }),
   }),
 
   payment: router({
@@ -157,6 +202,9 @@ export const appRouter = router({
           totalInCents: totalAmount,
           trackingParams: input.trackingParams,
         });
+
+        // Log dos tracking params para debug
+        console.log(`[UTMify] TrackingParams for ${externalRef}:`, JSON.stringify(input.trackingParams));
 
         // Enviar evento "waiting_payment" para UTMify (fire-and-forget)
         sendUtmifyPendingOrder({
