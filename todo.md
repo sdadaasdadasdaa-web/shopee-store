@@ -52,3 +52,6 @@
 - [x] Atualizar preços das variantes: Padrão R$ 89,57 e Arame Extra R$ 119,68
 - [x] Substituir imagens do carrossel do produto 22 pelas 9 imagens corretas da Dobevi
 - [x] Adicionar vídeo como primeiro item do carrossel do produto Máquina de Solda com autoplay
+- [x] Criar hook/contexto de escassez com contador de 60 unidades que diminui aleatoriamente
+- [x] Adicionar aviso de escassez na página do produto Máquina de Solda
+- [x] Adicionar aviso de escassez no checkout

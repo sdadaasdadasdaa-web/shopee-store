@@ -14,6 +14,7 @@ import type { Review } from "@/lib/data";
 import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, RotateCcw, Award, Package, Play, User, BadgeCheck, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 import UrgencyTimer from "@/components/UrgencyTimer";
+import ScarcityBadge from "@/components/ScarcityBadge";
 import { useSendInitiateCheckout } from "@/components/UtmifyTracker";
 
 export default function ProductDetail() {
@@ -279,6 +280,12 @@ export default function ProductDetail() {
                 {/* Timer de Urgência — acima do preço */}
                 <div className="mt-4 rounded overflow-hidden">
                   <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
+                  {/* Contador de escassez */}
+                  {product.id === 22 && (
+                    <div className="px-4 pt-3">
+                      <ScarcityBadge variant="product" />
+                    </div>
+                  )}
                   {/* Price */}
                   <div className="p-4" style={{ background: "#FFF5F0" }}>
                   {product.originalPrice > product.price && (
