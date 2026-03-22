@@ -7,7 +7,6 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
-  bynetApiKey: process.env.BYNET_API_KEY ?? "",
   sigiloPaySecretKey: process.env.SIGILO_PAY_SECRET_KEY ?? "",
   sigiloPayPublicKey: process.env.SIGILO_PAY_PUBLIC_KEY ?? "",
   utmifyApiToken: process.env.UTMIFY_API_TOKEN ?? "",

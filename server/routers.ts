@@ -1,5 +1,6 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
+import { ENV } from "./_core/env";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { createPixTransaction, getTransactionStatus } from "./sigilopay";
@@ -119,6 +120,11 @@ export const appRouter = router({
     createPix: publicProcedure
       .input(createPixTransactionSchema)
       .mutation(async ({ input }) => {
+        // Validar credenciais antes de tentar criar transação
+        if (!ENV.sigiloPaySecretKey || !ENV.sigiloPayPublicKey) {
+          throw new Error("Credenciais do gateway de pagamento não configuradas. Configure SIGILO_PAY_SECRET_KEY e SIGILO_PAY_PUBLIC_KEY.");
+        }
+
         const externalRef = `ACHA-${nanoid(10)}`;
 
         // Calcular o total em centavos

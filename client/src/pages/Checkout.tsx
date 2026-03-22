@@ -1,5 +1,5 @@
 /*
- * Design: Bazaar Digital — Checkout simples com Order Bump dinâmico + Pagamento BYNET PIX
+ * Design: Bazaar Digital — Checkout simples com Order Bump dinâmico + Pagamento Sigilo Pay PIX
  * Formulário de dados, order bumps contextuais, opções de frete, resumo do pedido
  * Nicho: Ferramentas
  */

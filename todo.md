@@ -63,3 +63,5 @@
 - [x] Configurar credenciais da Sigilo Pay como secrets
 - [x] Atualizar backend para usar API da Sigilo Pay
 - [x] Testar fluxo de pagamento PIX com Sigilo Pay
+- [x] Corrigir erro "Credenciais não fornecidas" no pagamento (env vars Sigilo Pay)
+- [x] Remover todos os arquivos e referências da BYNET do projeto
