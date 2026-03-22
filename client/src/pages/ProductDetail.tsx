@@ -280,11 +280,9 @@ export default function ProductDetail() {
                 {/* Timer de Urgência — acima do preço */}
                 <div className="mt-4 rounded overflow-hidden">
                   <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
-                  {/* Contador de escassez */}
+                  {/* Contador de escassez — barra separada */}
                   {product.id === 22 && (
-                    <div className="px-4 pt-3">
-                      <ScarcityBadge variant="product" />
-                    </div>
+                    <ScarcityBadge variant="product" />
                   )}
                   {/* Price */}
                   <div className="p-4" style={{ background: "#FFF5F0" }}>

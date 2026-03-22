@@ -1,5 +1,5 @@
 import { useScarcity } from "@/hooks/useScarcity";
-import { Flame, AlertTriangle } from "lucide-react";
+import { Flame, AlertTriangle, Zap } from "lucide-react";
 
 interface ScarcityBadgeProps {
   variant?: "product" | "checkout";
@@ -13,62 +13,76 @@ export default function ScarcityBadge({ variant = "product" }: ScarcityBadgeProp
 
   if (variant === "checkout") {
     return (
-      <div
-        className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-semibold animate-pulse ${
-          isCritical
-            ? "bg-red-50 border-red-300 text-red-700"
-            : isLow
-              ? "bg-orange-50 border-orange-300 text-orange-700"
-              : "bg-yellow-50 border-yellow-300 text-yellow-700"
-        }`}
-      >
-        <AlertTriangle className={`w-5 h-5 shrink-0 ${isCritical ? "text-red-500" : isLow ? "text-orange-500" : "text-yellow-500"}`} />
-        <div>
-          <span className="font-bold">
-            {isCritical ? "Quase esgotando!" : isLow ? "Estoque baixo!" : "Alta demanda!"}
-          </span>
-          {" "}Restam apenas{" "}
-          <span className={`font-extrabold text-base ${isCritical ? "text-red-600" : isLow ? "text-orange-600" : "text-yellow-600"}`}>
-            {stock} unidades
-          </span>
-          {" "}— finalize sua compra agora!
+      <div className="relative overflow-hidden rounded-lg border-2 border-red-400 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 p-4 shadow-lg">
+        {/* Animated background pulse */}
+        <div className="absolute inset-0 bg-white/5 animate-pulse" />
+        <div className="relative flex items-center gap-3">
+          <div className="shrink-0 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center animate-bounce">
+            <Flame className="w-7 h-7 text-yellow-300 drop-shadow-lg" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4 text-yellow-300" />
+              <span className="text-white font-extrabold text-sm uppercase tracking-wider">
+                {isCritical ? "Quase esgotando!" : isLow ? "Estoque acabando!" : "Alta procura!"}
+              </span>
+            </div>
+            <div className="text-white text-sm">
+              Restam apenas{" "}
+              <span className="inline-flex items-center justify-center bg-white text-red-600 font-black text-lg px-2.5 py-0.5 rounded-md mx-1 shadow-inner min-w-[2.5rem] tabular-nums">
+                {stock}
+              </span>
+              {" "}unidades — finalize sua compra agora!
+            </div>
+          </div>
         </div>
+        {/* Progress bar showing stock depletion */}
+        <div className="relative mt-3 h-2 bg-white/20 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-yellow-300 rounded-full transition-all duration-1000 ease-out"
+            style={{ width: `${(stock / 60) * 100}%` }}
+          />
+        </div>
+        <p className="text-white/70 text-[10px] mt-1.5 text-center">
+          {Math.round(((60 - stock) / 60) * 100)}% do estoque já foi vendido hoje
+        </p>
       </div>
     );
   }
 
-  // Variant: product page
+  // Variant: product page — barra chamativa abaixo do timer
   return (
-    <div
-      className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold ${
-        isCritical
-          ? "bg-red-50 border border-red-200 text-red-700"
-          : isLow
-            ? "bg-orange-50 border border-orange-200 text-orange-700"
-            : "bg-amber-50 border border-amber-200 text-amber-700"
-      }`}
-    >
-      <Flame
-        className={`w-5 h-5 shrink-0 ${
-          isCritical ? "text-red-500 animate-bounce" : isLow ? "text-orange-500" : "text-amber-500"
-        }`}
+    <div className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-500 to-orange-500 px-4 py-3">
+      {/* Shimmer effect */}
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
+          animation: "shimmer 2s infinite",
+        }}
       />
-      <div className="flex items-center gap-1 flex-wrap">
-        <span className="text-xs uppercase tracking-wide opacity-80">
-          {isCritical ? "Quase esgotando!" : isLow ? "Estoque baixo!" : "Alta demanda!"}
-        </span>
-        <span className="mx-1 opacity-40">|</span>
-        <span>
-          Restam{" "}
-          <span
-            className={`font-extrabold text-base ${
-              isCritical ? "text-red-600" : isLow ? "text-orange-600" : "text-amber-600"
-            }`}
-          >
-            {stock}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
+      <div className="relative flex items-center justify-center gap-3">
+        <Flame className={`w-5 h-5 text-yellow-300 shrink-0 ${isCritical ? "animate-bounce" : ""}`} />
+        <div className="flex items-center gap-2 text-white font-bold text-sm">
+          <span className="uppercase tracking-wide text-xs text-yellow-200">
+            {isCritical ? "Quase esgotando!" : isLow ? "Estoque baixo!" : "Alta procura!"}
           </span>
-          {" "}unidades
-        </span>
+          <span className="text-white/60">|</span>
+          <span>
+            Restam{" "}
+            <span className="inline-flex items-center justify-center bg-white text-red-600 font-black text-base px-2 py-0.5 rounded mx-0.5 shadow-md min-w-[2rem] tabular-nums">
+              {stock}
+            </span>
+            {" "}unidades
+          </span>
+        </div>
+        <Flame className={`w-5 h-5 text-yellow-300 shrink-0 ${isCritical ? "animate-bounce" : ""}`} />
       </div>
     </div>
   );
