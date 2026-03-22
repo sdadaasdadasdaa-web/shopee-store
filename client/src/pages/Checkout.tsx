@@ -257,6 +257,7 @@ export default function Checkout() {
                         value={form.name}
                         onChange={handleChange}
                         required
+                        maxLength={80}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.name ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Seu nome completo"
                       />
@@ -270,6 +271,7 @@ export default function Checkout() {
                         value={form.email}
                         onChange={handleChange}
                         required
+                        maxLength={60}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.email ? "border-red-400" : "border-gray-200"}`}
                         placeholder="seu@email.com"
                       />
@@ -305,6 +307,7 @@ export default function Checkout() {
                         value={form.phone}
                         onChange={handleChange}
                         required
+                        maxLength={15}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.phone ? "border-red-400" : "border-gray-200"}`}
                         placeholder="(11) 99999-9999"
                       />
@@ -343,6 +346,7 @@ export default function Checkout() {
                         value={form.street}
                         onChange={handleChange}
                         required
+                        maxLength={100}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.street ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Nome da rua"
                       />
@@ -356,6 +360,7 @@ export default function Checkout() {
                         value={form.number}
                         onChange={handleChange}
                         required
+                        maxLength={10}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.number ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Nº"
                       />
@@ -368,6 +373,7 @@ export default function Checkout() {
                         name="complement"
                         value={form.complement}
                         onChange={handleChange}
+                        maxLength={50}
                         className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
                         placeholder="Apto, bloco..."
                       />
@@ -380,6 +386,7 @@ export default function Checkout() {
                         value={form.neighborhood}
                         onChange={handleChange}
                         required
+                        maxLength={50}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.neighborhood ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Bairro"
                       />
@@ -393,6 +400,7 @@ export default function Checkout() {
                         value={form.city}
                         onChange={handleChange}
                         required
+                        maxLength={40}
                         className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.city ? "border-red-400" : "border-gray-200"}`}
                         placeholder="Cidade"
                       />
