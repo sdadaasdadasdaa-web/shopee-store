@@ -1155,7 +1155,7 @@ export const cooktopOrderBumps: OrderBumpItem[] = [
     price: 39.90,
     originalPrice: 89.90,
     discount: 56,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-panelas_f2a60152.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/panelas_043ca353.jpg",
     shortDescription: "Panelas antiaderente compatíveis com cooktop cerâmico. Fundo reforçado.",
   },
   {
@@ -1164,7 +1164,7 @@ export const cooktopOrderBumps: OrderBumpItem[] = [
     price: 9.90,
     originalPrice: 24.90,
     discount: 60,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-9panelas_33646697.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/adaptador_4c496983.jpg",
     shortDescription: "Adaptador 10A para 20A. Compatível com cooktops de alta potência.",
   },
   {
@@ -1173,7 +1173,7 @@ export const cooktopOrderBumps: OrderBumpItem[] = [
     price: 14.90,
     originalPrice: 34.90,
     discount: 57,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-cristal_13921c0f.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/protetor_fee29465.jpg",
     shortDescription: "Protetor de silicone térmico. Evita riscos na placa cerâmica.",
   },
   {
@@ -1182,7 +1182,7 @@ export const cooktopOrderBumps: OrderBumpItem[] = [
     price: 19.90,
     originalPrice: 44.90,
     discount: 56,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-temp_336b86ed.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/extensao_b2250e42.png",
     shortDescription: "Extensão 20A reforçada para cooktops de alta potência. Cabo 2.5mm².",
   },
 ];
