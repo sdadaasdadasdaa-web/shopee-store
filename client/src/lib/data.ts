@@ -710,6 +710,7 @@ export const shippingOptions: Record<number, ShippingOption[]> = {
 // Vídeo do produto Roçadeira Nakasaki
 export const productVideos: Record<number, string> = {
   21: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/br-11110105-6v65g-mlm31qg3l2py96.16000081773059220_511a1d68.mp4",
+  22: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/maquina-solda-video_f2da9540.mp4",
 };
 
 // Depoimentos / Avaliações de clientes

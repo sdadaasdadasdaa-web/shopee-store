@@ -3,7 +3,7 @@
  * Galeria de imagens + vídeo, variações, quantidade, especificações, depoimentos, CTAs sticky no mobile
  * Nicho: Ferramentas
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -31,7 +31,10 @@ export default function ProductDetail() {
   const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({});
   const [addedToCart, setAddedToCart] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
+  // Vídeo inicia automaticamente se o produto tem vídeo
+  const videoUrl = productVideos[product?.id ?? 0];
+  const [showVideo, setShowVideo] = useState(!!videoUrl);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [reviewVideoUrl, setReviewVideoUrl] = useState<string | null>(null);
 
@@ -69,7 +72,7 @@ export default function ProductDetail() {
     );
   }
 
-  const videoUrl = productVideos[product.id];
+  // videoUrl já definido acima
   const reviews = productReviews[product.id] || [];
   const avgRating = reviews.length > 0
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
@@ -154,10 +157,18 @@ export default function ProductDetail() {
                 {showVideo && videoUrl ? (
                   <div className="relative aspect-square bg-black overflow-hidden">
                     <video
+                      ref={videoRef}
                       src={videoUrl}
                       controls
                       autoPlay
+                      muted
+                      loop
+                      playsInline
                       className="w-full h-full object-contain"
+                      onLoadedData={() => {
+                        // Tenta dar play automaticamente (muted para contornar política de autoplay dos browsers)
+                        videoRef.current?.play().catch(() => {});
+                      }}
                     />
                     <button
                       onClick={() => setShowVideo(false)}
