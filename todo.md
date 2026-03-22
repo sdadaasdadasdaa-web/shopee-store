@@ -59,3 +59,7 @@
 - [x] Corrigir imagens dos order bumps no checkout (Arame Tubular, Máscara de Solda, Kit Bicos, Luvas)
 - [x] Adicionar maxLength nos campos do checkout (CPF, telefone, CEP, UF, etc.)
 - [x] Adicionar máscaras automáticas de formatação: CPF (000.000.000-00), Telefone ((00) 00000-0000), CEP (00000-000)
+- [x] Substituir integração de pagamento BYNET pela SIGILO PAY
+- [x] Configurar credenciais da Sigilo Pay como secrets
+- [x] Atualizar backend para usar API da Sigilo Pay
+- [x] Testar fluxo de pagamento PIX com Sigilo Pay

@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
-import { createTransaction, getTransactionById } from "./bynet";
+import { createPixTransaction, getTransactionStatus } from "./sigilopay";
 import { sendUtmifyPendingOrder, sendUtmifyPaidOrder, sendUtmifyTrackingEvent } from "./utmify";
 import { z } from "zod";
 import { nanoid } from "nanoid";
@@ -126,57 +126,69 @@ export const appRouter = router({
           (sum, item) => sum + item.unitPrice * item.quantity,
           0
         );
-        const totalAmount = itemsTotal + input.shippingFee;
+        const totalAmountCents = itemsTotal + input.shippingFee;
+
+        // Converter centavos para reais (Sigilo Pay usa reais)
+        const totalAmountReais = totalAmountCents / 100;
+        const shippingFeeReais = input.shippingFee / 100;
 
         // Limpar CPF (remover pontos e traços)
         const cleanCpf = input.customer.cpf.replace(/\D/g, "");
         const cleanPhone = input.customer.phone.replace(/\D/g, "");
-        const cleanZip = input.customer.address.zipCode.replace(/\D/g, "");
 
-        const result = await createTransaction({
-          amount: totalAmount,
-          paymentMethod: "PIX",
-          customer: {
+        // Formatar telefone para (XX) XXXXX-XXXX
+        const formattedPhone = cleanPhone.length === 11
+          ? `(${cleanPhone.slice(0, 2)}) ${cleanPhone.slice(2, 7)}-${cleanPhone.slice(7)}`
+          : cleanPhone.length === 10
+            ? `(${cleanPhone.slice(0, 2)}) ${cleanPhone.slice(2, 6)}-${cleanPhone.slice(6)}`
+            : cleanPhone;
+
+        // Formatar CPF para XXX.XXX.XXX-XX
+        const formattedCpf = cleanCpf.length === 11
+          ? `${cleanCpf.slice(0, 3)}.${cleanCpf.slice(3, 6)}.${cleanCpf.slice(6, 9)}-${cleanCpf.slice(9)}`
+          : cleanCpf;
+
+        // Data de vencimento: amanhã
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 1);
+        const dueDateStr = dueDate.toISOString().split("T")[0];
+
+        // Preparar produtos para Sigilo Pay (price = preço unitário em reais)
+        const sigiloProducts = input.items.map((item, idx) => ({
+          id: item.externalRef || `item-${idx + 1}`,
+          name: item.title,
+          quantity: item.quantity,
+          price: item.unitPrice / 100, // converter centavos para reais (preço unitário)
+        }));
+
+        // Recalcular amount como Sigilo Pay espera: sum(price * quantity) + shippingFee
+        // Isso garante que amount == soma dos products + shippingFee
+        const calculatedAmount = sigiloProducts.reduce(
+          (sum, p) => sum + p.price * p.quantity, 0
+        ) + shippingFeeReais;
+
+        const result = await createPixTransaction({
+          identifier: externalRef,
+          amount: calculatedAmount,
+          shippingFee: shippingFeeReais > 0 ? shippingFeeReais : undefined,
+          client: {
             name: input.customer.name,
             email: input.customer.email,
-            document: {
-              number: cleanCpf,
-              type: "CPF",
-            },
-            phone: cleanPhone,
-            externalRef,
-            address: {
-              ...input.customer.address,
-              zipCode: cleanZip,
-            },
+            phone: formattedPhone,
+            document: formattedCpf,
           },
-          shipping: {
-            fee: input.shippingFee,
-            address: {
-              ...input.customer.address,
-              zipCode: cleanZip,
-            },
-          },
-          items: input.items.map((item, idx) => ({
-            title: item.title,
-            unitPrice: item.unitPrice,
-            quantity: item.quantity,
-            tangible: item.tangible,
-            externalRef: item.externalRef || `item-${idx + 1}`,
-          })),
-          pix: {
-            expiresInDays: 1,
-          },
-          metadata: JSON.stringify({
+          products: sigiloProducts,
+          dueDate: dueDateStr,
+          metadata: {
             order_number: externalRef,
             ...(input.metadata ? JSON.parse(input.metadata) : {}),
-          }),
+          },
         });
 
-        const pixCode = result.data.qrCode || result.data.pix?.qrcode || null;
-        const pixImageUrl = result.data.pix?.url || null;
-        const pixExpiration = result.data.pix?.expirationDate || null;
-        const transactionId = result.data.id;
+        const transactionId = result.transactionId;
+        const pixCode = result.pix?.code || null;
+        const pixBase64 = result.pix?.base64 || null;
+        const pixImageUrl = result.pix?.image || null;
 
         // Formatar data UTC para UTMify
         const createdAtUTC = new Date().toISOString().replace("T", " ").substring(0, 19);
@@ -199,7 +211,7 @@ export const appRouter = router({
             cpf: cleanCpf,
           },
           products: utmifyProducts,
-          totalInCents: totalAmount,
+          totalInCents: totalAmountCents,
           trackingParams: input.trackingParams,
         });
 
@@ -216,7 +228,7 @@ export const appRouter = router({
             cpf: cleanCpf,
           },
           products: utmifyProducts,
-          totalInCents: totalAmount,
+          totalInCents: totalAmountCents,
           trackingParams: input.trackingParams,
         }).catch((err) => {
           console.error("[UTMify] Error sending pending order:", err);
@@ -225,12 +237,13 @@ export const appRouter = router({
         return {
           success: true,
           transactionId,
-          status: result.data.status,
-          amount: result.data.amount,
+          status: result.status,
+          amount: totalAmountCents, // retornar em centavos para manter compatibilidade com frontend
           pix: {
             qrCode: pixCode,
+            qrCodeBase64: pixBase64,
             qrCodeImageUrl: pixImageUrl,
-            expirationDate: pixExpiration,
+            expirationDate: dueDateStr,
           },
           externalRef,
         };
@@ -239,16 +252,31 @@ export const appRouter = router({
     checkStatus: publicProcedure
       .input(z.object({ transactionId: z.string() }))
       .query(async ({ input }) => {
-        const result = await getTransactionById(input.transactionId);
-        const status = result.data.status;
+        const result = await getTransactionStatus(input.transactionId);
 
-        // Se o status mudou para "paid", enviar evento para UTMify
-        if (status === "paid" || status === "PAID") {
+        // Mapear status da Sigilo Pay para o formato esperado pelo frontend
+        // Sigilo Pay: PENDING, COMPLETED, FAILED, REFUNDED, CHARGED_BACK
+        // Frontend espera: "paid", "pending", "failed", etc.
+        let normalizedStatus = "pending";
+        if (result.status === "COMPLETED") {
+          normalizedStatus = "paid";
+        } else if (result.status === "FAILED") {
+          normalizedStatus = "failed";
+        } else if (result.status === "REFUNDED") {
+          normalizedStatus = "refunded";
+        } else if (result.status === "CHARGED_BACK") {
+          normalizedStatus = "charged_back";
+        } else if (result.status === "PENDING") {
+          normalizedStatus = "pending";
+        }
+
+        // Se o status mudou para "paid" (COMPLETED), enviar evento para UTMify
+        if (normalizedStatus === "paid") {
           const orderData = orderStore.get(input.transactionId);
           if (orderData) {
             // Enviar evento "paid" para UTMify (fire-and-forget)
             sendUtmifyPaidOrder({
-              orderId: (typeof result.data.metadata === 'string' && result.data.metadata) ? JSON.parse(result.data.metadata).order_number : input.transactionId,
+              orderId: result.clientIdentifier || input.transactionId,
               createdAt: orderData.createdAt,
               customer: orderData.customer,
               products: orderData.products,
@@ -264,9 +292,9 @@ export const appRouter = router({
         }
 
         return {
-          status: result.data.status,
-          paidAt: result.data.paidAt,
-          amount: result.data.amount,
+          status: normalizedStatus,
+          paidAt: result.payedAt || null,
+          amount: Math.round(result.amount * 100), // converter reais para centavos
         };
       }),
   }),

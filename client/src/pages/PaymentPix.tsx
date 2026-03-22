@@ -37,7 +37,7 @@ export default function PaymentPix() {
 
   // Check if payment was confirmed
   useEffect(() => {
-    if (statusQuery.data?.status === "PAID" || statusQuery.data?.status === "APPROVED") {
+    if (statusQuery.data?.status === "paid" || statusQuery.data?.status === "PAID" || statusQuery.data?.status === "APPROVED" || statusQuery.data?.status === "COMPLETED") {
       setPaymentConfirmed(true);
     }
   }, [statusQuery.data?.status]);

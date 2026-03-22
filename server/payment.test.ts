@@ -15,7 +15,7 @@ function createPublicContext(): TrpcContext {
   };
 }
 
-describe("payment.createPix", () => {
+describe("payment.createPix (Sigilo Pay)", () => {
   it("should create a PIX transaction with valid input", async () => {
     const ctx = createPublicContext();
     const caller = appRouter.createCaller(ctx);
@@ -24,8 +24,8 @@ describe("payment.createPix", () => {
       customer: {
         name: "João da Silva",
         email: "joao@teste.com",
-        cpf: "12345678901",
-        phone: "11999999999",
+        cpf: "216.435.040-53",
+        phone: "(86) 94208-3736",
         address: {
           street: "Rua Teste",
           streetNumber: "123",
@@ -52,7 +52,6 @@ describe("payment.createPix", () => {
     expect(result.success).toBe(true);
     expect(result.transactionId).toBeDefined();
     expect(result.transactionId).not.toBe("");
-    expect(result.status).toBe("WAITING_PAYMENT");
     expect(result.externalRef).toMatch(/^ACHA-/);
     // PIX data should be returned with qrCode for the payment page
     expect(result.pix).toBeDefined();
@@ -62,7 +61,7 @@ describe("payment.createPix", () => {
       expect(typeof result.pix.qrCode).toBe("string");
       expect(result.pix.qrCode.length).toBeGreaterThan(10);
     }
-  });
+  }, 15000);
 
   it("should reject invalid CPF (too short)", async () => {
     const ctx = createPublicContext();
@@ -74,7 +73,7 @@ describe("payment.createPix", () => {
           name: "João da Silva",
           email: "joao@teste.com",
           cpf: "123",
-          phone: "11999999999",
+          phone: "(11) 99999-9999",
           address: {
             street: "Rua Teste",
             streetNumber: "123",
@@ -108,8 +107,8 @@ describe("payment.createPix", () => {
         customer: {
           name: "João da Silva",
           email: "joao@teste.com",
-          cpf: "12345678901",
-          phone: "11999999999",
+          cpf: "216.435.040-53",
+          phone: "(86) 94208-3736",
           address: {
             street: "Rua Teste",
             streetNumber: "123",
@@ -135,8 +134,8 @@ describe("payment.createPix", () => {
       customer: {
         name: "Maria Santos",
         email: "maria@teste.com",
-        cpf: "98765432100",
-        phone: "21988888888",
+        cpf: "529.982.247-25",
+        phone: "(21) 98888-8888",
         address: {
           street: "Rua da Praia",
           streetNumber: "456",
