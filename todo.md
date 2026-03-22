@@ -56,3 +56,4 @@
 - [x] Adicionar aviso de escassez na página do produto Máquina de Solda
 - [x] Adicionar aviso de escassez no checkout
 - [x] Redesenhar contador de escassez: mais chamativo, sem sobrepor timer de urgência
+- [x] Corrigir imagens dos order bumps no checkout (Arame Tubular, Máscara de Solda, Kit Bicos, Luvas)

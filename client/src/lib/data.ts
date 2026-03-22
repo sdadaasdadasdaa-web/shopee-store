@@ -983,7 +983,7 @@ export const soldaOrderBumps: OrderBumpItem[] = [
     price: 29.90,
     originalPrice: 59.90,
     discount: 50,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-specs_61d8df21.webp",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/arame-tubular_828fba01.webp",
     shortDescription: "Arame tubular 0.8mm compatível com Dobevi 250A. Solda sem gás. Rende até 200m.",
   },
   {
@@ -992,7 +992,7 @@ export const soldaOrderBumps: OrderBumpItem[] = [
     price: 49.90,
     originalPrice: 119.90,
     discount: 58,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail2_15b633f0.webp",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/mascara-solda_59492622.jpg",
     shortDescription: "Escurecimento automático em 0.1ms. Proteção UV/IR. Ajuste DIN 9-13.",
   },
   {
@@ -1001,7 +1001,7 @@ export const soldaOrderBumps: OrderBumpItem[] = [
     price: 19.90,
     originalPrice: 44.90,
     discount: 56,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail3_eaeac3a2.webp",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/kit-bicos-bocais_89733bec.webp",
     shortDescription: "Peças de reposição compatíveis com Dobevi 250A. Cobre de alta condutividade.",
   },
   {
@@ -1010,7 +1010,7 @@ export const soldaOrderBumps: OrderBumpItem[] = [
     price: 24.90,
     originalPrice: 54.90,
     discount: 55,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dobevi-detail1_b8c170a6.webp",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/luvas-soldador_61358695.webp",
     shortDescription: "Couro bovino resistente ao calor. Cano longo para proteção total. Norma NR-6.",
   },
 ];
