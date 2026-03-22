@@ -67,3 +67,12 @@
 - [x] Remover todos os arquivos e referências da BYNET do projeto
 - [ ] Corrigir erro persistente de credenciais Sigilo Pay no Railway
 - [x] Revisar fluxo completo de pagamento para garantir que não há erros bloqueantes
+- [ ] Criar produto 23: novo produto com vídeo, escassez, depoimentos, order bumps, 120v/220v, R$89,57
+- [ ] Criar produto 24: novo produto com vídeo, escassez, depoimentos, order bumps, 120v/220v, R$89,57
+- [x] Adicionar depoimentos no checkout (2-3 depoimentos com foto de perfil, sem foto de depoimento)
+- [x] Adicionar selo de compra segura no checkout
+- [x] Adicionar seletor de quantidade no checkout
+- [x] Configurar vídeos autoplay para os 2 novos produtos
+- [x] Configurar escassez (60 unidades) para os 2 novos produtos
+- [x] Criar order bumps relevantes para os 2 novos produtos
+- [x] Criar produto 23 (Cooktop Elétrico Indução 5000W): vídeo, escassez, depoimentos checkout, selo, seletor qtd, order bumps, 120v/220v, R$89,57

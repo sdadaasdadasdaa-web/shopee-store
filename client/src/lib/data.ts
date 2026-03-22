@@ -60,6 +60,7 @@ export const categories = [
   { id: 9, name: "Manuais", icon: "Hammer" },
   { id: 10, name: "Roçadeiras", icon: "Flame" },
   { id: 11, name: "Soldas", icon: "Zap" },
+  { id: 12, name: "Eletrodomésticos", icon: "Flame" },
 ];
 
 export const products: Product[] = [
@@ -685,6 +686,43 @@ export const products: Product[] = [
       { label: "Modelo", options: ["MIG 250A (Padrão)", "MIG 250A + Arame Extra 1kg"], prices: [89.57, 119.68] },
     ],
   },
+  {
+    id: 23,
+    name: "Cooktop Elétrico Cerâmico 5000W Alta Potência Indução Portátil 110V/220V",
+    price: 89.57,
+    originalPrice: 249.90,
+    discount: 64,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-main_6e4c07f9.png",
+    images: [
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-main_6e4c07f9.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-panelas_f2a60152.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-temp_336b86ed.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-cristal_13921c0f.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-9panelas_33646697.png",
+    ],
+    rating: 4.8,
+    sold: 12847,
+    freeShipping: false,
+    category: "Eletrodomésticos",
+    description: "Cooktop Elétrico Cerâmico 5000W de Alta Potência — o fogão portátil mais potente do mercado! Placa de cristal cerâmico ultra resistente que suporta até 850°C de temperatura real, garantindo aquecimento rápido e uniforme. Compatível com QUALQUER tipo de panela: ferro fundido, alumínio, inox, cerâmica, vidro, barro, esmaltada, antiaderente e cobre — diferente dos cooktops de indução comuns que só funcionam com panelas magnéticas. Painel digital touch com display LED para controle preciso de temperatura e potência. Sistema de segurança com desligamento automático, proteção contra superaquecimento e trava de segurança infantil. Ventilador de resfriamento silencioso integrado para maior durabilidade. Design compacto e portátil, ideal para cozinhas pequenas, apartamentos, escritórios, camping e viagens. Bivolt automático 110V/220V — conecte em qualquer tomada. Superfície lisa de fácil limpeza, basta passar um pano úmido. Economia de energia com eficiência térmica superior a 90%. Garantia de 12 meses com nota fiscal.",
+    specifications: [
+      { label: "Potência", value: "5000W (máxima)" },
+      { label: "Temperatura", value: "Até 850°C" },
+      { label: "Placa", value: "Cristal cerâmico ultra resistente" },
+      { label: "Tensão", value: "110V / 220V (bivolt automático)" },
+      { label: "Compatibilidade", value: "Todas as panelas (9 tipos)" },
+      { label: "Painel", value: "Digital touch com display LED" },
+      { label: "Segurança", value: "Desligamento automático + trava infantil" },
+      { label: "Eficiência", value: "Superior a 90%" },
+      { label: "Resfriamento", value: "Ventilador silencioso integrado" },
+      { label: "Peso", value: "2.8 kg" },
+      { label: "Dimensões", value: "28 x 28 x 6 cm" },
+      { label: "Garantia", value: "12 meses" },
+    ],
+    variations: [
+      { label: "Voltagem", options: ["110V", "220V"], prices: [89.57, 89.57] },
+    ],
+  },
 ];
 
 // Shipping options for Roçadeira
@@ -705,12 +743,18 @@ export const shippingOptions: Record<number, ShippingOption[]> = {
     { label: "Frete Normal", price: 24.90, days: "12 a 18 dias úteis" },
     { label: "Frete Expresso", price: 44.90, days: "5 a 8 dias úteis" },
   ],
+  23: [
+    { label: "Frete Grátis", price: 0, days: "20 a 30 dias úteis" },
+    { label: "Frete Normal", price: 19.90, days: "12 a 18 dias úteis" },
+    { label: "Frete Expresso", price: 39.90, days: "5 a 8 dias úteis" },
+  ],
 };
 
 // Vídeo do produto Roçadeira Nakasaki
 export const productVideos: Record<number, string> = {
   21: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/br-11110105-6v65g-mlm31qg3l2py96.16000081773059220_511a1d68.mp4",
   22: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/maquina-solda-video_f2da9540.mp4",
+  23: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-demo_8a5f3833.mp4",
 };
 
 // Depoimentos / Avaliações de clientes
@@ -892,6 +936,94 @@ export const productReviews: Record<number, Review[]> = {
       videoUrl: "https://down-bs-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6kfks-mdafcm0geuyad8.16000051754919721.mp4",
     },
   ],
+  23: [
+    {
+      id: 1,
+      name: "Carla Souza",
+      rating: 5,
+      date: "18/03/2026",
+      text: "Chegou super rápido e muito bem embalado! O cooktop é lindo, compacto e potente demais. Fiz arroz, feijão e frango no mesmo dia e ele aqueceu muito rápido. A placa de cerâmica é fácil de limpar, só passo um pano e fica novo. Uso no meu apartamento pequeno e é perfeito! Super recomendo.",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_784b8050.png",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep-unboxing_4aa8de07.png",
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep-close_ce0a0166.png",
+      ],
+      videoUrl: "https://down-tx-th.vod.susercontent.com/api/v4/11110103/mms/th-11110103-6v6xc-mh18roumgfew24.16000101763080644.mp4",
+    },
+    {
+      id: 2,
+      name: "Roberto Mendes",
+      rating: 5,
+      date: "14/03/2026",
+      text: "Melhor compra que fiz esse ano! Esse cooktop é absurdo de potente, ferve água em menos de 2 minutos. Uso com panela de ferro fundido e de alumínio, funciona perfeito com as duas. O display digital é muito prático. Minha esposa amou porque é fácil de limpar e não suja como fogão a gás. Produto top!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_f1b2d2eb.png",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep-uso1_73aa6328.png",
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep-uso2_dbc9769a.png",
+      ],
+      videoUrl: "https://down-tx-th.vod.susercontent.com/api/v4/11110103/mms/th-11110103-6kgci-m77l8jrd3cgw24.16000051741672416.mp4",
+    },
+    {
+      id: 3,
+      name: "Fernanda Lima",
+      rating: 5,
+      date: "10/03/2026",
+      text: "Comprei pra usar no escritório e é perfeito! Compacto, leve e muito potente. Esqueço água e ele desliga sozinho, a trava de segurança é ótima. A placa de cristal cerâmico é linda e resistente. Já usei panela de barro, inox e antiaderente, todas funcionaram perfeitamente. Entrega antes do prazo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil4_c80044cb.png",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep-bancada_b0ccf775.png",
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep-manual_a4af4bb5.png",
+      ],
+    },
+    {
+      id: 4,
+      name: "Juliana Oliveira",
+      rating: 5,
+      date: "05/03/2026",
+      text: "Esse cooktop é incrível! Substituiu meu fogão a gás e não me arrependo. A potência de 5000W é real, cozinha muito rápido. O ventilador interno é super silencioso. Uso todos os dias e a placa continua impecável. Economizei muito no gás. Recomendo pra quem mora em apartamento!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil5_e514de54.png",
+    },
+    {
+      id: 5,
+      name: "Marcos Santos",
+      rating: 4,
+      date: "28/02/2026",
+      text: "Produto muito bom pelo preço! A potência é impressionante, ferve água rápido demais. Uso com panela de ferro e funciona perfeitamente. Só tirei uma estrela porque o cabo poderia ser um pouco mais longo. Mas no geral é excelente, vale cada centavo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil6_c7f769a2.png",
+    },
+    {
+      id: 6,
+      name: "Ana Beatriz",
+      rating: 5,
+      date: "20/02/2026",
+      text: "Amei! Comprei pro meu marido que adora cozinhar e ele ficou apaixonado. O cooktop aquece muito rápido e o controle de temperatura é preciso. Usamos com panela de cerâmica e de inox, funciona perfeito. A limpeza é muito fácil. Produto de qualidade, entrega rápida e bem embalado!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil7_7d4f0bce.png",
+    },
+    {
+      id: 7,
+      name: "Patricia Alves",
+      rating: 5,
+      date: "15/02/2026",
+      text: "Perfeito pra quem não tem espaço! Moro sozinha em kit e esse cooktop resolveu minha vida. Cozinho tudo nele: arroz, feijão, carne, macarrão. A potência é absurda pra um aparelho tão compacto. O desligamento automático me dá muita segurança. Melhor investimento!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil2_c2344e53.png",
+    },
+    {
+      id: 8,
+      name: "Diego Ferreira",
+      rating: 5,
+      date: "10/02/2026",
+      text: "Comprei dois, um pra casa e outro pro camping. Funciona muito bem com gerador. A placa cerâmica é resistente demais, já derrubei panela pesada em cima e não trincou. O display é intuitivo e o aquecimento é instantâneo. Produto nota 10, vendedor confiável!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_f1b2d2eb.png",
+    },
+  ],
 };
 
 // Order Bump items - produtos complementares sugeridos no checkout
@@ -1015,8 +1147,51 @@ export const soldaOrderBumps: OrderBumpItem[] = [
   },
 ];
 
+// Order bumps específicos para Cooktop Elétrico
+export const cooktopOrderBumps: OrderBumpItem[] = [
+  {
+    id: 401,
+    name: "Jogo de Panelas Antiaderente 5 Peças Compatível Cooktop",
+    price: 39.90,
+    originalPrice: 89.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-panelas_f2a60152.png",
+    shortDescription: "Panelas antiaderente compatíveis com cooktop cerâmico. Fundo reforçado.",
+  },
+  {
+    id: 402,
+    name: "Adaptador de Tomada Universal 10A/20A Bivolt",
+    price: 9.90,
+    originalPrice: 24.90,
+    discount: 60,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-9panelas_33646697.png",
+    shortDescription: "Adaptador 10A para 20A. Compatível com cooktops de alta potência.",
+  },
+  {
+    id: 403,
+    name: "Protetor de Superfície Silicone para Cooktop 28cm",
+    price: 14.90,
+    originalPrice: 34.90,
+    discount: 57,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-cristal_13921c0f.png",
+    shortDescription: "Protetor de silicone térmico. Evita riscos na placa cerâmica.",
+  },
+  {
+    id: 404,
+    name: "Extensão Elétrica Reforçada 3m 20A para Cooktop",
+    price: 19.90,
+    originalPrice: 44.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-temp_336b86ed.png",
+    shortDescription: "Extensão 20A reforçada para cooktops de alta potência. Cabo 2.5mm².",
+  },
+];
+
 // Função para obter order bumps baseado nos itens do carrinho
 export function getOrderBumpsForCart(productIds: number[]): OrderBumpItem[] {
+  if (productIds.includes(23)) {
+    return cooktopOrderBumps;
+  }
   if (productIds.includes(22)) {
     return soldaOrderBumps;
   }

@@ -281,7 +281,7 @@ export default function ProductDetail() {
                 <div className="mt-4 rounded overflow-hidden">
                   <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
                   {/* Contador de escassez — barra separada */}
-                  {product.id === 22 && (
+                  {(product.id === 22 || product.id === 23) && (
                     <ScarcityBadge variant="product" />
                   )}
                   {/* Price */}

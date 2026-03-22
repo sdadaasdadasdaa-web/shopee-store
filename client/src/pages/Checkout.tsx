@@ -7,7 +7,7 @@ import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useCart } from "@/contexts/CartContext";
 import { trpc } from "@/lib/trpc";
-import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck, Loader2 } from "lucide-react";
+import { ShoppingCart, Lock, ChevronLeft, Check, Zap, Gift, Flame, Truck, Loader2, ShieldCheck, Star, Minus, Plus } from "lucide-react";
 import { checkoutSuccessImage, getOrderBumpsForCart, shippingOptions, type ShippingOption } from "@/lib/data";
 import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
@@ -15,7 +15,7 @@ import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
 import { getItemPrice } from "@/lib/pricing";
 
 export default function Checkout() {
-  const { items, totalPrice, totalItems, clearCart } = useCart();
+  const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
   const [, navigate] = useLocation();
   const [selectedBumps, setSelectedBumps] = useState<Set<number>>(new Set());
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -283,7 +283,7 @@ export default function Checkout() {
                 {/* Timer de Urgência */}
                 <UrgencyTimer variant="checkout" durationMinutes={30} />
                 {/* Contador de escassez */}
-                {productIds.includes(22) && (
+                {(productIds.includes(22) || productIds.includes(23)) && (
                   <ScarcityBadge variant="checkout" />
                 )}
                 {/* Contact */}
@@ -530,7 +530,9 @@ export default function Checkout() {
                   </div>
                   <div className="p-4 space-y-3">
                     <p className="text-xs text-gray-500 mb-2">
-                      {productIds.includes(21)
+                      {productIds.includes(23)
+                        ? "Quem comprou o Cooktop também levou estes itens essenciais com desconto exclusivo:"
+                        : productIds.includes(21)
                         ? "Quem comprou a Roçadeira Nakasaki também levou estes itens essenciais com desconto exclusivo:"
                         : "Clientes que compraram ferramentas também levaram estes itens com desconto exclusivo:"}
                     </p>
@@ -584,6 +586,102 @@ export default function Checkout() {
                     })}
                   </div>
                 </div>
+
+                {/* Selo de Compra Segura */}
+                <div className="bg-white rounded-sm p-4 border border-green-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-green-700">Compra 100% Segura</p>
+                      <p className="text-[10px] text-green-600">Seus dados estão protegidos</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="p-2 bg-green-50 rounded">
+                      <Lock className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                      <p className="text-[9px] text-green-700 font-semibold">Dados Criptografados</p>
+                    </div>
+                    <div className="p-2 bg-green-50 rounded">
+                      <ShieldCheck className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                      <p className="text-[9px] text-green-700 font-semibold">Pagamento Seguro</p>
+                    </div>
+                    <div className="p-2 bg-green-50 rounded">
+                      <Truck className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                      <p className="text-[9px] text-green-700 font-semibold">Entrega Garantida</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Depoimentos no Checkout (só foto perfil, sem foto de depoimento) */}
+                {(productIds.includes(22) || productIds.includes(23)) && (
+                  <div className="bg-white rounded-sm p-4">
+                    <h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      O que nossos clientes dizem
+                    </h2>
+                    <div className="space-y-3">
+                      {productIds.includes(23) ? (
+                        <>
+                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_784b8050.png" alt="Carla" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                            <div>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <p className="text-xs font-bold text-gray-800">Carla S.</p>
+                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
+                              </div>
+                              <p className="text-[11px] text-gray-600">"Chegou rápido e muito bem embalado! Potente demais, aqueceu super rápido. Super recomendo!"</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_f1b2d2eb.png" alt="Roberto" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                            <div>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <p className="text-xs font-bold text-gray-800">Roberto M.</p>
+                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
+                              </div>
+                              <p className="text-[11px] text-gray-600">"Melhor compra do ano! Ferve água em menos de 2 min. Funciona com qualquer panela. Produto top!"</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil4_c80044cb.png" alt="Fernanda" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                            <div>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <p className="text-xs font-bold text-gray-800">Fernanda L.</p>
+                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
+                              </div>
+                              <p className="text-[11px] text-gray-600">"Compacto, leve e potente. Desliga sozinho, trava de segurança ótima. Funciona com qualquer panela!"</p>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/pasted_file_USzOU6_image_97ea78dd.png" alt="Fabio" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                            <div>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <p className="text-xs font-bold text-gray-800">Fabio O.</p>
+                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
+                              </div>
+                              <p className="text-[11px] text-gray-600">"Qualidade da solda excelente, arco estável. Modo MIG sem gás é perfeito. Kit completo!"</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/pasted_file_Cj83si_image_8a4d29e7.png" alt="Marcos" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                            <div>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <p className="text-xs font-bold text-gray-800">Marcos A.</p>
+                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
+                              </div>
+                              <p className="text-[11px] text-gray-600">"Melhor custo-benefício! Bivolt automática, display digital. Dá conta de tudo!"</p>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Order summary */}
@@ -605,7 +703,24 @@ export default function Checkout() {
                         />
                         <div className="min-w-0 flex-1">
                           <p className="text-xs text-gray-700 line-clamp-2">{item.product.name}</p>
-                          <p className="text-xs text-gray-400 mt-0.5">Qtd: {item.quantity}</p>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs text-gray-400">Qtd:</span>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); if (item.quantity > 1) updateQuantity(item.product.id, item.quantity - 1); }}
+                              className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                            >
+                              <Minus className="w-3 h-3 text-gray-500" />
+                            </button>
+                            <span className="text-xs font-bold text-gray-700 w-4 text-center">{item.quantity}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); updateQuantity(item.product.id, item.quantity + 1); }}
+                              className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                            >
+                              <Plus className="w-3 h-3 text-gray-500" />
+                            </button>
+                          </div>
                           <p className="text-sm font-bold mt-0.5" style={{ color: "#EE4D2D" }}>
                             {formatPrice(getItemPrice(item) * item.quantity)}
                           </p>
