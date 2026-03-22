@@ -68,9 +68,34 @@ export default function Checkout() {
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+  // Máscaras de formatação automática
+  const maskCpf = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    return digits
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  };
+
+  const maskPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const maskCep = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8);
+    if (digits.length <= 5) return digits;
+    return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    let maskedValue = value;
+    if (name === "phone") maskedValue = maskPhone(value);
+    else if (name === "cep") maskedValue = maskCep(value);
+    setForm((prev) => ({ ...prev, [name]: maskedValue }));
     // Clear error on change
     if (formErrors[name]) {
       setFormErrors((prev) => {
@@ -283,7 +308,7 @@ export default function Checkout() {
                         type="text"
                         value={cpf}
                         onChange={(e) => {
-                          setCpf(e.target.value);
+                          setCpf(maskCpf(e.target.value));
                           if (formErrors.cpf) {
                             setFormErrors((prev) => {
                               const next = { ...prev };
