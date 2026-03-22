@@ -159,12 +159,31 @@ export default function Checkout() {
     },
   });
 
+  // Validação de CPF com dígitos verificadores
+  const isValidCpf = (raw: string): boolean => {
+    const digits = raw.replace(/\D/g, "");
+    if (digits.length !== 11) return false;
+    // Rejeitar sequências iguais (000.000.000-00, 111... etc)
+    if (/^(\d)\1{10}$/.test(digits)) return false;
+    // Calcular dígitos verificadores
+    let sum = 0;
+    for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
+    let rest = (sum * 10) % 11;
+    if (rest === 10) rest = 0;
+    if (rest !== parseInt(digits[9])) return false;
+    sum = 0;
+    for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
+    rest = (sum * 10) % 11;
+    if (rest === 10) rest = 0;
+    return rest === parseInt(digits[10]);
+  };
+
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
     if (!form.name.trim()) errors.name = "Nome é obrigatório";
     if (!form.email.trim() || !form.email.includes("@")) errors.email = "E-mail inválido";
     if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 10) errors.phone = "Telefone inválido";
-    if (!cpf.trim() || cpf.replace(/\D/g, "").length < 11) errors.cpf = "CPF inválido";
+    if (!cpf.trim() || !isValidCpf(cpf)) errors.cpf = "CPF inválido";
     if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) errors.cep = "CEP inválido";
     if (!form.street.trim()) errors.street = "Rua é obrigatória";
     if (!form.number.trim()) errors.number = "Número é obrigatório";

@@ -65,3 +65,5 @@
 - [x] Testar fluxo de pagamento PIX com Sigilo Pay
 - [x] Corrigir erro "Credenciais não fornecidas" no pagamento (env vars Sigilo Pay)
 - [x] Remover todos os arquivos e referências da BYNET do projeto
+- [ ] Corrigir erro persistente de credenciais Sigilo Pay no Railway
+- [x] Revisar fluxo completo de pagamento para garantir que não há erros bloqueantes
