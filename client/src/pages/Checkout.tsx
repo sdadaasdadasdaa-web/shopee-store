@@ -204,7 +204,32 @@ export default function Checkout() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      // Scroll para o primeiro campo com erro
+      const fieldOrder = ["name", "email", "phone", "cpf", "cep", "street", "number", "neighborhood", "city", "state"];
+      const firstError = fieldOrder.find((f) => {
+        const errs: Record<string, string> = {};
+        if (!form.name.trim()) errs.name = "x";
+        if (!form.email.trim() || !form.email.includes("@")) errs.email = "x";
+        if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 10) errs.phone = "x";
+        if (!cpf.trim() || !isValidCpf(cpf)) errs.cpf = "x";
+        if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) errs.cep = "x";
+        if (!form.street.trim()) errs.street = "x";
+        if (!form.number.trim()) errs.number = "x";
+        if (!form.neighborhood.trim()) errs.neighborhood = "x";
+        if (!form.city.trim()) errs.city = "x";
+        if (!form.state.trim()) errs.state = "x";
+        return errs[f];
+      });
+      if (firstError) {
+        const el = document.querySelector(`[name="${firstError}"]`) as HTMLElement;
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => el.focus(), 400);
+        }
+      }
+      return;
+    }
 
     // Build items array (cart items + selected bumps)
     const paymentItems = [
@@ -333,6 +358,7 @@ export default function Checkout() {
                       <label className="block text-xs font-semibold text-gray-500 mb-1">CPF *</label>
                       <input
                         type="text"
+                        name="cpf"
                         value={cpf}
                         onChange={(e) => {
                           setCpf(maskCpf(e.target.value));
