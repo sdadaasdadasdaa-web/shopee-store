@@ -77,3 +77,4 @@
 - [x] Criar order bumps relevantes para os 2 novos produtos
 - [x] Criar produto 23 (Cooktop Elétrico Indução 5000W): vídeo, escassez, depoimentos checkout, selo, seletor qtd, order bumps, 120v/220v, R$89,57
 - [x] Corrigir imagens dos order bumps do Cooktop (produto 23)
+- [x] Corrigir erro "invalid product" / "Documento inválido" - adicionada validação CPF no backend + mensagens de erro amigáveis

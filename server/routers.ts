@@ -142,6 +142,25 @@ export const appRouter = router({
         const cleanCpf = input.customer.cpf.replace(/\D/g, "");
         const cleanPhone = input.customer.phone.replace(/\D/g, "");
 
+        // Validar CPF no backend (dígitos verificadores)
+        if (cleanCpf.length !== 11 || /^(\d)\1{10}$/.test(cleanCpf)) {
+          throw new Error("CPF inv\u00e1lido. Verifique os n\u00fameros e tente novamente.");
+        }
+        let cpfSum = 0;
+        for (let i = 0; i < 9; i++) cpfSum += parseInt(cleanCpf[i]) * (10 - i);
+        let cpfRest = (cpfSum * 10) % 11;
+        if (cpfRest === 10) cpfRest = 0;
+        if (cpfRest !== parseInt(cleanCpf[9])) {
+          throw new Error("CPF inv\u00e1lido. Verifique os n\u00fameros e tente novamente.");
+        }
+        cpfSum = 0;
+        for (let i = 0; i < 10; i++) cpfSum += parseInt(cleanCpf[i]) * (11 - i);
+        cpfRest = (cpfSum * 10) % 11;
+        if (cpfRest === 10) cpfRest = 0;
+        if (cpfRest !== parseInt(cleanCpf[10])) {
+          throw new Error("CPF inv\u00e1lido. Verifique os n\u00fameros e tente novamente.");
+        }
+
         // Formatar telefone para (XX) XXXXX-XXXX
         const formattedPhone = cleanPhone.length === 11
           ? `(${cleanPhone.slice(0, 2)}) ${cleanPhone.slice(2, 7)}-${cleanPhone.slice(7)}`

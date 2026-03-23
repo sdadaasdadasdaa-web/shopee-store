@@ -155,7 +155,15 @@ export default function Checkout() {
       navigate(`/pagamento/${data.transactionId}`);
     },
     onError: (error) => {
-      alert(`Erro ao processar pagamento: ${error.message}`);
+      const msg = error.message;
+      if (msg.includes("CPF")) {
+        setFormErrors((prev) => ({ ...prev, cpf: "CPF inv\u00e1lido. Verifique e tente novamente." }));
+        alert("CPF inv\u00e1lido. Por favor, verifique o n\u00famero do CPF e tente novamente.");
+      } else if (msg.includes("Credenciais")) {
+        alert("Sistema de pagamento temporariamente indispon\u00edvel. Tente novamente em alguns minutos.");
+      } else {
+        alert(`Erro ao processar pagamento. Verifique seus dados e tente novamente.`);
+      }
     },
   });
 
