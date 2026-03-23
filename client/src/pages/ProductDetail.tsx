@@ -36,6 +36,9 @@ export default function ProductDetail() {
   const videoUrl = productVideos[product?.id ?? 0];
   const [showVideo, setShowVideo] = useState(!!videoUrl);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoPaused, setVideoPaused] = useState(false);
+  const [showSoundPrompt, setShowSoundPrompt] = useState(true);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [reviewVideoUrl, setReviewVideoUrl] = useState<string | null>(null);
 
@@ -156,27 +159,85 @@ export default function ProductDetail() {
               {/* Image gallery + Video */}
               <div>
                 {showVideo && videoUrl ? (
-                  <div className="relative aspect-square bg-black overflow-hidden">
+                  <div className="relative aspect-square bg-black overflow-hidden" onClick={() => {
+                    if (showSoundPrompt) {
+                      setShowSoundPrompt(false);
+                      setVideoMuted(false);
+                      if (videoRef.current) {
+                        videoRef.current.muted = false;
+                        videoRef.current.play().catch(() => {});
+                      }
+                      return;
+                    }
+                    if (videoRef.current) {
+                      if (videoRef.current.paused) {
+                        videoRef.current.play().catch(() => {});
+                        setVideoPaused(false);
+                      } else {
+                        videoRef.current.pause();
+                        setVideoPaused(true);
+                      }
+                    }
+                  }}>
                     <video
                       ref={videoRef}
                       src={videoUrl}
-                      controls
                       autoPlay
-                      muted
+                      muted={videoMuted}
                       loop
                       playsInline
                       className="w-full h-full object-contain"
                       onLoadedData={() => {
-                        // Tenta dar play automaticamente (muted para contornar política de autoplay dos browsers)
                         videoRef.current?.play().catch(() => {});
                       }}
                     />
-                    <button
-                      onClick={() => setShowVideo(false)}
-                      className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white text-xs font-bold px-3 py-1.5 rounded transition-colors"
-                    >
-                      Ver Fotos
-                    </button>
+                    {/* Overlay: Ativar Som */}
+                    {showSoundPrompt && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="bg-black/70 text-white rounded-full px-6 py-4 flex items-center gap-3 animate-pulse shadow-lg">
+                          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                          <span className="text-base font-bold">Toque para ativar o som</span>
+                        </div>
+                      </div>
+                    )}
+                    {/* Overlay: Pausado */}
+                    {videoPaused && !showSoundPrompt && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="bg-black/50 text-white rounded-full p-5">
+                          <svg className="w-12 h-12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                      </div>
+                    )}
+                    {/* Controles inferiores */}
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (videoRef.current) {
+                            const newMuted = !videoMuted;
+                            videoRef.current.muted = newMuted;
+                            setVideoMuted(newMuted);
+                            setShowSoundPrompt(false);
+                          }
+                        }}
+                        className="bg-white/20 hover:bg-white/40 text-white rounded-full p-2.5 transition-colors"
+                      >
+                        {videoMuted ? (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                        ) : (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                        )}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowVideo(false);
+                        }}
+                        className="bg-white/20 hover:bg-white/40 text-white text-xs font-bold px-4 py-2 rounded-full transition-colors"
+                      >
+                        Ver Fotos
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="relative aspect-square bg-gray-50 overflow-hidden group">

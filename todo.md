@@ -79,3 +79,4 @@
 - [x] Corrigir imagens dos order bumps do Cooktop (produto 23)
 - [x] Corrigir erro "invalid product" / "Documento inválido" - adicionada validação CPF no backend + mensagens de erro amigáveis
 - [x] Scroll automático para campo com erro no checkout quando clicar em pagar (mobile-friendly)
+- [x] Melhorar player de vídeo mobile: botão grande ativar som, controles visíveis pausar/mutar
