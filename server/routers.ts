@@ -5,6 +5,9 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { createPixTransaction, getTransactionStatus } from "./sigilopay";
 import { sendUtmifyPendingOrder, sendUtmifyPaidOrder, sendUtmifyTrackingEvent } from "./utmify";
+import { getDb } from "./db";
+import { orders } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 
@@ -49,15 +52,6 @@ const createPixTransactionSchema = z.object({
   }).optional(),
 });
 
-// In-memory store for order data (for UTMify paid event)
-const orderStore = new Map<string, {
-  createdAt: string;
-  customer: { name: string; email: string; phone: string; cpf: string };
-  products: { id: string; name: string; quantity: number; priceInCents: number }[];
-  totalInCents: number;
-  trackingParams?: any;
-}>();
-
 export const appRouter = router({
   system: systemRouter,
   auth: router({
@@ -72,7 +66,6 @@ export const appRouter = router({
   }),
 
   // Proxy server-side para eventos de tracking UTMify
-  // Contorna ad blockers que bloqueiam tracking.utmify.com.br
   tracking: router({
     sendEvent: publicProcedure
       .input(
@@ -91,7 +84,6 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input, ctx }) => {
-        // Capturar IP real do cliente
         const clientIp =
           (ctx.req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
           ctx.req.socket.remoteAddress ||
@@ -144,21 +136,21 @@ export const appRouter = router({
 
         // Validar CPF no backend (dígitos verificadores)
         if (cleanCpf.length !== 11 || /^(\d)\1{10}$/.test(cleanCpf)) {
-          throw new Error("CPF inv\u00e1lido. Verifique os n\u00fameros e tente novamente.");
+          throw new Error("CPF inválido. Verifique os números e tente novamente.");
         }
         let cpfSum = 0;
         for (let i = 0; i < 9; i++) cpfSum += parseInt(cleanCpf[i]) * (10 - i);
         let cpfRest = (cpfSum * 10) % 11;
         if (cpfRest === 10) cpfRest = 0;
         if (cpfRest !== parseInt(cleanCpf[9])) {
-          throw new Error("CPF inv\u00e1lido. Verifique os n\u00fameros e tente novamente.");
+          throw new Error("CPF inválido. Verifique os números e tente novamente.");
         }
         cpfSum = 0;
         for (let i = 0; i < 10; i++) cpfSum += parseInt(cleanCpf[i]) * (11 - i);
         cpfRest = (cpfSum * 10) % 11;
         if (cpfRest === 10) cpfRest = 0;
         if (cpfRest !== parseInt(cleanCpf[10])) {
-          throw new Error("CPF inv\u00e1lido. Verifique os n\u00fameros e tente novamente.");
+          throw new Error("CPF inválido. Verifique os números e tente novamente.");
         }
 
         // Formatar telefone para (XX) XXXXX-XXXX
@@ -183,11 +175,10 @@ export const appRouter = router({
           id: item.externalRef || `item-${idx + 1}`,
           name: item.title,
           quantity: item.quantity,
-          price: item.unitPrice / 100, // converter centavos para reais (preço unitário)
+          price: item.unitPrice / 100,
         }));
 
-        // Recalcular amount como Sigilo Pay espera: sum(price * quantity) + shippingFee
-        // Isso garante que amount == soma dos products + shippingFee
+        // Recalcular amount como Sigilo Pay espera
         const calculatedAmount = sigiloProducts.reduce(
           (sum, p) => sum + p.price * p.quantity, 0
         ) + shippingFeeReais;
@@ -226,19 +217,28 @@ export const appRouter = router({
           priceInCents: item.unitPrice * item.quantity,
         }));
 
-        // Salvar dados do pedido para uso posterior (quando pagar)
-        orderStore.set(transactionId, {
-          createdAt: createdAtUTC,
-          customer: {
-            name: input.customer.name,
-            email: input.customer.email,
-            phone: cleanPhone,
-            cpf: cleanCpf,
-          },
-          products: utmifyProducts,
-          totalInCents: totalAmountCents,
-          trackingParams: input.trackingParams,
-        });
+        // Persistir pedido no banco de dados (sobrevive a restarts do servidor)
+        try {
+          const db = await getDb();
+          if (db) {
+            await db.insert(orders).values({
+              transactionId,
+              externalRef,
+              customerName: input.customer.name,
+              customerEmail: input.customer.email,
+              customerPhone: cleanPhone,
+              customerCpf: cleanCpf,
+              productsJson: JSON.stringify(utmifyProducts),
+              totalInCents: totalAmountCents,
+              trackingParamsJson: input.trackingParams ? JSON.stringify(input.trackingParams) : null,
+              status: "pending",
+            });
+            console.log(`[Order] Saved to DB: ${transactionId} (${externalRef})`);
+          }
+        } catch (dbErr) {
+          console.error("[Order] Failed to save to DB:", dbErr);
+          // Não bloquear o pagamento se o DB falhar
+        }
 
         // Log dos tracking params para debug
         console.log(`[UTMify] TrackingParams for ${externalRef}:`, JSON.stringify(input.trackingParams));
@@ -263,7 +263,7 @@ export const appRouter = router({
           success: true,
           transactionId,
           status: result.status,
-          amount: totalAmountCents, // retornar em centavos para manter compatibilidade com frontend
+          amount: totalAmountCents,
           pix: {
             qrCode: pixCode,
             qrCodeBase64: pixBase64,
@@ -280,8 +280,6 @@ export const appRouter = router({
         const result = await getTransactionStatus(input.transactionId);
 
         // Mapear status da Sigilo Pay para o formato esperado pelo frontend
-        // Sigilo Pay: PENDING, COMPLETED, FAILED, REFUNDED, CHARGED_BACK
-        // Frontend espera: "paid", "pending", "failed", etc.
         let normalizedStatus = "pending";
         if (result.status === "COMPLETED") {
           normalizedStatus = "paid";
@@ -295,31 +293,54 @@ export const appRouter = router({
           normalizedStatus = "pending";
         }
 
-        // Se o status mudou para "paid" (COMPLETED), enviar evento para UTMify
+        // Se o status mudou para "paid", enviar evento para UTMify
         if (normalizedStatus === "paid") {
-          const orderData = orderStore.get(input.transactionId);
-          if (orderData) {
-            // Enviar evento "paid" para UTMify (fire-and-forget)
-            sendUtmifyPaidOrder({
-              orderId: result.clientIdentifier || input.transactionId,
-              createdAt: orderData.createdAt,
-              customer: orderData.customer,
-              products: orderData.products,
-              totalInCents: orderData.totalInCents,
-              trackingParams: orderData.trackingParams,
-            }).catch((err) => {
-              console.error("[UTMify] Error sending paid order:", err);
-            });
+          try {
+            const db = await getDb();
+            if (db) {
+              const orderRows = await db.select().from(orders)
+                .where(eq(orders.transactionId, input.transactionId))
+                .limit(1);
 
-            // Remover do store após enviar (evitar duplicatas)
-            orderStore.delete(input.transactionId);
+              if (orderRows.length > 0 && orderRows[0].status === "pending") {
+                const order = orderRows[0];
+                const products = JSON.parse(order.productsJson);
+                const trackingParams = order.trackingParamsJson ? JSON.parse(order.trackingParamsJson) : undefined;
+
+                // Enviar evento "paid" para UTMify
+                sendUtmifyPaidOrder({
+                  orderId: order.externalRef,
+                  createdAt: order.createdAt.toISOString().replace("T", " ").substring(0, 19),
+                  customer: {
+                    name: order.customerName || "",
+                    email: order.customerEmail || "",
+                    phone: order.customerPhone || "",
+                    cpf: order.customerCpf || "",
+                  },
+                  products,
+                  totalInCents: order.totalInCents,
+                  trackingParams,
+                }).catch((err) => {
+                  console.error("[UTMify] Error sending paid order:", err);
+                });
+
+                // Marcar como pago no banco (evitar duplicatas)
+                await db.update(orders)
+                  .set({ status: "paid", paidAt: new Date() })
+                  .where(eq(orders.transactionId, input.transactionId));
+
+                console.log(`[Order] Marked as paid: ${input.transactionId} (${order.externalRef})`);
+              }
+            }
+          } catch (dbErr) {
+            console.error("[Order] Error processing paid status:", dbErr);
           }
         }
 
         return {
           status: normalizedStatus,
           paidAt: result.payedAt || null,
-          amount: Math.round(result.amount * 100), // converter reais para centavos
+          amount: Math.round(result.amount * 100),
         };
       }),
   }),

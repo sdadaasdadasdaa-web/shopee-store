@@ -65,7 +65,7 @@
 - [x] Testar fluxo de pagamento PIX com Sigilo Pay
 - [x] Corrigir erro "Credenciais não fornecidas" no pagamento (env vars Sigilo Pay)
 - [x] Remover todos os arquivos e referências da BYNET do projeto
-- [ ] Corrigir erro persistente de credenciais Sigilo Pay no Railway
+- [x] Corrigir erro persistente de credenciais Sigilo Pay no Railway
 - [x] Revisar fluxo completo de pagamento para garantir que não há erros bloqueantes
 - [ ] Criar produto 23: novo produto com vídeo, escassez, depoimentos, order bumps, 120v/220v, R$89,57
 - [ ] Criar produto 24: novo produto com vídeo, escassez, depoimentos, order bumps, 120v/220v, R$89,57
@@ -80,3 +80,4 @@
 - [x] Corrigir erro "invalid product" / "Documento inválido" - adicionada validação CPF no backend + mensagens de erro amigáveis
 - [x] Scroll automático para campo com erro no checkout quando clicar em pagar (mobile-friendly)
 - [x] Melhorar player de vídeo mobile: botão grande ativar som, controles visíveis pausar/mutar
+- [x] Corrigir tracking UTMify: pedidos agora persistidos no banco de dados (sobrevive restarts do servidor)
