@@ -82,3 +82,10 @@
 - [x] Melhorar player de vídeo mobile: botão grande ativar som, controles visíveis pausar/mutar
 - [x] Corrigir tracking UTMify: pedidos agora persistidos no banco de dados (sobrevive restarts do servidor)
 - [x] Adicionar script pixel TikTok UTMify no head de todas as páginas
+- [x] URGENTE: Corrigir erro "Erro ao processar o pagamento" - PIX não está sendo gerado para clientes reais
+- [x] URGENTE: Corrigir UTMify não recebendo eventos de compra/campanha
+- [x] Melhorar tratamento de erros da Sigilo Pay (mensagens amigáveis por tipo de erro)
+- [x] Corrigir arredondamento de ponto flutuante nos valores enviados à Sigilo Pay
+- [x] Corrigir port binding em produção (usar PORT exato, sem fallback)
+- [x] Adicionar logging detalhado para debug de pagamento e UTMify em produção
+- [x] Melhorar logging de erros UTMify (incluir status code e response body)

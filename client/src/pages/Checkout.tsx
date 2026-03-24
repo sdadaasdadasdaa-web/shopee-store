@@ -156,13 +156,21 @@ export default function Checkout() {
     },
     onError: (error) => {
       const msg = error.message;
+      console.error("[Checkout] Erro ao criar PIX:", msg);
       if (msg.includes("CPF")) {
-        setFormErrors((prev) => ({ ...prev, cpf: "CPF inv\u00e1lido. Verifique e tente novamente." }));
-        alert("CPF inv\u00e1lido. Por favor, verifique o n\u00famero do CPF e tente novamente.");
-      } else if (msg.includes("Credenciais")) {
-        alert("Sistema de pagamento temporariamente indispon\u00edvel. Tente novamente em alguns minutos.");
+        setFormErrors((prev) => ({ ...prev, cpf: "CPF inválido. Verifique e tente novamente." }));
+        // Scroll para o campo de CPF
+        const cpfEl = document.querySelector('[name="cpf"]') as HTMLElement;
+        if (cpfEl) {
+          cpfEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => cpfEl.focus(), 400);
+        }
+      } else if (msg.includes("Credenciais") || msg.includes("gateway")) {
+        alert("Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.");
+      } else if (msg.includes("indisponível") || msg.includes("Servidor")) {
+        alert("Servidor de pagamento temporariamente indisponível. Tente novamente em alguns minutos.");
       } else {
-        alert(`Erro ao processar pagamento. Verifique seus dados e tente novamente.`);
+        alert("Ocorreu um erro ao gerar o PIX. Por favor, verifique seus dados e tente novamente.");
       }
     },
   });

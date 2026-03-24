@@ -76,7 +76,9 @@ export async function sendUtmifyOrder(payload: UtmifyOrderPayload): Promise<{ su
     return { success: true };
   } catch (error: any) {
     const errorMsg = error?.response?.data?.message || error?.message || "Unknown error";
-    console.error(`[UTMify] Failed to send order ${payload.orderId}: ${errorMsg}`);
+    const statusCode = error?.response?.status || 'N/A';
+    const responseData = error?.response?.data ? JSON.stringify(error.response.data) : 'N/A';
+    console.error(`[UTMify] Failed to send order ${payload.orderId}: status=${statusCode}, msg=${errorMsg}, response=${responseData}`);
     return { success: false, error: errorMsg };
   }
 }

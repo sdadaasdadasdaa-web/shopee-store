@@ -127,8 +127,9 @@ export const appRouter = router({
         const totalAmountCents = itemsTotal + input.shippingFee;
 
         // Converter centavos para reais (Sigilo Pay usa reais)
-        const totalAmountReais = totalAmountCents / 100;
-        const shippingFeeReais = input.shippingFee / 100;
+        // Arredondar para 2 casas decimais para evitar erros de ponto flutuante
+        const totalAmountReais = Math.round(totalAmountCents) / 100;
+        const shippingFeeReais = Math.round(input.shippingFee) / 100;
 
         // Limpar CPF (remover pontos e traços)
         const cleanCpf = input.customer.cpf.replace(/\D/g, "");
@@ -171,17 +172,24 @@ export const appRouter = router({
         const dueDateStr = dueDate.toISOString().split("T")[0];
 
         // Preparar produtos para Sigilo Pay (price = preço unitário em reais)
+        // Arredondar para 2 casas decimais para evitar erros de ponto flutuante
         const sigiloProducts = input.items.map((item, idx) => ({
           id: item.externalRef || `item-${idx + 1}`,
           name: item.title,
           quantity: item.quantity,
-          price: item.unitPrice / 100,
+          price: Math.round(item.unitPrice) / 100,
         }));
 
         // Recalcular amount como Sigilo Pay espera
-        const calculatedAmount = sigiloProducts.reduce(
-          (sum, p) => sum + p.price * p.quantity, 0
-        ) + shippingFeeReais;
+        // IMPORTANTE: Arredondar para 2 casas decimais para evitar erros de ponto flutuante
+        // que causam erro 500 na Sigilo Pay (splitAmountTotal negativo)
+        const calculatedAmount = Math.round(
+          (sigiloProducts.reduce(
+            (sum, p) => sum + p.price * p.quantity, 0
+          ) + shippingFeeReais) * 100
+        ) / 100;
+
+        console.log(`[Payment] Creating PIX for ${externalRef}: amount=${calculatedAmount}, items=${sigiloProducts.length}, shipping=${shippingFeeReais}`);
 
         const result = await createPixTransaction({
           identifier: externalRef,
@@ -292,6 +300,8 @@ export const appRouter = router({
         } else if (result.status === "PENDING") {
           normalizedStatus = "pending";
         }
+
+        console.log(`[Payment] Status check for ${input.transactionId}: raw=${result.status}, normalized=${normalizedStatus}`);
 
         // Se o status mudou para "paid", enviar evento para UTMify
         if (normalizedStatus === "paid") {

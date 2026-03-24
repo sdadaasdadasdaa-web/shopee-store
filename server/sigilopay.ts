@@ -91,7 +91,14 @@ export async function createPixTransaction(
   if (input.metadata) body.metadata = input.metadata;
   if (input.callbackUrl) body.callbackUrl = input.callbackUrl;
 
-  console.log("[SigiloPay] Creating PIX transaction:", JSON.stringify(body));
+  console.log("[SigiloPay] Creating PIX transaction:", JSON.stringify({
+    identifier: body.identifier,
+    amount: body.amount,
+    shippingFee: body.shippingFee,
+    clientName: (body.client as any)?.name,
+    clientDoc: (body.client as any)?.document?.substring(0, 7) + '***',
+    productsCount: (body.products as any[])?.length,
+  }));
 
   const response = await fetch(`${SIGILO_PAY_BASE_URL}/gateway/pix/receive`, {
     method: "POST",
@@ -103,12 +110,34 @@ export async function createPixTransaction(
 
   if (!response.ok) {
     console.error("[SigiloPay] Error creating transaction:", JSON.stringify(data));
+    const errorMsg = data?.message || "";
+    const errorCode = data?.errorCode || "";
+    
+    // Mapear erros da Sigilo Pay para mensagens amigáveis
+    if (errorMsg.includes("Documento") || errorMsg.includes("documento") || errorCode === "GATEWAY_INVALID_ARGUMENT") {
+      throw new Error("CPF inválido. Verifique os números e tente novamente.");
+    }
+    if (errorMsg.includes("amount") || errorMsg.includes("valor")) {
+      throw new Error("Valor do pedido inválido. Tente novamente.");
+    }
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("Credenciais do gateway de pagamento inválidas.");
+    }
+    if (response.status >= 500) {
+      throw new Error("Servidor de pagamento temporariamente indisponível. Tente novamente em alguns minutos.");
+    }
     throw new Error(
-      data?.message || `Erro ao criar transação Sigilo Pay: ${response.status}`
+      `Erro ao processar pagamento: ${errorMsg || response.status}. Verifique seus dados e tente novamente.`
     );
   }
 
-  console.log("[SigiloPay] Transaction created:", JSON.stringify(data));
+  console.log("[SigiloPay] Transaction created:", JSON.stringify({
+    transactionId: data.transactionId,
+    status: data.status,
+    hasPixCode: !!data.pix?.code,
+    hasPixBase64: !!data.pix?.base64,
+    orderId: data.order?.id,
+  }));
   return data as SigiloPayPixResponse;
 }
 
