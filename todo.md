@@ -119,3 +119,5 @@
 - [x] BUG: Pixel UTMify erro "Cannot read properties of undefined (reading '_id')" na página /produto/24 - removido IC duplicado do proxy (pixel client-side já detecta automaticamente)
 - [x] Produto 24 (baby look): adicionar opções de cor (9 combinações: PRETO/MARROM/ROSA/LILAS, etc.)
 - [x] Bloquear checkout sem seleção de tamanho E cor com scroll automático para variações
+- [x] BUG: Chave React duplicada `24` no checkout (dois itens com mesmo id no carrinho) - corrigido key para usar idx+product.id+variations
+- [x] BUG: Erro UTMify "_id" no checkout - corrigido com fetch interceptor no index.html que garante lead={_id:null} quando API retorna resposta sem campo lead

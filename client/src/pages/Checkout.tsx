@@ -773,8 +773,8 @@ export default function Checkout() {
 
                   {/* Items */}
                   <div className="space-y-3 max-h-[200px] overflow-y-auto mb-4">
-                    {items.map((item) => (
-                      <div key={item.product.id} className="flex gap-3">
+                    {items.map((item, idx) => (
+                      <div key={`${item.product.id}-${idx}-${JSON.stringify(item.selectedVariations)}`} className="flex gap-3">
                         <img
                           src={item.product.image}
                           alt={item.product.name}
