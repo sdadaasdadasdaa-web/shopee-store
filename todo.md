@@ -121,3 +121,4 @@
 - [x] Bloquear checkout sem seleção de tamanho E cor com scroll automático para variações
 - [x] BUG: Chave React duplicada `24` no checkout (dois itens com mesmo id no carrinho) - corrigido key para usar idx+product.id+variations
 - [x] BUG: Erro UTMify "_id" no checkout - corrigido com fetch interceptor no index.html que garante lead={_id:null} quando API retorna resposta sem campo lead
+- [x] Adicionar logo do carrinho laranja no header e como favicon do site
