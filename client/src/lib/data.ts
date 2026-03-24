@@ -763,6 +763,17 @@ export const products: Product[] = [
     ],
     variations: [
       { label: "Tamanho", options: ["P (36/38)", "M (38/40)", "G (42/44)", "GG (46/48)"] },
+      { label: "Cor", options: [
+        "PRETO/MARROM/ROSA/LILAS",
+        "MARROM/ROSA/LILAS/OFF",
+        "PRETO/ROSA/LILAS/OFF WHITE",
+        "PRETO/OFF/MARROM/AMARELO",
+        "OFF/PRETO/AZUL/ROSA",
+        "ROSA/LILAS/AZUL/OFF",
+        "ROSA/LILAS/AZUL/AMARELO",
+        "KIT COM 4 LILAS",
+        "KIT COM 4 PRETAS",
+      ]},
     ],
   },
   {

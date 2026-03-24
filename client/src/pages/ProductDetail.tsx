@@ -40,6 +40,8 @@ export default function ProductDetail() {
   const [showSoundPrompt, setShowSoundPrompt] = useState(true);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [reviewVideoUrl, setReviewVideoUrl] = useState<string | null>(null);
+  const [variationErrors, setVariationErrors] = useState<Record<string, boolean>>({});
+  const variationsRef = useRef<HTMLDivElement>(null);
 
   // Preço dinâmico baseado na variante selecionada
   const currentPrice = useMemo(() => {
@@ -109,7 +111,30 @@ export default function ProductDetail() {
     return sold.toString();
   };
 
+  // Verifica se todas as variações obrigatórias foram selecionadas
+  const validateVariations = () => {
+    if (!product || product.variations.length === 0) return true;
+    const errors: Record<string, boolean> = {};
+    let hasError = false;
+    for (const variation of product.variations) {
+      if (!selectedVariations[variation.label]) {
+        errors[variation.label] = true;
+        hasError = true;
+      }
+    }
+    setVariationErrors(errors);
+    if (hasError) {
+      // Scroll para a seção de variações
+      variationsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast.error("Selecione todas as opções antes de continuar", {
+        description: "Escolha o tamanho e a cor do produto.",
+      });
+    }
+    return !hasError;
+  };
+
   const handleAddToCart = () => {
+    if (!validateVariations()) return;
     addItem(product, quantity, selectedVariations);
     setAddedToCart(true);
     toast.success("Produto adicionado ao carrinho!", {
@@ -119,6 +144,7 @@ export default function ProductDetail() {
   };
 
   const handleBuyNow = () => {
+    if (!validateVariations()) return;
     addItem(product, quantity, selectedVariations);
     // O pixel UTMify client-side detecta automaticamente o clique em "COMPRAR AGORA"
     // via icTextMatch. Não enviar IC pelo proxy para evitar duplicação e erro 400 ALREADY_SAVED
@@ -401,23 +427,42 @@ export default function ProductDetail() {
                 </div>
 
                 {/* Variations */}
+                <div ref={variationsRef}>
                 {product.variations.map((variation) => (
                   <div key={variation.label} className="mt-4">
-                    <span className="text-sm font-semibold text-gray-600 block mb-2">
-                      {variation.label}
-                    </span>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-semibold text-gray-600">
+                        {variation.label}:
+                      </span>
+                      {selectedVariations[variation.label] && (
+                        <span className="text-sm text-[#EE4D2D] font-medium">
+                          {selectedVariations[variation.label]}
+                        </span>
+                      )}
+                      {variationErrors[variation.label] && !selectedVariations[variation.label] && (
+                        <span className="text-xs text-red-500 font-medium animate-pulse">
+                          ⚠ Obrigatório
+                        </span>
+                      )}
+                    </div>
+                    <div className={`flex flex-wrap gap-2 p-2 rounded-lg transition-all ${
+                      variationErrors[variation.label] && !selectedVariations[variation.label]
+                        ? "border-2 border-red-400 bg-red-50"
+                        : "border border-transparent"
+                    }`}>
                       {variation.options.map((option) => {
                         const isSelected = selectedVariations[variation.label] === option;
                         return (
                           <button
                             key={option}
-                            onClick={() =>
+                            onClick={() => {
                               setSelectedVariations((prev) => ({
                                 ...prev,
                                 [variation.label]: option,
-                              }))
-                            }
+                              }));
+                              // Limpar erro ao selecionar
+                              setVariationErrors((prev) => ({ ...prev, [variation.label]: false }));
+                            }}
                             className={`px-4 py-2 text-sm rounded border transition-all ${
                               isSelected
                                 ? "border-[#EE4D2D] text-[#EE4D2D] bg-orange-50 font-semibold"
@@ -431,6 +476,7 @@ export default function ProductDetail() {
                     </div>
                   </div>
                 ))}
+                </div>
 
                 {/* Size Guide — apenas para categoria Roupas */}
                 {product.category === "Roupas" && (
