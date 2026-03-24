@@ -98,3 +98,4 @@
 - [x] Remover variável morta totalAmountReais do routers.ts
 - [x] Adicionar try/catch no response.json() do sigilopay.ts (proteção contra 502/503)
 - [x] Adicionar fallback no PaymentPix quando localStorage não tem dados PIX
+- [x] BUG: React error #300 ao clicar em voltar na página (navegação para trás) - hooks movidos antes do early return no ProductDetail.tsx

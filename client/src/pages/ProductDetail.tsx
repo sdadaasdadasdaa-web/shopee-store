@@ -21,6 +21,7 @@ export default function ProductDetail() {
   const [, params] = useRoute("/produto/:id");
   const [, navigate] = useLocation();
   const { addItem } = useCart();
+  const sendIC = useSendInitiateCheckout();
 
   const product = useMemo(
     () => products.find((p) => p.id === Number(params?.id)),
@@ -43,7 +44,7 @@ export default function ProductDetail() {
   const [reviewVideoUrl, setReviewVideoUrl] = useState<string | null>(null);
 
   // Preço dinâmico baseado na variante selecionada
-  const currentPrice = (() => {
+  const currentPrice = useMemo(() => {
     if (!product) return 0;
     for (const variation of product.variations) {
       if (variation.prices && selectedVariations[variation.label]) {
@@ -54,8 +55,34 @@ export default function ProductDetail() {
       }
     }
     return product.price;
-  })();
+  }, [product, selectedVariations]);
 
+  // Dados derivados do produto (calculados após hooks, antes do early return)
+  const reviews = useMemo(() => product ? (productReviews[product.id] || []) : [], [product]);
+  const avgRating = useMemo(() => {
+    if (!product) return "0.0";
+    return reviews.length > 0
+      ? (reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      : product.rating.toFixed(1);
+  }, [product, reviews]);
+  const displayedReviews = useMemo(() => showAllReviews ? reviews : reviews.slice(0, 4), [showAllReviews, reviews]);
+
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    return products
+      .filter((p) => p.category === product.category && p.id !== product.id)
+      .slice(0, 5);
+  }, [product]);
+
+  const moreProducts = useMemo(() => {
+    if (!product) return [];
+    return products
+      .filter((p) => p.id !== product.id)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 10);
+  }, [product]);
+
+  // Early return AFTER all hooks
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col bg-[#F5F5F5]">
@@ -76,22 +103,6 @@ export default function ProductDetail() {
     );
   }
 
-  // videoUrl já definido acima
-  const reviews = productReviews[product.id] || [];
-  const avgRating = reviews.length > 0
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-    : product.rating.toFixed(1);
-  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 4);
-
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 5);
-
-  const moreProducts = products
-    .filter((p) => p.id !== product.id)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 10);
-
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -109,7 +120,6 @@ export default function ProductDetail() {
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
-  const sendIC = useSendInitiateCheckout();
   const handleBuyNow = () => {
     addItem(product, quantity, selectedVariations);
     sendIC(); // Enviar InitiateCheckout para UTMify via proxy server-side
