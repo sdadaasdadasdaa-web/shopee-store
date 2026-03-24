@@ -15,13 +15,11 @@ import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, Shopp
 import { toast } from "sonner";
 import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
-import { useSendInitiateCheckout } from "@/components/UtmifyTracker";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/produto/:id");
   const [, navigate] = useLocation();
   const { addItem } = useCart();
-  const sendIC = useSendInitiateCheckout();
 
   const product = useMemo(
     () => products.find((p) => p.id === Number(params?.id)),
@@ -122,7 +120,8 @@ export default function ProductDetail() {
 
   const handleBuyNow = () => {
     addItem(product, quantity, selectedVariations);
-    sendIC(); // Enviar InitiateCheckout para UTMify via proxy server-side
+    // O pixel UTMify client-side detecta automaticamente o clique em "COMPRAR AGORA"
+    // via icTextMatch. Não enviar IC pelo proxy para evitar duplicação e erro 400 ALREADY_SAVED
     navigate("/checkout");
   };
 

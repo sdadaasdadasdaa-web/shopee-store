@@ -116,3 +116,4 @@
 - [x] Criar produto 27: Kit 2 Calça Legging Feminina Suplex (R$29,90)
 - [x] Criar produto 28: Kit 3 Pijamas Baby Doll Short (R$29,90)
 - [x] Headline dinâmica na página do baby look: "Essa oferta só vai até HOJE DD/MM. Lote limitado!" (atualiza todo dia)
+- [x] BUG: Pixel UTMify erro "Cannot read properties of undefined (reading '_id')" na página /produto/24 - removido IC duplicado do proxy (pixel client-side já detecta automaticamente)
