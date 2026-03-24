@@ -352,7 +352,7 @@ export default function ProductDetail() {
                 <div className="mt-4 rounded overflow-hidden">
                   <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
                   {/* Contador de escassez — barra separada */}
-                  {(product.id === 22 || product.id === 23) && (
+                  {(product.id === 22 || product.id === 23 || product.id === 24) && (
                     <ScarcityBadge variant="product" />
                   )}
                   {/* Price */}
@@ -417,6 +417,41 @@ export default function ProductDetail() {
                     </div>
                   </div>
                 ))}
+
+                {/* Size Guide — apenas para categoria Roupas */}
+                {product.category === "Roupas" && (
+                  <div className="mt-4 p-4 rounded-lg border border-pink-100" style={{ background: "#FFF0F5" }}>
+                    <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                      <span className="text-base">📏</span> Guia de Tamanhos
+                    </h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-center">
+                        <thead>
+                          <tr className="text-white" style={{ background: "#EE4D2D" }}>
+                            <th className="py-2 px-3 font-bold rounded-tl-md">Tamanho</th>
+                            <th className="py-2 px-3 font-bold">Veste</th>
+                            <th className="py-2 px-3 font-bold rounded-tr-md">Busto (cm)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { size: "P", veste: "36/38", busto: "86-90" },
+                            { size: "M", veste: "38/40", busto: "90-94" },
+                            { size: "G", veste: "42/44", busto: "94-100" },
+                            { size: "GG", veste: "46/48", busto: "100-108" },
+                          ].map((row, i) => (
+                            <tr key={row.size} className={i % 2 === 0 ? "bg-pink-50" : "bg-white"}>
+                              <td className="py-2 px-3 font-bold text-pink-700">{row.size}</td>
+                              <td className="py-2 px-3 text-gray-700">{row.veste}</td>
+                              <td className="py-2 px-3 text-gray-700">{row.busto}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">💡 Em caso de dúvida entre dois tamanhos, recomendamos o maior.</p>
+                  </div>
+                )}
 
                 {/* Quantity */}
                 <div className="mt-4">

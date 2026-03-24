@@ -61,6 +61,7 @@ export const categories = [
   { id: 10, name: "Roçadeiras", icon: "Flame" },
   { id: 11, name: "Soldas", icon: "Zap" },
   { id: 12, name: "Eletrodomésticos", icon: "Flame" },
+  { id: 13, name: "Roupas", icon: "Shirt" },
 ];
 
 export const products: Product[] = [
@@ -723,6 +724,46 @@ export const products: Product[] = [
       { label: "Voltagem", options: ["110V", "220V"], prices: [89.57, 89.57] },
     ],
   },
+  {
+    id: 24,
+    name: "Kit 4 Blusas Baby Look Manga Curta com Forro Frontal Suplex Verão Tendência",
+    price: 49.90,
+    originalPrice: 99.90,
+    discount: 50,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto1_9c5328c7.png",
+    images: [
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto1_9c5328c7.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto2_ce923b1b.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto3_297d677b.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto4_36d46e23.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto5_7a4aee86.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto6_c8da0845.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto7_85785ad8.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto8_c9da1ad0.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto9_899510a9.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto10_3a7fda58.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto11_f3643202.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto12_6d596610.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto13_a379a280.png",
+    ],
+    rating: 4.9,
+    sold: 8432,
+    freeShipping: false,
+    category: "Roupas",
+    description: "KIT COM 4 BLUSINHA BABY LOOK MANGA CURTA COM FORRO FRONTAL — tendência do verão! Confeccionadas no tecido Crepe Dunas de alta qualidade, com forro frontal que garante mais conforto e discrição no dia a dia. Modelagem baby look moderna e elegante, perfeita para usar no trabalho, passeio ou lazer. O kit vem com 4 peças em cores variadas para renovar o guarda-roupa completo. Tecido leve, macio e de fácil lavagem, ideal para o calor do verão brasileiro. Fabricação própria com controle de qualidade rigoroso — cada peça é revisada antes de ser enviada.\n\n✅ TAMANHO P (veste 36/38)\n✅ TAMANHO M (veste 38/40)\n✅ TAMANHO G (veste 42/44)\n✅ TAMANHO GG (veste 46/48)\n\n📦 Postagem em até 1 dia útil\n💰 Excelente preço e qualidade\n🏷️ Fabricação própria\n\nFique à vontade para tirar suas dúvidas aqui no campo de perguntas. Estamos prontas para te atender! ✨ Confira também nossos outros modelos! Obrigada pela visita e boas compras 💖",
+    specifications: [
+      { label: "Tecido", value: "Crepe Dunas" },
+      { label: "Quantidade", value: "4 peças no kit" },
+      { label: "Modelagem", value: "Baby Look" },
+      { label: "Manga", value: "Curta com forro frontal" },
+      { label: "Tamanhos", value: "P (36/38), M (38/40), G (42/44), GG (46/48)" },
+      { label: "Postagem", value: "Até 1 dia útil" },
+      { label: "Fabricação", value: "Própria" },
+    ],
+    variations: [
+      { label: "Tamanho", options: ["P (36/38)", "M (38/40)", "G (42/44)", "GG (46/48)"] },
+    ],
+  },
 ];
 
 // Shipping options for Roçadeira
@@ -748,6 +789,11 @@ export const shippingOptions: Record<number, ShippingOption[]> = {
     { label: "Frete Normal", price: 19.90, days: "12 a 18 dias úteis" },
     { label: "Frete Expresso", price: 39.90, days: "5 a 8 dias úteis" },
   ],
+  24: [
+    { label: "Frete Grátis", price: 0, days: "20 a 30 dias úteis" },
+    { label: "Frete Normal", price: 14.90, days: "10 a 15 dias úteis" },
+    { label: "Frete Expresso", price: 24.90, days: "4 a 7 dias úteis" },
+  ],
 };
 
 // Vídeo do produto Roçadeira Nakasaki
@@ -755,6 +801,7 @@ export const productVideos: Record<number, string> = {
   21: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/br-11110105-6v65g-mlm31qg3l2py96.16000081773059220_511a1d68.mp4",
   22: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/maquina-solda-video_f2da9540.mp4",
   23: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-demo_8a5f3833.mp4",
+  24: "https://down-zl-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6v65g-mkxutjexf8xv3c.16000051771592550.mp4",
 };
 
 // Depoimentos / Avaliações de clientes
@@ -1024,6 +1071,104 @@ export const productReviews: Record<number, Review[]> = {
       profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_f1b2d2eb.png",
     },
   ],
+  24: [
+    {
+      id: 1,
+      name: "Camila Rodrigues",
+      rating: 5,
+      date: "20/03/2026",
+      text: "Amei demais! As blusas são lindas e o tecido é muito gostoso. Comprei o kit G e ficou perfeito. O forro frontal faz toda a diferença, dá muito mais segurança. Já usei duas e já lavei, não deformou nada. Super recomendo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_a52a63bc.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep1_524e0568.png",
+      ],
+      videoUrl: "https://down-ws-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6v65e-ml7pt4w3whl2d6.16000051772189468.mp4",
+    },
+    {
+      id: 2,
+      name: "Fernanda Oliveira",
+      rating: 5,
+      date: "17/03/2026",
+      text: "Produto incrivel! Chegou muito bem embalado e antes do prazo. As 4 blusas são lindas, o tecido é de ótima qualidade e o forro frontal é excelente. Comprei M e ficou perfeito. Já indiquei para várias amigas!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil2_d621afde.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep2_f51c840e.png",
+      ],
+    },
+    {
+      id: 3,
+      name: "Juliana Santos",
+      rating: 5,
+      date: "14/03/2026",
+      text: "Que kit maravilhoso! As blusas são super estilosas e o tecido é fresquinho para o verão. O forro frontal é um diferencial que eu amei. Comprei GG e ficou na medida. Entrega rápida e embalagem caprichada!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_9009a25a.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep3_a99ab744.png",
+      ],
+      videoUrl: "https://down-zl-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6v65d-mktmjozsc9oj6d.16000051771337337.mp4",
+    },
+    {
+      id: 4,
+      name: "Ana Paula Lima",
+      rating: 5,
+      date: "10/03/2026",
+      text: "Comprei para mim e para minha irmã e as duas amamos! O tecido Crepe Dunas é muito macio e leve. As blusas ficam bem no corpo e o forro frontal é ótimo. Vou comprar mais kits com certeza!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil4_c084df20.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep4_9215688f.png",
+      ],
+    },
+    {
+      id: 5,
+      name: "Patricia Almeida",
+      rating: 5,
+      date: "05/03/2026",
+      text: "Produto de ótima qualidade! As blusas são lindas e combinam com tudo. O tecido é fresquinho e o forro frontal é muito prático. Comprei P e ficou perfeito. Entrega super rápida. Recomendo muito!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil5_80295b58.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep5_32e62388.png",
+      ],
+    },
+    {
+      id: 6,
+      name: "Mariana Costa",
+      rating: 5,
+      date: "28/02/2026",
+      text: "Que achado! Comprei o kit e fiquei apaixonada. As blusas são muito bonitas e o tecido é de qualidade. O forro frontal é um detalhe que faz toda a diferença. Vou comprar mais para presentear as amigas!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil6_6eea14df.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep6_4f77a4be.png",
+      ],
+      videoUrl: "https://down-cvs-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6v65g-mi14v4zy4idi4e.16000051765253328.mp4",
+    },
+    {
+      id: 7,
+      name: "Beatriz Ferreira",
+      rating: 5,
+      date: "20/02/2026",
+      text: "Produto maravilhoso! As blusas são lindas e o tecido é muito gostoso. Comprei M e ficou perfeito. O forro frontal é ótimo. Entrega rápida e bem embalado. Super recomendo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil7_81284da9.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/dep7_8d7d828e.png",
+      ],
+    },
+    {
+      id: 8,
+      name: "Renata Souza",
+      rating: 5,
+      date: "15/02/2026",
+      text: "Amei o kit! As blusas são muito estilosas e o tecido é fresquinho. Comprei G e ficou na medida. O forro frontal é um diferencial que eu amei. Vou comprar mais kits com certeza!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil8_897692ce.jpg",
+    },
+  ],
 };
 
 // Order Bump items - produtos complementares sugeridos no checkout
@@ -1187,8 +1332,51 @@ export const cooktopOrderBumps: OrderBumpItem[] = [
   },
 ];
 
+// Order bumps específicos para Kit Baby Look
+export const babylookOrderBumps: OrderBumpItem[] = [
+  {
+    id: 501,
+    name: "Kit 2 Blusas Baby Look Manga Curta com Forro Frontal",
+    price: 19.90,
+    originalPrice: 49.90,
+    discount: 60,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto2_ce923b1b.png",
+    shortDescription: "2 blusas baby look Crepe Dunas com forro frontal. Escolha seu tamanho: P/M/G/GG.",
+  },
+  {
+    id: 502,
+    name: "Kit 3 Blusas Baby Look Manga Curta com Forro Frontal",
+    price: 30.00,
+    originalPrice: 74.90,
+    discount: 60,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto3_297d677b.png",
+    shortDescription: "3 blusas baby look Crepe Dunas com forro frontal. Escolha seu tamanho: P/M/G/GG.",
+  },
+  {
+    id: 503,
+    name: "Kit 2 Shorts Feminino Suplex Cintura Alta Confort",
+    price: 19.90,
+    originalPrice: 44.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto4_36d46e23.png",
+    shortDescription: "2 shorts femininos suplex cintura alta. Confortável e estiloso para o verão.",
+  },
+  {
+    id: 504,
+    name: "Kit 3 Calcinhas Renda Sem Costura Confortável",
+    price: 19.90,
+    originalPrice: 39.90,
+    discount: 50,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/produto5_7a4aee86.png",
+    shortDescription: "3 calcinhas renda sem costura. Super confortável, ideal para o dia a dia.",
+  },
+];
+
 // Função para obter order bumps baseado nos itens do carrinho
 export function getOrderBumpsForCart(productIds: number[]): OrderBumpItem[] {
+  if (productIds.includes(24)) {
+    return babylookOrderBumps;
+  }
   if (productIds.includes(23)) {
     return cooktopOrderBumps;
   }

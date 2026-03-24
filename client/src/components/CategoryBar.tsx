@@ -5,12 +5,12 @@
 import { categories } from "@/lib/data";
 import {
   Sparkles, Wrench, CircleDot, Ruler, Scissors,
-  Key, Zap, Package, Hammer, Drill,
+  Key, Zap, Package, Hammer, Drill, Shirt, Flame,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
   Sparkles, Wrench, Drill, CircleDot, Ruler,
-  Scissors, Key, Zap, Package, Hammer,
+  Scissors, Key, Zap, Package, Hammer, Shirt, Flame,
 };
 
 interface CategoryBarProps {

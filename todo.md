@@ -104,3 +104,9 @@
 - [x] Implementar job de reconciliação periódica (a cada 2min) para detectar pagamentos confirmados
 - [x] Implementar webhook endpoint /api/webhook/sigilopay para receber callbacks de pagamento
 - [x] Implementar webhookHandler.ts para processar callbacks da Sigilo Pay
+- [x] Criar produto Kit 4 Blusas Baby Look com página no estilo cooktop
+- [x] Upload das imagens e vídeos do baby look para CDN (13 fotos produto + 8 perfis + 7 depoimentos)
+- [x] Adicionar categoria "Roupas" no menu/navegação
+- [x] Criar order bumps: Kit 2 blusas por R$19,90 e Kit 3 blusas por R$30,00
+- [x] Adicionar seção de tamanhos (P/M/G/GG) na página do produto (tabela guia de tamanhos)
+- [x] Adicionar depoimentos com fotos reais na página do baby look (8 depoimentos com fotos e vídeos)
