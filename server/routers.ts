@@ -164,10 +164,15 @@ export const appRouter = router({
           ? `${cleanCpf.slice(0, 3)}.${cleanCpf.slice(3, 6)}.${cleanCpf.slice(6, 9)}-${cleanCpf.slice(9)}`
           : cleanCpf;
 
-        // Data de vencimento: amanhã
+        // Data de vencimento para a Sigilo Pay (formato YYYY-MM-DD, mínimo amanhã)
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 1);
         const dueDateStr = dueDate.toISOString().split("T")[0];
+
+        // Expiração visual do QR Code no frontend: 30 minutos
+        const expirationDate = new Date();
+        expirationDate.setMinutes(expirationDate.getMinutes() + 30);
+        const expirationISO = expirationDate.toISOString();
 
         // Calcular amount total em reais (arredondado para 2 casas decimais)
         const calculatedAmount = Math.round(totalAmountCents) / 100;
@@ -262,7 +267,7 @@ export const appRouter = router({
             qrCode: pixCode,
             qrCodeBase64: pixBase64,
             qrCodeImageUrl: pixImageUrl,
-            expirationDate: dueDateStr,
+            expirationDate: expirationISO,
           },
           externalRef,
         };

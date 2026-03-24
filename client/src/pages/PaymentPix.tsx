@@ -23,7 +23,7 @@ export default function PaymentPix() {
       const diff = Math.floor((new Date(pixData.expirationDate).getTime() - Date.now()) / 1000);
       return Math.max(0, diff);
     }
-    return 24 * 60 * 60; // Default 24h
+    return 30 * 60; // Default 30 minutos
   });
 
   // Fetch transaction status periodically
