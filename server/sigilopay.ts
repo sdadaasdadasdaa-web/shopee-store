@@ -114,8 +114,11 @@ export async function createPixTransaction(
     const errorCode = data?.errorCode || "";
     
     // Mapear erros da Sigilo Pay para mensagens amigáveis
-    if (errorMsg.includes("Documento") || errorMsg.includes("documento") || errorCode === "GATEWAY_INVALID_ARGUMENT") {
+    if (errorMsg.includes("Documento") || errorMsg.includes("documento") || errorMsg.includes("document")) {
       throw new Error("CPF inválido. Verifique os números e tente novamente.");
+    }
+    if (errorMsg.includes("Invalid products") || errorMsg.includes("products")) {
+      throw new Error("Erro ao processar produtos. Tente novamente.");
     }
     if (errorMsg.includes("amount") || errorMsg.includes("valor")) {
       throw new Error("Valor do pedido inválido. Tente novamente.");

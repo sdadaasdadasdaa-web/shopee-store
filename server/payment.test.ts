@@ -43,7 +43,6 @@ describe("payment.createPix (Sigilo Pay)", () => {
           unitPrice: 8990,
           quantity: 1,
           tangible: true,
-          externalRef: "product-21",
         },
       ],
       shippingFee: 0,
@@ -149,9 +148,9 @@ describe("payment.createPix (Sigilo Pay)", () => {
       },
       items: [
         {
-          title: "Produto A",
-          unitPrice: 5000, // R$ 50,00
-          quantity: 2,
+          title: "Máquina Solda Inversor IGBT 250A",
+          unitPrice: 8957, // R$ 89,57
+          quantity: 1,
           tangible: true,
         },
       ],
@@ -159,7 +158,7 @@ describe("payment.createPix (Sigilo Pay)", () => {
     });
 
     expect(result.success).toBe(true);
-    // Total should be 5000*2 + 1985 = 11985 (R$ 119,85)
-    expect(result.amount).toBe(11985);
+    // Total should be 8957*1 + 1985 = 10942 (R$ 109,42)
+    expect(result.amount).toBe(10942);
   }, 15000);
 });

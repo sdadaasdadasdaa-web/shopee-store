@@ -171,26 +171,15 @@ export const appRouter = router({
         dueDate.setDate(dueDate.getDate() + 1);
         const dueDateStr = dueDate.toISOString().split("T")[0];
 
-        // Preparar produtos para Sigilo Pay (price = preço unitário em reais)
-        // Arredondar para 2 casas decimais para evitar erros de ponto flutuante
-        const sigiloProducts = input.items.map((item, idx) => ({
-          id: item.externalRef || `item-${idx + 1}`,
-          name: item.title,
-          quantity: item.quantity,
-          price: Math.round(item.unitPrice) / 100,
-        }));
+        // Calcular amount total em reais (arredondado para 2 casas decimais)
+        const calculatedAmount = Math.round(totalAmountCents) / 100;
 
-        // Recalcular amount como Sigilo Pay espera
-        // IMPORTANTE: Arredondar para 2 casas decimais para evitar erros de ponto flutuante
-        // que causam erro 500 na Sigilo Pay (splitAmountTotal negativo)
-        const calculatedAmount = Math.round(
-          (sigiloProducts.reduce(
-            (sum, p) => sum + p.price * p.quantity, 0
-          ) + shippingFeeReais) * 100
-        ) / 100;
+        console.log(`[Payment] Creating PIX for ${externalRef}: amount=${calculatedAmount}, itemsTotal=${Math.round(itemsTotal)/100}, shipping=${shippingFeeReais}`);
 
-        console.log(`[Payment] Creating PIX for ${externalRef}: amount=${calculatedAmount}, items=${sigiloProducts.length}, shipping=${shippingFeeReais}`);
-
+        // IMPORTANTE: Não enviar campo "products" à Sigilo Pay.
+        // A API rejeita com erro 400 "Invalid products" quando os IDs não estão
+        // cadastrados na plataforma. Enviamos apenas o amount total.
+        // Os detalhes dos itens ficam salvos no metadata e no banco de dados.
         const result = await createPixTransaction({
           identifier: externalRef,
           amount: calculatedAmount,
@@ -201,11 +190,10 @@ export const appRouter = router({
             phone: formattedPhone,
             document: formattedCpf,
           },
-          products: sigiloProducts,
           dueDate: dueDateStr,
           metadata: {
             order_number: externalRef,
-            ...(input.metadata ? JSON.parse(input.metadata) : {}),
+            items: JSON.stringify(input.items.map(i => ({ title: i.title, qty: i.quantity, price: i.unitPrice }))),
           },
         });
 

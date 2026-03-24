@@ -89,3 +89,5 @@
 - [x] Corrigir port binding em produção (usar PORT exato, sem fallback)
 - [x] Adicionar logging detalhado para debug de pagamento e UTMify em produção
 - [x] Melhorar logging de erros UTMify (incluir status code e response body)
+- [x] Remover campo 'products' da requisição Sigilo Pay (causava erro 400 'Invalid products' com order bumps)
+- [x] Corrigir mapeamento de erros: GATEWAY_INVALID_ARGUMENT não é necessariamente CPF inválido
