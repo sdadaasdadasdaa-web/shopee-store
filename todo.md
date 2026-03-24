@@ -81,3 +81,4 @@
 - [x] Scroll automático para campo com erro no checkout quando clicar em pagar (mobile-friendly)
 - [x] Melhorar player de vídeo mobile: botão grande ativar som, controles visíveis pausar/mutar
 - [x] Corrigir tracking UTMify: pedidos agora persistidos no banco de dados (sobrevive restarts do servidor)
+- [x] Adicionar script pixel TikTok UTMify no head de todas as páginas
