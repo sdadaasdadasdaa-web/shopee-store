@@ -110,3 +110,9 @@
 - [x] Criar order bumps: Kit 2 blusas por R$19,90 e Kit 3 blusas por R$30,00
 - [x] Adicionar seção de tamanhos (P/M/G/GG) na página do produto (tabela guia de tamanhos)
 - [x] Adicionar depoimentos com fotos reais na página do baby look (8 depoimentos com fotos e vídeos)
+- [x] Order bumps de roupa: adicionar seletor P/M/G/GG ao lado do desconto
+- [x] Criar produto 25: Kit Calcinhas Cós Alto Sem Costura (R$19,90)
+- [x] Criar produto 26: Kit 4 Sutiãs Reforçados Plus Size (R$19,90)
+- [x] Criar produto 27: Kit 2 Calça Legging Feminina Suplex (R$29,90)
+- [x] Criar produto 28: Kit 3 Pijamas Baby Doll Short (R$29,90)
+- [x] Headline dinâmica na página do baby look: "Essa oferta só vai até HOJE DD/MM. Lote limitado!" (atualiza todo dia)

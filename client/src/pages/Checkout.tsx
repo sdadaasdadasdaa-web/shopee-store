@@ -18,6 +18,7 @@ export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
   const [, navigate] = useLocation();
   const [selectedBumps, setSelectedBumps] = useState<Set<number>>(new Set());
+  const [bumpSizes, setBumpSizes] = useState<Record<number, string>>({}); // Tamanho selecionado por bump
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [cpf, setCpf] = useState("");
 
@@ -572,58 +573,94 @@ export default function Checkout() {
                   </div>
                   <div className="p-4 space-y-3">
                     <p className="text-xs text-gray-500 mb-2">
-                      {productIds.includes(23)
+                      {productIds.includes(24) || productIds.some(id => [25,26,27,28].includes(id))
+                        ? "Clientes que compraram roupas também levaram estes itens com desconto exclusivo:"
+                        : productIds.includes(23)
                         ? "Quem comprou o Cooktop também levou estes itens essenciais com desconto exclusivo:"
                         : productIds.includes(21)
                         ? "Quem comprou a Roçadeira Nakasaki também levou estes itens essenciais com desconto exclusivo:"
-                        : "Clientes que compraram ferramentas também levaram estes itens com desconto exclusivo:"}
+                        : "Clientes também levaram estes itens com desconto exclusivo:"}
                     </p>
                     {currentBumps.map((bump) => {
                       const isSelected = selectedBumps.has(bump.id);
+                      const hasSizes = bump.sizes && bump.sizes.length > 0;
+                      const selectedSize = bumpSizes[bump.id];
                       return (
-                        <button
-                          key={bump.id}
-                          type="button"
-                          onClick={() => toggleBump(bump.id)}
-                          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left ${
-                            isSelected
-                              ? "border-[#EE4D2D] bg-orange-50"
-                              : "border-gray-200 hover:border-orange-200 hover:bg-orange-50/30"
-                          }`}
-                        >
-                          {/* Checkbox */}
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                            isSelected
-                              ? "border-[#EE4D2D] bg-[#EE4D2D]"
-                              : "border-gray-300"
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-
-                          {/* Image */}
-                          <img
-                            src={bump.image}
-                            alt={bump.name}
-                            className="w-14 h-14 rounded object-contain bg-gray-50 shrink-0 p-1"
-                          />
-
-                          {/* Info */}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-gray-800 line-clamp-1">{bump.name}</p>
-                            <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{bump.shortDescription}</p>
-                            <div className="flex items-baseline gap-2 mt-1">
-                              <span className="text-xs text-gray-400 line-through">
-                                {formatPrice(bump.originalPrice)}
-                              </span>
-                              <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
-                                {formatPrice(bump.price)}
-                              </span>
-                              <span className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded" style={{ background: "#EE4D2D" }}>
-                                -{bump.discount}%
-                              </span>
+                        <div key={bump.id} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleBump(bump.id)}
+                            className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left ${
+                              isSelected
+                                ? "border-[#EE4D2D] bg-orange-50"
+                                : "border-gray-200 hover:border-orange-200 hover:bg-orange-50/30"
+                            }`}
+                          >
+                            {/* Checkbox */}
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                              isSelected
+                                ? "border-[#EE4D2D] bg-[#EE4D2D]"
+                                : "border-gray-300"
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
-                          </div>
-                        </button>
+
+                            {/* Image */}
+                            <img
+                              src={bump.image}
+                              alt={bump.name}
+                              className="w-14 h-14 rounded object-contain bg-gray-50 shrink-0 p-1"
+                            />
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-gray-800 line-clamp-1">{bump.name}</p>
+                              <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{bump.shortDescription}</p>
+                              <div className="flex items-baseline gap-2 mt-1">
+                                <span className="text-xs text-gray-400 line-through">
+                                  {formatPrice(bump.originalPrice)}
+                                </span>
+                                <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
+                                  {formatPrice(bump.price)}
+                                </span>
+                                <span className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded" style={{ background: "#EE4D2D" }}>
+                                  -{bump.discount}%
+                                </span>
+                                {hasSizes && (
+                                  <span className="text-[10px] text-gray-400 ml-1">
+                                    {selectedSize ? `Tamanho: ${selectedSize}` : "Escolha o tamanho"}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+
+                          {/* Seletor de tamanho — aparece quando o bump é selecionado e tem tamanhos */}
+                          {isSelected && hasSizes && (
+                            <div className="flex items-center gap-1.5 px-3 pb-2">
+                              <span className="text-[10px] text-gray-600 font-semibold shrink-0">Tamanho:</span>
+                              <div className="flex gap-1 flex-wrap">
+                                {bump.sizes!.map((size) => (
+                                  <button
+                                    key={size}
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setBumpSizes(prev => ({ ...prev, [bump.id]: size }));
+                                    }}
+                                    className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-all ${
+                                      selectedSize === size
+                                        ? "border-[#EE4D2D] bg-[#EE4D2D] text-white"
+                                        : "border-gray-300 text-gray-600 hover:border-[#EE4D2D] hover:text-[#EE4D2D]"
+                                    }`}
+                                  >
+                                    {size}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>

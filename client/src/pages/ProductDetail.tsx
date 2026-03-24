@@ -348,8 +348,23 @@ export default function ProductDetail() {
                   )}
                 </div>
 
+                {/* Headline dinâmica de urgência — só para produto 24 (Baby Look) */}
+                {product.id === 24 && (() => {
+                  const hoje = new Date();
+                  const dia = hoje.getDate().toString().padStart(2, '0');
+                  const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
+                  const dataFormatada = `${dia}/${mes}`;
+                  return (
+                    <div className="mt-4 rounded-lg overflow-hidden border-2 border-red-500 bg-red-600 px-4 py-2.5 flex items-center justify-center gap-2 animate-pulse">
+                      <span className="text-white text-sm font-extrabold tracking-wide text-center">
+                        🔥 Essa oferta só vai até HOJE {dataFormatada}. Lote limitado!
+                      </span>
+                    </div>
+                  );
+                })()}
+
                 {/* Timer de Urgência — acima do preço */}
-                <div className="mt-4 rounded overflow-hidden">
+                <div className="mt-2 rounded overflow-hidden">
                   <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
                   {/* Contador de escassez — barra separada */}
                   {(product.id === 22 || product.id === 23 || product.id === 24) && (
