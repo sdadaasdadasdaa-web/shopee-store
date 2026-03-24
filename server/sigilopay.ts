@@ -106,7 +106,15 @@ export async function createPixTransaction(
     body: JSON.stringify(body),
   });
 
-  const data = await response.json();
+  let data: any;
+  try {
+    data = await response.json();
+  } catch {
+    console.error(`[SigiloPay] Non-JSON response: status=${response.status}`);
+    throw new Error(
+      "Servidor de pagamento retornou resposta inválida. Tente novamente em alguns minutos."
+    );
+  }
 
   if (!response.ok) {
     console.error("[SigiloPay] Error creating transaction:", JSON.stringify(data));
@@ -155,7 +163,15 @@ export async function getTransactionStatus(
     }
   );
 
-  const data = await response.json();
+  let data: any;
+  try {
+    data = await response.json();
+  } catch {
+    console.error(`[SigiloPay] Non-JSON response on status check: status=${response.status}`);
+    throw new Error(
+      `Erro ao consultar transação: resposta inválida (${response.status})`
+    );
+  }
 
   if (!response.ok) {
     console.error("[SigiloPay] Error fetching transaction:", JSON.stringify(data));

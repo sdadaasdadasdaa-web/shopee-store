@@ -127,8 +127,6 @@ export const appRouter = router({
         const totalAmountCents = itemsTotal + input.shippingFee;
 
         // Converter centavos para reais (Sigilo Pay usa reais)
-        // Arredondar para 2 casas decimais para evitar erros de ponto flutuante
-        const totalAmountReais = Math.round(totalAmountCents) / 100;
         const shippingFeeReais = Math.round(input.shippingFee) / 100;
 
         // Limpar CPF (remover pontos e traços)

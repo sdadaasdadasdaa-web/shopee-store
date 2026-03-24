@@ -91,3 +91,10 @@
 - [x] Melhorar logging de erros UTMify (incluir status code e response body)
 - [x] Remover campo 'products' da requisição Sigilo Pay (causava erro 400 'Invalid products' com order bumps)
 - [x] Corrigir mapeamento de erros: GATEWAY_INVALID_ARGUMENT não é necessariamente CPF inválido
+- [x] Auditoria completa do código: backend (routers, sigilopay, utmify, db, schema)
+- [x] Auditoria completa do código: frontend (Checkout, PaymentPix, Cart, Product)
+- [x] Auditoria completa do código: configuração (env, index.ts, build, dependências)
+- [x] Verificar 0 erros em pagamento e API com testes reais
+- [x] Remover variável morta totalAmountReais do routers.ts
+- [x] Adicionar try/catch no response.json() do sigilopay.ts (proteção contra 502/503)
+- [x] Adicionar fallback no PaymentPix quando localStorage não tem dados PIX

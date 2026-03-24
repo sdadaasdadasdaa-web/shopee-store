@@ -142,7 +142,7 @@ export default function PaymentPix() {
     );
   }
 
-  // Error state - no PIX data at all
+  // Error state - no PIX data and status query also failed
   if (!pixData?.qrCode && statusQuery.isError) {
     return (
       <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
@@ -150,6 +150,36 @@ export default function PaymentPix() {
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-800 mb-2">Erro ao carregar pagamento</h1>
           <p className="text-gray-500 mb-6">Não foi possível carregar os dados da transação. Tente novamente.</p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded text-white font-bold text-sm"
+            style={{ background: "#EE4D2D" }}
+          >
+            Voltar à Loja
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // No PIX data in localStorage but transaction exists (e.g. direct URL access or page refresh)
+  if (!pixData?.qrCode && statusQuery.data && statusQuery.data.status === "pending") {
+    return (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg p-8 text-center max-w-md w-full shadow-sm">
+          <Clock className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+          <h1 className="text-xl font-bold text-gray-800 mb-2">Pagamento Pendente</h1>
+          <p className="text-gray-500 mb-2">Seu PIX foi gerado mas os dados do QR Code não estão mais disponíveis neste navegador.</p>
+          <p className="text-gray-500 mb-4">Se você já copiou o código PIX, finalize o pagamento no app do seu banco.</p>
+          {statusQuery.data.amount && (
+            <p className="text-lg font-bold mb-4" style={{ color: "#EE4D2D" }}>
+              {formatPrice(statusQuery.data.amount)}
+            </p>
+          )}
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6">
+            <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#EE4D2D" }} />
+            Aguardando confirmação do pagamento...
+          </div>
           <Link
             href="/"
             className="inline-flex items-center gap-2 px-6 py-3 rounded text-white font-bold text-sm"
