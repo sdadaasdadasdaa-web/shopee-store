@@ -8,7 +8,11 @@ import { Zap, Star, Truck } from "lucide-react";
 import { products } from "@/lib/data";
 
 export default function FlashSale() {
-  const flashProducts = products.slice(0, 8);
+  // Produtos em destaque no flash sale: primeiros 7 + produto 29 (Rolo de Pintura Vonder)
+  const flashProducts = [
+    ...products.slice(0, 7),
+    ...products.filter((p) => p.id === 29),
+  ];
 
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 30 });
 
