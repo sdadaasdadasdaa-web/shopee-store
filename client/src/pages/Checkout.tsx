@@ -13,6 +13,7 @@ import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
 import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
 import { getItemPrice } from "@/lib/pricing";
+import { getAppliedCoupon, clearAppliedCoupon } from "@/components/ExitIntentPopup";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
@@ -64,7 +65,13 @@ export default function Checkout() {
       ? 0
       : 14.90;
 
-  const finalTotal = totalPrice + bumpTotal + shippingCost;
+  // Cupom de desconto aplicado via exit-intent popup
+  const appliedCoupon = useMemo(() => getAppliedCoupon(), []);
+  const couponDiscount = appliedCoupon
+    ? Math.round(((totalPrice + bumpTotal) * appliedCoupon.discountPct) / 100 * 100) / 100
+    : 0;
+
+  const finalTotal = totalPrice + bumpTotal + shippingCost - couponDiscount;
 
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -152,6 +159,7 @@ export default function Checkout() {
         );
       }
       clearCart();
+      clearAppliedCoupon(); // Limpar cupom após uso
       // Navigate to payment page with transaction ID
       navigate(`/pagamento/${data.transactionId}`);
     },
@@ -259,6 +267,17 @@ export default function Checkout() {
           externalRef: `bump-${bump.id}`,
         })),
     ];
+
+    // Aplicar desconto do cupom como item negativo
+    if (couponDiscount > 0 && appliedCoupon) {
+      paymentItems.push({
+        title: `Cupom ${appliedCoupon.code} (-${appliedCoupon.discountPct}%)`,
+        unitPrice: -Math.round(couponDiscount * 100), // valor negativo em centavos
+        quantity: 1,
+        tangible: false,
+        externalRef: `coupon-${appliedCoupon.code}`,
+      });
+    }
 
     // Capturar UTM parameters (URL + localStorage + cookies) para enviar à UTMify
     const trackingParams = getUtmifyTrackingParams();
@@ -860,6 +879,15 @@ export default function Checkout() {
                       <p className="text-[10px] text-gray-400">
                         Entrega em {customShippingOpts[selectedShippingIdx].days}
                       </p>
+                    )}
+                    {couponDiscount > 0 && appliedCoupon && (
+                      <div className="flex justify-between text-[#00BFA5] font-semibold">
+                        <span className="flex items-center gap-1">
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                          Cupom {appliedCoupon.code} (-{appliedCoupon.discountPct}%)
+                        </span>
+                        <span>-{formatPrice(couponDiscount)}</span>
+                      </div>
                     )}
                     <div className="border-t border-gray-100 pt-2 flex justify-between">
                       <span className="font-bold text-gray-800">Total</span>

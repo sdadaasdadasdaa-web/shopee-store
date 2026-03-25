@@ -130,3 +130,4 @@
 - [x] Produto 29: Adicionar headline dinâmica "Essa oferta só vai até HOJE DD/MM. Lote limitado!"- [x] Produto 29: Adicionar timer de urgência e contador de escassez (quase esgotando)
 - [x] Produto 29: Reordenar depoimentos - 4 homens primeiro (fotos reais enviadas), 4 mulheres depois
 - [x] Produto 29: Corrigir imagens dos order bumps - bandeja, fita crepe Tigre, lona azul, kit espátula+lixa+massa
+- [x] Criar pop-up de exit-intent com cupom de 5% de desconto nas páginas de produto - popup VOLTA5 com exit-intent, desconto aplicado no checkout e limpo após uso

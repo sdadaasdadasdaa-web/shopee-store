@@ -15,6 +15,7 @@ import { Star, Truck, ShieldCheck, ChevronLeft, ChevronRight, Minus, Plus, Shopp
 import { toast } from "sonner";
 import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/produto/:id");
@@ -914,6 +915,9 @@ export default function ProductDetail() {
       </div>
 
       <Footer />
+
+      {/* Exit Intent Popup */}
+      <ExitIntentPopup enabled={true} />
 
       {/* Video Modal */}
       {reviewVideoUrl && (
