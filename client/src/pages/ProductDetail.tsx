@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import ProductBannerModal from "@/components/ProductBannerModal";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/produto/:id");
@@ -624,6 +625,15 @@ export default function ProductDetail() {
               </div>
             </div>
           </div>
+
+          {/* Banner Infográfico — apenas para produto 29 (Rolo de Pintura) */}
+          {product.id === 29 && (
+            <ProductBannerModal
+              bannerUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/LPS(31)_67b6b459.webp"
+              bannerAlt="Banner infográfico do Rolo de Pintura com Reservatório Vonder"
+              showButton={true}
+            />
+          )}
 
           {/* Specifications */}
           {product.specifications && product.specifications.length > 0 && (
