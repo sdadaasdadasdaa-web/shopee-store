@@ -123,3 +123,4 @@
 - [x] BUG: Erro UTMify "_id" no checkout - corrigido com fetch interceptor no index.html que garante lead={_id:null} quando API retorna resposta sem campo lead
 - [x] Adicionar logo do carrinho laranja no header e como favicon do site
 - [x] BUG: Botão "−" para diminuir/remover itens no resumo do pedido do Checkout não funciona - corrigido updateQuantity/removeItem para usar productId + selectedVariations (evita afetar outros itens com mesmo id mas variações diferentes)
+- [x] Adicionar 11 combinações de cores faltantes no produto 24 (Baby Look) - total agora: 20 opções de cor
