@@ -13,7 +13,7 @@ import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
 import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
 import { getItemPrice } from "@/lib/pricing";
-import { getAppliedCoupon, clearAppliedCoupon } from "@/components/ExitIntentPopup";
+import ExitIntentPopup, { getAppliedCoupon, clearAppliedCoupon } from "@/components/ExitIntentPopup";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
@@ -942,6 +942,9 @@ export default function Checkout() {
           </div>
         </form>
       </main>
+
+      {/* Exit-intent popup: aparece quando o usuário tenta sair do checkout */}
+      <ExitIntentPopup enabled={true} />
     </div>
   );
 }

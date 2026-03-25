@@ -134,3 +134,4 @@
 - [x] BUG: Exit-intent popup bloqueia botão de voltar na página do produto - corrigido z-index e botão voltar usa history.go(-2) quando estado exitIntent está ativo
 - [x] Adicionar exit-intent para mobile via detecção de botão voltar (popstate/history trick) - implementado em ExitIntentPopup.tsx
 - [x] Adicionar produto 29 (Rolo de Pintura Vonder) no carrossel de Ofertas Relâmpago da home
+- [x] Adicionar exit-intent popup com cupom VOLTA5 na página de Checkout
