@@ -1346,12 +1346,12 @@ export const productReviews: Record<number, Review[]> = {
   29: [
     {
       id: 1,
-      name: "Cláudia Mendes",
+      name: "Rodrigo Mendonça",
       rating: 5,
       date: "22/03/2026",
-      text: "Produto incrível! Pintei a sala inteira sem precisar parar uma vez só pra recarregar. O reservatório é grande e a tinta flui uniforme, sem manchar. Acabamento ficou profissional. Recomendo demais!",
+      text: "Cara, que produto sensacional! Pintei a sala e o quarto em um dia só sem parar uma vez pra recarregar. O reservatório é grande e a tinta flui uniforme, sem manchar. Acabamento ficou profissional. Recomendo demais!",
       verified: true,
-      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_a52a63bc.jpg",
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/homem1_b5de8162.jpg",
       images: [
         "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo9_af111565.png",
       ],
@@ -1359,12 +1359,12 @@ export const productReviews: Record<number, Review[]> = {
     },
     {
       id: 2,
-      name: "Roberto Alves",
+      name: "André Oliveira",
       rating: 5,
       date: "18/03/2026",
       text: "Comprei pra pintar o quarto e o corredor. Que facilidade! O cabo extensível chegou no teto sem precisar de escada. A válvula de controle é ótima, regula o fluxo na medida certa. Produto de qualidade!",
       verified: true,
-      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil2_d621afde.jpg",
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/homem2_d3f17fe4.jpg",
       images: [
         "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo10_92bfca6d.png",
       ],
@@ -1372,12 +1372,12 @@ export const productReviews: Record<number, Review[]> = {
     },
     {
       id: 3,
-      name: "Fernanda Costa",
+      name: "Lucas Ferreira",
       rating: 5,
       date: "14/03/2026",
-      text: "Pintei 3 cômodos em um dia só! Antes levava o dobro do tempo com o rolo normal. A limpeza é super fácil, desmonta rapidinho e lava em segundos. Acabamento impecável, sem marcas de rolo. Amei!",
+      text: "Sou pedreiro e uso esse rolo todo dia. A economia de tinta é notável, não fica pingando no chão. O rolo de lã grossa dá um acabamento muito melhor que o rolo comum. Vale muito o investimento!",
       verified: true,
-      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_9009a25a.jpg",
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/homem3_ee16bff0.jpg",
       images: [
         "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo11_9dcae059.png",
       ],
@@ -1387,9 +1387,9 @@ export const productReviews: Record<number, Review[]> = {
       name: "Marcos Pereira",
       rating: 5,
       date: "10/03/2026",
-      text: "Sou pedreiro e uso esse rolo todo dia. A economia de tinta é notável, não fica pingando no chão. O rolo de lã grossa dá um acabamento muito melhor que o rolo comum. Vale muito o investimento!",
+      text: "Melhor rolo que já usei! Pintei o apartamento inteiro em um final de semana. O reservatório evita aquela bagunça de bandeja de tinta. Compatível com tinta látex e acrílica. Produto top!",
       verified: true,
-      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil4_c084df20.jpg",
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/homem4_e76959ec.jpg",
       images: [
         "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo12_0151d7a3.png",
       ],
@@ -1408,12 +1408,12 @@ export const productReviews: Record<number, Review[]> = {
     },
     {
       id: 6,
-      name: "Carlos Souza",
+      name: "Fernanda Costa",
       rating: 5,
       date: "28/02/2026",
-      text: "Melhor rolo que já usei! Pintei o apartamento inteiro em um final de semana. O reservatório evita aquela bagunça de bandeja de tinta. Compatível com tinta látex e acrílica. Produto top!",
+      text: "Pintei 3 cômodos em um dia só! Antes levava o dobro do tempo com o rolo normal. A limpeza é super fácil, desmonta rapidinho e lava em segundos. Acabamento impecável, sem marcas de rolo. Amei!",
       verified: true,
-      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil6_6eea14df.jpg",
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_9009a25a.jpg",
       images: [
         "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo14_59d6f109.png",
       ],
@@ -1432,12 +1432,12 @@ export const productReviews: Record<number, Review[]> = {
     },
     {
       id: 8,
-      name: "Eduardo Santos",
+      name: "Cláudia Mendes",
       rating: 5,
       date: "15/02/2026",
       text: "Produto excelente! Uso profissionalmente e a qualidade surpreende. O acabamento com o rolo de lã grossa é superior ao rolo comum. Durabilidade ótima, já usei em várias obras. Nota 10!",
       verified: true,
-      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil8_897692ce.jpg",
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_a52a63bc.jpg",
       images: [
         "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo16_0c9dedb0.png",
       ],
@@ -1788,7 +1788,7 @@ export const roloOrderBumps: OrderBumpItem[] = [
     price: 19.90,
     originalPrice: 44.90,
     discount: 56,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo8_4e319441.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/bandeja_ae5e302b.jpg",
     shortDescription: "Bandeja plástica resistente 23cm + rolo de lã grossa reserva. Compatível com Vonder.",
   },
   {
@@ -1797,7 +1797,7 @@ export const roloOrderBumps: OrderBumpItem[] = [
     price: 19.90,
     originalPrice: 44.90,
     discount: 56,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo7_fb3c0694.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/fita-crepe_82332d2a.jpg",
     shortDescription: "Fita crepe 48mm para proteger rodapés, janelas e cantos. Alta aderência.",
   },
   {
@@ -1806,7 +1806,7 @@ export const roloOrderBumps: OrderBumpItem[] = [
     price: 29.90,
     originalPrice: 64.90,
     discount: 54,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo6_c3ec6de5.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/lona-plastica_066064dd.jpg",
     shortDescription: "Lona 4x3m para proteger móveis e piso durante a pintura. Resistente e reutilizável.",
   },
   {
@@ -1815,7 +1815,7 @@ export const roloOrderBumps: OrderBumpItem[] = [
     price: 29.90,
     originalPrice: 69.90,
     discount: 57,
-    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo5_f7662d98.png",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/kit-espatula_6b83eba2.webp",
     shortDescription: "Kit completo para preparar a parede antes de pintar. Acabamento perfeito.",
   },
 ];

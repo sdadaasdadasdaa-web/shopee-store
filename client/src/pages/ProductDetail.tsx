@@ -373,8 +373,8 @@ export default function ProductDetail() {
                   )}
                 </div>
 
-                {/* Headline dinâmica de urgência — só para produto 24 (Baby Look) */}
-                {product.id === 24 && (() => {
+                {/* Headline dinâmica de urgência — produtos 24 e 29 */}
+                {(product.id === 24 || product.id === 29) && (() => {
                   const hoje = new Date();
                   const dia = hoje.getDate().toString().padStart(2, '0');
                   const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
@@ -392,7 +392,7 @@ export default function ProductDetail() {
                 <div className="mt-2 rounded overflow-hidden">
                   <UrgencyTimer variant="product" durationMinutes={30} productId={product.id} />
                   {/* Contador de escassez — barra separada */}
-                  {(product.id === 22 || product.id === 23 || product.id === 24) && (
+                  {(product.id === 22 || product.id === 23 || product.id === 24 || product.id === 29) && (
                     <ScarcityBadge variant="product" />
                   )}
                   {/* Price */}
