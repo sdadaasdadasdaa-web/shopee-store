@@ -56,12 +56,10 @@ export default function Header({ onSearch }: HeaderProps) {
         )}
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1.5 shrink-0">
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/achashop-logo_c07ef09e.png"
-            alt="AchaShop"
-            className="w-10 h-10 md:w-12 md:h-12 object-contain"
-          />
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center">
+            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" style={{ color: "#EE4D2D" }} />
+          </div>
           <span className="hidden sm:block text-white text-xl md:text-2xl font-extrabold tracking-tight">
             AchaShop
           </span>
