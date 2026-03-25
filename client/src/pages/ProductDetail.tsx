@@ -445,42 +445,14 @@ export default function ProductDetail() {
                         </span>
                       )}
                     </div>
-                    {variation.options.length > 8 ? (
-                      /* Dropdown com scroll para muitas opções */
-                      <div className={`rounded-lg transition-all ${
-                        variationErrors[variation.label] && !selectedVariations[variation.label]
-                          ? "ring-2 ring-red-400"
-                          : ""
-                      }`}>
-                        <select
-                          value={selectedVariations[variation.label] ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            if (!val) return;
-                            setSelectedVariations((prev) => ({ ...prev, [variation.label]: val }));
-                            setVariationErrors((prev) => ({ ...prev, [variation.label]: false }));
-                          }}
-                          className={`w-full px-3 py-2.5 text-sm rounded-lg border bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#EE4D2D] transition-all ${
-                            variationErrors[variation.label] && !selectedVariations[variation.label]
-                              ? "border-red-400 bg-red-50"
-                              : selectedVariations[variation.label]
-                              ? "border-[#EE4D2D] text-[#EE4D2D] font-semibold"
-                              : "border-gray-300 text-gray-500"
-                          }`}
-                        >
-                          <option value="">Selecione {variation.label}...</option>
-                          {variation.options.map((option) => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                      </div>
-                    ) : (
-                      /* Chips para poucas opções */
-                      <div className={`flex flex-wrap gap-2 p-2 rounded-lg transition-all ${
+                    <div className={`p-2 rounded-lg transition-all ${
                         variationErrors[variation.label] && !selectedVariations[variation.label]
                           ? "border-2 border-red-400 bg-red-50"
                           : "border border-transparent"
+                      } ${
+                        variation.options.length > 8 ? "max-h-52 overflow-y-auto" : ""
                       }`}>
+                      <div className="flex flex-wrap gap-2">
                         {variation.options.map((option) => {
                           const isSelected = selectedVariations[variation.label] === option;
                           return (
@@ -504,7 +476,7 @@ export default function ProductDetail() {
                           );
                         })}
                       </div>
-                    )}
+                    </div>
                   </div>
                 ))}
                 </div>
