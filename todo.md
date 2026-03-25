@@ -124,3 +124,4 @@
 - [x] Adicionar logo do carrinho laranja no header e como favicon do site
 - [x] BUG: Botão "−" para diminuir/remover itens no resumo do pedido do Checkout não funciona - corrigido updateQuantity/removeItem para usar productId + selectedVariations (evita afetar outros itens com mesmo id mas variações diferentes)
 - [x] Adicionar 11 combinações de cores faltantes no produto 24 (Baby Look) - total agora: 20 opções de cor
+- [x] Substituir chips de cor por dropdown com scroll na página de produto - dropdown ativado quando há mais de 8 opções, chips mantidos para poucas opções (ex: tamanho)
