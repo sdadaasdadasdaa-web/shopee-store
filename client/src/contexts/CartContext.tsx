@@ -5,8 +5,8 @@ import { getItemPrice } from "@/lib/pricing";
 interface CartContextType {
   items: CartItem[];
   addItem: (product: Product, quantity: number, variations: Record<string, string>) => void;
-  removeItem: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeItem: (productId: number, variations?: Record<string, string>) => void;
+  updateQuantity: (productId: number, quantity: number, variations?: Record<string, string>) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -36,19 +36,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const removeItem = useCallback((productId: number) => {
-    setItems((prev) => prev.filter((item) => item.product.id !== productId));
+  const removeItem = useCallback((productId: number, variations?: Record<string, string>) => {
+    setItems((prev) => prev.filter((item) => {
+      if (item.product.id !== productId) return true;
+      if (variations !== undefined) {
+        return JSON.stringify(item.selectedVariations) !== JSON.stringify(variations);
+      }
+      return false;
+    }));
   }, []);
 
-  const updateQuantity = useCallback((productId: number, quantity: number) => {
+  const updateQuantity = useCallback((productId: number, quantity: number, variations?: Record<string, string>) => {
     if (quantity <= 0) {
-      setItems((prev) => prev.filter((item) => item.product.id !== productId));
+      setItems((prev) => prev.filter((item) => {
+        if (item.product.id !== productId) return true;
+        if (variations !== undefined) {
+          return JSON.stringify(item.selectedVariations) !== JSON.stringify(variations);
+        }
+        return false;
+      }));
       return;
     }
     setItems((prev) =>
-      prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => {
+        if (item.product.id !== productId) return item;
+        if (variations !== undefined && JSON.stringify(item.selectedVariations) !== JSON.stringify(variations)) return item;
+        return { ...item, quantity };
+      })
     );
   }, []);
 

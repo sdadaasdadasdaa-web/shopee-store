@@ -786,7 +786,7 @@ export default function Checkout() {
                             <span className="text-xs text-gray-400">Qtd:</span>
                             <button
                               type="button"
-                              onClick={(e) => { e.preventDefault(); if (item.quantity > 1) updateQuantity(item.product.id, item.quantity - 1); }}
+                              onClick={(e) => { e.preventDefault(); if (item.quantity > 1) updateQuantity(item.product.id, item.quantity - 1, item.selectedVariations); else updateQuantity(item.product.id, 0, item.selectedVariations); }}
                               className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
                             >
                               <Minus className="w-3 h-3 text-gray-500" />
@@ -794,7 +794,7 @@ export default function Checkout() {
                             <span className="text-xs font-bold text-gray-700 w-4 text-center">{item.quantity}</span>
                             <button
                               type="button"
-                              onClick={(e) => { e.preventDefault(); updateQuantity(item.product.id, item.quantity + 1); }}
+                              onClick={(e) => { e.preventDefault(); updateQuantity(item.product.id, item.quantity + 1, item.selectedVariations); }}
                               className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
                             >
                               <Plus className="w-3 h-3 text-gray-500" />
