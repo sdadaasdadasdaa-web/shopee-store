@@ -50,9 +50,22 @@ export default function Header({ onSearch }: HeaderProps) {
       <div className="container flex items-center gap-3 py-2.5 md:py-3">
         {/* Back button on non-home pages (mobile) */}
         {!isHome && (
-          <Link href="/" className="md:hidden text-white p-1">
+          <button
+            onClick={() => {
+              // Se o exit-intent empurrou um estado extra no histórico, precisamos voltar 2 passos
+              // para pular o estado extra e ir para a página anterior real.
+              // Detectamos isso verificando se o estado atual tem exitIntent.
+              const state = window.history.state;
+              if (state && state.exitIntent) {
+                window.history.go(-2);
+              } else {
+                window.history.go(-1);
+              }
+            }}
+            className="md:hidden text-white p-1"
+          >
             <ChevronLeft className="w-6 h-6" />
-          </Link>
+          </button>
         )}
 
         {/* Logo */}

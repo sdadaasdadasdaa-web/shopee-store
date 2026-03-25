@@ -131,3 +131,5 @@
 - [x] Produto 29: Reordenar depoimentos - 4 homens primeiro (fotos reais enviadas), 4 mulheres depois
 - [x] Produto 29: Corrigir imagens dos order bumps - bandeja, fita crepe Tigre, lona azul, kit espátula+lixa+massa
 - [x] Criar pop-up de exit-intent com cupom de 5% de desconto nas páginas de produto - popup VOLTA5 com exit-intent, desconto aplicado no checkout e limpo após uso
+- [x] BUG: Exit-intent popup bloqueia botão de voltar na página do produto - corrigido z-index e botão voltar usa history.go(-2) quando estado exitIntent está ativo
+- [x] Adicionar exit-intent para mobile via detecção de botão voltar (popstate/history trick) - implementado em ExitIntentPopup.tsx

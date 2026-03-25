@@ -1,8 +1,16 @@
 /**
- * ExitIntentPopup — aparece quando o mouse sai pela parte superior da janela
- * Oferece cupom VOLTA5 com 5% de desconto para recuperar o visitante
+ * ExitIntentPopup — aparece quando o usuário tenta sair da página
+ *
+ * Desktop: detecta mouse saindo pela parte superior da janela (mouseleave)
+ * Mobile:  usa o "history trick" — empurra um estado extra no histórico ao montar,
+ *          e quando o usuário aperta o botão Voltar do browser, o evento popstate
+ *          dispara o popup em vez de navegar para a página anterior.
+ *          O botão Voltar real da página (chevron) é preservado — ele usa
+ *          window.history.go(-2) para pular o estado extra.
+ *
+ * Só exibe uma vez por sessão.
  */
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { X, Tag, Copy, Check } from "lucide-react";
 
 const COUPON_CODE = "VOLTA5";
@@ -30,7 +38,6 @@ export function clearAppliedCoupon() {
 }
 
 interface ExitIntentPopupProps {
-  /** Só exibe o popup se estiver em uma página de produto */
   enabled?: boolean;
 }
 
@@ -38,21 +45,32 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const [applied, setApplied] = useState(false);
+  // Controla se o estado extra foi empurrado no histórico (mobile trick)
+  const historyPushed = useRef(false);
+  // Quando o popup fecha via "Não obrigado" ou "X", precisa realmente voltar
+  const shouldGoBack = useRef(false);
 
-  const handleMouseLeave = useCallback((e: MouseEvent) => {
-    // Só dispara quando o mouse sai pela parte superior (exit-intent real)
-    if (e.clientY <= 5) {
-      const alreadyShown = sessionStorage.getItem(STORAGE_KEY_SHOWN);
-      if (!alreadyShown) {
-        setVisible(true);
-        sessionStorage.setItem(STORAGE_KEY_SHOWN, "1");
-      }
+  const showPopup = useCallback(() => {
+    const alreadyShown = sessionStorage.getItem(STORAGE_KEY_SHOWN);
+    if (!alreadyShown) {
+      setVisible(true);
+      sessionStorage.setItem(STORAGE_KEY_SHOWN, "1");
     }
   }, []);
 
+  // ── Desktop: mouse sai pela parte superior ──────────────────────────────────
+  const handleMouseLeave = useCallback(
+    (e: MouseEvent) => {
+      if (e.clientY <= 5) showPopup();
+    },
+    [showPopup]
+  );
+
   useEffect(() => {
     if (!enabled) return;
-    // Aguarda 3 segundos antes de ativar o listener para evitar disparos acidentais
+    const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isMobile) return; // mobile usa a estratégia de popstate abaixo
+
     const timer = setTimeout(() => {
       document.addEventListener("mouseleave", handleMouseLeave);
     }, 3000);
@@ -61,6 +79,44 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [enabled, handleMouseLeave]);
+
+  // ── Mobile: history trick ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (!enabled) return;
+    const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (!isMobile) return;
+
+    const alreadyShown = sessionStorage.getItem(STORAGE_KEY_SHOWN);
+    if (alreadyShown) return; // não empurra estado se já foi exibido
+
+    // Empurra um estado extra para que o primeiro "Voltar" dispare popstate
+    // em vez de sair da página
+    window.history.pushState({ exitIntent: true }, "");
+    historyPushed.current = true;
+
+    const handlePopState = (e: PopStateEvent) => {
+      // O usuário pressionou o botão Voltar do browser
+      if (e.state?.exitIntent) return; // estado intermediário, ignora
+      showPopup();
+      // Re-empurra o estado para que o popup possa ser fechado normalmente
+      // e o botão Voltar real ainda funcione depois
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [enabled, showPopup]);
+
+  // ── Fechar popup ─────────────────────────────────────────────────────────────
+  const closePopup = useCallback((navigateBack = false) => {
+    setVisible(false);
+    if (navigateBack && historyPushed.current) {
+      // Usuário clicou em "Não obrigado" — volta de verdade
+      historyPushed.current = false;
+      window.history.go(-1);
+    }
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(COUPON_CODE).catch(() => {});
@@ -72,16 +128,16 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
     const coupon: AppliedCoupon = { code: COUPON_CODE, discountPct: COUPON_DISCOUNT_PCT };
     localStorage.setItem(STORAGE_KEY_COUPON, JSON.stringify(coupon));
     setApplied(true);
-    setTimeout(() => setVisible(false), 1200);
+    setTimeout(() => closePopup(false), 1200);
   };
 
   if (!visible) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.65)" }}
-      onClick={() => setVisible(false)}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.65)", zIndex: 9000 }}
+      onClick={() => closePopup(false)}
     >
       <div
         className="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl"
@@ -94,7 +150,7 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
           style={{ background: "linear-gradient(135deg, #EE4D2D 0%, #FF7337 100%)" }}
         >
           <button
-            onClick={() => setVisible(false)}
+            onClick={() => closePopup(false)}
             className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -158,7 +214,7 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
           </button>
 
           <button
-            onClick={() => setVisible(false)}
+            onClick={() => closePopup(true)}
             className="mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors underline"
           >
             Não, obrigado. Prefiro pagar o valor cheio.
