@@ -788,6 +788,50 @@ export const products: Product[] = [
     ],
   },
   {
+    id: 29,
+    name: "Rolo De Pintura Com Reservatório Vonder — Pintura Sem Parar Sem Interrupções",
+    price: 59.90,
+    originalPrice: 159.00,
+    discount: 62,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo1_58c3982c.png",
+    images: [
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo1_58c3982c.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo2_73d22d25.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo3_ab48096b.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo4_b62f54dc.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo5_f7662d98.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo6_c3ec6de5.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo7_fb3c0694.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo8_4e319441.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo9_af111565.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo10_92bfca6d.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo11_9dcae059.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo12_0151d7a3.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo13_30637a34.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo14_59d6f109.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo15_27d3bb90.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo16_0c9dedb0.png",
+      "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo17_79dfae52.png",
+    ],
+    rating: 4.9,
+    sold: 11243,
+    freeShipping: true,
+    category: "Ferramentas",
+    description: "🎨 ROLO DE PINTURA COM RESERVATÓRIO VONDER — Pinte sem parar, sem interrupções, sem bandeja!\n\nO rolo com reservatório integrado que está revolucionando a pintura residencial e profissional! Esqueça a bandeja de tinta, o respingo no chão e as paradas constantes para recarregar. Com o reservatório acoplado, a tinta flui diretamente para o rolo de forma contínua e uniforme — você pinta paredes inteiras sem tirar o rolo da parede!\n\n✅ RESERVATÓRIO INTEGRADO de alta capacidade — pinte por mais tempo sem recarregar\n✅ FLUXO CONTÍNUO de tinta — distribuição uniforme sem manchas ou acúmulo\n✅ CABO EXTENSÍVEL — alcance tetos e partes altas sem escada\n✅ VÁLVULA DE CONTROLE — regule a quantidade de tinta com precisão\n✅ FÁCIL LIMPEZA — desmonta em segundos para lavagem rápida\n✅ COMPATÍVEL com tintas látex, acrílica e PVA\n✅ ROLO DE LÃ GROSSA — acabamento profissional em qualquer superfície\n\n🏠 IDEAL PARA: quartos, salas, fachadas, muros, tetos e grandes áreas\n💡 ECONOMIZE até 40% de tinta em relação ao rolo convencional\n📦 Postagem em até 1 dia útil | Garantia de 12 meses",
+    specifications: [
+      { label: "Marca", value: "Vonder" },
+      { label: "Material do Rolo", value: "Lã grossa de alta absorção" },
+      { label: "Reservatório", value: "Integrado de alta capacidade" },
+      { label: "Cabo", value: "Extensível (alcança tetos sem escada)" },
+      { label: "Válvula", value: "Controle de fluxo de tinta" },
+      { label: "Compatibilidade", value: "Tinta látex, acrílica e PVA" },
+      { label: "Limpeza", value: "Desmontável para lavagem rápida" },
+      { label: "Garantia", value: "12 meses" },
+      { label: "Postagem", value: "Até 1 dia útil" },
+    ],
+    variations: [],
+  },
+  {
     id: 25,
     name: "Kit com 10 Calcinhas Cós Alto SEM COSTURA Corte a Laser Conforto Não Marca Forro 100% Algodão",
     price: 19.90,
@@ -931,6 +975,7 @@ export const productVideos: Record<number, string> = {
   22: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/maquina-solda-video_f2da9540.mp4",
   23: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/cooktop-demo_8a5f3833.mp4",
   24: "https://down-zl-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6v65g-mkxutjexf8xv3c.16000051771592550.mp4",
+  29: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/front_d757d2e7.mp4",
 };
 
 // Depoimentos / Avaliações de clientes
@@ -1298,6 +1343,106 @@ export const productReviews: Record<number, Review[]> = {
       profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil8_897692ce.jpg",
     },
   ],
+  29: [
+    {
+      id: 1,
+      name: "Cláudia Mendes",
+      rating: 5,
+      date: "22/03/2026",
+      text: "Produto incrível! Pintei a sala inteira sem precisar parar uma vez só pra recarregar. O reservatório é grande e a tinta flui uniforme, sem manchar. Acabamento ficou profissional. Recomendo demais!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_a52a63bc.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo9_af111565.png",
+      ],
+      videoUrl: "https://down-bs-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6kfks-mbqkw9zol00pb1.16000051751539393.mp4",
+    },
+    {
+      id: 2,
+      name: "Roberto Alves",
+      rating: 5,
+      date: "18/03/2026",
+      text: "Comprei pra pintar o quarto e o corredor. Que facilidade! O cabo extensível chegou no teto sem precisar de escada. A válvula de controle é ótima, regula o fluxo na medida certa. Produto de qualidade!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil2_d621afde.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo10_92bfca6d.png",
+      ],
+      videoUrl: "https://down-bs-br.vod.susercontent.com/api/v4/11110103/mms/br-11110103-6v5do-mgdrus5oydc0d1.16000051761663290.mp4",
+    },
+    {
+      id: 3,
+      name: "Fernanda Costa",
+      rating: 5,
+      date: "14/03/2026",
+      text: "Pintei 3 cômodos em um dia só! Antes levava o dobro do tempo com o rolo normal. A limpeza é super fácil, desmonta rapidinho e lava em segundos. Acabamento impecável, sem marcas de rolo. Amei!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_9009a25a.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo11_9dcae059.png",
+      ],
+    },
+    {
+      id: 4,
+      name: "Marcos Pereira",
+      rating: 5,
+      date: "10/03/2026",
+      text: "Sou pedreiro e uso esse rolo todo dia. A economia de tinta é notável, não fica pingando no chão. O rolo de lã grossa dá um acabamento muito melhor que o rolo comum. Vale muito o investimento!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil4_c084df20.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo12_0151d7a3.png",
+      ],
+    },
+    {
+      id: 5,
+      name: "Ana Lima",
+      rating: 5,
+      date: "05/03/2026",
+      text: "Pintei a fachada da casa sem precisar subir em escada! O cabo extensível é incrível. A tinta ficou uniforme e sem manchas. Produto de ótima qualidade, chegou rápido e bem embalado. Super recomendo!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil5_80295b58.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo13_30637a34.png",
+      ],
+    },
+    {
+      id: 6,
+      name: "Carlos Souza",
+      rating: 5,
+      date: "28/02/2026",
+      text: "Melhor rolo que já usei! Pintei o apartamento inteiro em um final de semana. O reservatório evita aquela bagunça de bandeja de tinta. Compatível com tinta látex e acrílica. Produto top!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil6_6eea14df.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo14_59d6f109.png",
+      ],
+    },
+    {
+      id: 7,
+      name: "Patricia Ferreira",
+      rating: 5,
+      date: "20/02/2026",
+      text: "Comprei pra reformar o quarto das crianças. Ficou lindo e eu mesma fiz sozinha! O rolo é muito fácil de usar, a tinta flui perfeitamente. Economizei bastante tinta e tempo. Recomendo muito!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil7_81284da9.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo15_27d3bb90.png",
+      ],
+    },
+    {
+      id: 8,
+      name: "Eduardo Santos",
+      rating: 5,
+      date: "15/02/2026",
+      text: "Produto excelente! Uso profissionalmente e a qualidade surpreende. O acabamento com o rolo de lã grossa é superior ao rolo comum. Durabilidade ótima, já usei em várias obras. Nota 10!",
+      verified: true,
+      profileImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil8_897692ce.jpg",
+      images: [
+        "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo16_0c9dedb0.png",
+      ],
+    },
+  ],
 };
 
 // Order Bump items - produtos complementares sugeridos no checkout
@@ -1617,6 +1762,9 @@ export const roupasProducts: Product[] = [
 
 // Função para obter order bumps baseado nos itens do carrinho
 export function getOrderBumpsForCart(productIds: number[]): OrderBumpItem[] {
+  if (productIds.includes(29)) {
+    return roloOrderBumps;
+  }
   if (productIds.includes(24)) {
     return babylookOrderBumps;
   }
@@ -1631,6 +1779,46 @@ export function getOrderBumpsForCart(productIds: number[]): OrderBumpItem[] {
   }
   return defaultOrderBumps;
 }
+
+// Order bumps específicos para Rolo de Pintura com Reservatório Vonder
+export const roloOrderBumps: OrderBumpItem[] = [
+  {
+    id: 601,
+    name: "Bandeja de Pintura com Rolo Reserva 23cm",
+    price: 19.90,
+    originalPrice: 44.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo8_4e319441.png",
+    shortDescription: "Bandeja plástica resistente 23cm + rolo de lã grossa reserva. Compatível com Vonder.",
+  },
+  {
+    id: 602,
+    name: "Fita Crepe Profissional 48mm x 50m para Pintura",
+    price: 19.90,
+    originalPrice: 44.90,
+    discount: 56,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo7_fb3c0694.png",
+    shortDescription: "Fita crepe 48mm para proteger rodapés, janelas e cantos. Alta aderência.",
+  },
+  {
+    id: 603,
+    name: "Lona Plástica de Proteção 4x3m para Pintura",
+    price: 29.90,
+    originalPrice: 64.90,
+    discount: 54,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo6_c3ec6de5.png",
+    shortDescription: "Lona 4x3m para proteger móveis e piso durante a pintura. Resistente e reutilizável.",
+  },
+  {
+    id: 604,
+    name: "Kit Espátula + Lixa + Massa Corrida para Preparo de Parede",
+    price: 29.90,
+    originalPrice: 69.90,
+    discount: 57,
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/rolo5_f7662d98.png",
+    shortDescription: "Kit completo para preparar a parede antes de pintar. Acabamento perfeito.",
+  },
+];
 
 // Manter compatibilidade com import antigo
 export const orderBumpItems = defaultOrderBumps;

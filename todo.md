@@ -125,3 +125,5 @@
 - [x] BUG: Botão "−" para diminuir/remover itens no resumo do pedido do Checkout não funciona - corrigido updateQuantity/removeItem para usar productId + selectedVariations (evita afetar outros itens com mesmo id mas variações diferentes)
 - [x] Adicionar 11 combinações de cores faltantes no produto 24 (Baby Look) - total agora: 20 opções de cor
 - [x] Substituir chips de cor por dropdown com scroll na página de produto - dropdown ativado quando há mais de 8 opções, chips mantidos para poucas opções (ex: tamanho)
+- [x] Criar produto 29: Rolo de Pintura com Reservatório Vonder (R$59,90, sem variações, 3 vídeos, 4 order bumps: 2x R$19,90 e 2x R$29,90)
+- [x] Investigar e corrigir envio de evento Purchase para TikTok e Facebook via UTMify - corrigido ECONNRESET no reconciler usando Pool de conexões mysql2 com keepAlive

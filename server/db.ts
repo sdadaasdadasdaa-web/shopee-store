@@ -1,20 +1,39 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { createPool } from "mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
+let _pool: ReturnType<typeof createPool> | null = null;
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
+/**
+ * Retorna uma instância do Drizzle conectada ao banco de dados.
+ * Usa um Pool de conexões mysql2 com reconexão automática (waitForConnections: true).
+ * O Pool gerencia as conexões ociosas e reconecta automaticamente após ECONNRESET.
+ */
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  if (!process.env.DATABASE_URL) return null;
+
+  if (!_pool || !_db) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      _pool = createPool({
+        uri: process.env.DATABASE_URL,
+        waitForConnections: true,
+        connectionLimit: 5,
+        queueLimit: 0,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 30000,
+      });
+      _db = drizzle(_pool);
+      console.log("[Database] Connection pool created");
     } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
+      console.warn("[Database] Failed to create pool:", error);
+      _pool = null;
       _db = null;
     }
   }
+
   return _db;
 }
 
