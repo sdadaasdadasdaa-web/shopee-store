@@ -135,3 +135,4 @@
 - [x] Adicionar exit-intent para mobile via detecção de botão voltar (popstate/history trick) - implementado em ExitIntentPopup.tsx
 - [x] Adicionar produto 29 (Rolo de Pintura Vonder) no carrossel de Ofertas Relâmpago da home
 - [x] Adicionar exit-intent popup com cupom VOLTA5 na página de Checkout
+- [x] BUG: Clicar em produto na home abre a página rolada para a seção de depoimentos em vez do topo - corrigido com ScrollToTop que executa window.scrollTo(0,0) a cada mudança de rota

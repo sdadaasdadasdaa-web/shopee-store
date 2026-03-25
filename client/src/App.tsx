@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { CartProvider } from "./contexts/CartContext";
 import UtmifyTracker from "./components/UtmifyTracker";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
@@ -33,6 +34,8 @@ function App() {
         <CartProvider>
           <TooltipProvider>
             <Toaster position="top-center" richColors />
+            {/* Rola para o topo a cada mudança de rota */}
+            <ScrollToTop />
             {/* UTMify Tracker — dispara PageView, InitiateCheckout, Purchase em cada rota */}
             <UtmifyTracker />
             <Router />
