@@ -5,10 +5,11 @@
  * Mobile:  usa o "history trick" — empurra um estado extra no histórico ao montar,
  *          e quando o usuário aperta o botão Voltar do browser, o evento popstate
  *          dispara o popup em vez de navegar para a página anterior.
- *          O botão Voltar real da página (chevron) é preservado — ele usa
- *          window.history.go(-2) para pular o estado extra.
  *
- * Só exibe uma vez por sessão.
+ * forceShow: quando true, exibe o popup imediatamente (usado pelo botão Voltar do checkout).
+ * onApply:   callback para aplicar o cupom diretamente no estado do pai (sem reload).
+ *
+ * Só exibe uma vez por sessão (exceto quando forceShow=true).
  */
 import { useEffect, useState, useCallback, useRef } from "react";
 import { X, Tag, Copy, Check } from "lucide-react";
@@ -39,16 +40,29 @@ export function clearAppliedCoupon() {
 
 interface ExitIntentPopupProps {
   enabled?: boolean;
+  /** Se true, exibe o popup imediatamente (usado pelo botão Voltar do checkout) */
+  forceShow?: boolean;
+  /** Callback quando o cupom é aplicado — aplica no estado do pai sem reload */
+  onApply?: (coupon: AppliedCoupon) => void;
+  /** Callback quando o popup é fechado */
+  onClose?: () => void;
 }
 
-export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps) {
-  const [visible, setVisible] = useState(false);
+export default function ExitIntentPopup({
+  enabled = true,
+  forceShow = false,
+  onApply,
+  onClose,
+}: ExitIntentPopupProps) {
+  const [visible, setVisible] = useState(forceShow);
   const [copied, setCopied] = useState(false);
   const [applied, setApplied] = useState(false);
-  // Controla se o estado extra foi empurrado no histórico (mobile trick)
   const historyPushed = useRef(false);
-  // Quando o popup fecha via "Não obrigado" ou "X", precisa realmente voltar
-  const shouldGoBack = useRef(false);
+
+  // Sincroniza quando forceShow muda para true
+  useEffect(() => {
+    if (forceShow) setVisible(true);
+  }, [forceShow]);
 
   const showPopup = useCallback(() => {
     const alreadyShown = sessionStorage.getItem(STORAGE_KEY_SHOWN);
@@ -69,7 +83,7 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
   useEffect(() => {
     if (!enabled) return;
     const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-    if (isMobile) return; // mobile usa a estratégia de popstate abaixo
+    if (isMobile) return;
 
     const timer = setTimeout(() => {
       document.addEventListener("mouseleave", handleMouseLeave);
@@ -87,19 +101,14 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
     if (!isMobile) return;
 
     const alreadyShown = sessionStorage.getItem(STORAGE_KEY_SHOWN);
-    if (alreadyShown) return; // não empurra estado se já foi exibido
+    if (alreadyShown) return;
 
-    // Empurra um estado extra para que o primeiro "Voltar" dispare popstate
-    // em vez de sair da página
     window.history.pushState({ exitIntent: true }, "");
     historyPushed.current = true;
 
     const handlePopState = (e: PopStateEvent) => {
-      // O usuário pressionou o botão Voltar do browser
-      if (e.state?.exitIntent) return; // estado intermediário, ignora
+      if (e.state?.exitIntent) return;
       showPopup();
-      // Re-empurra o estado para que o popup possa ser fechado normalmente
-      // e o botão Voltar real ainda funcione depois
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -109,14 +118,20 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
   }, [enabled, showPopup]);
 
   // ── Fechar popup ─────────────────────────────────────────────────────────────
-  const closePopup = useCallback((navigateBack = false) => {
-    setVisible(false);
-    if (navigateBack && historyPushed.current) {
-      // Usuário clicou em "Não obrigado" — volta de verdade
-      historyPushed.current = false;
-      window.history.go(-1);
-    }
-  }, []);
+  const closePopup = useCallback(
+    (navigateBack = false) => {
+      setVisible(false);
+      onClose?.();
+      if (navigateBack && historyPushed.current) {
+        historyPushed.current = false;
+        window.history.go(-1);
+      } else if (navigateBack && forceShow) {
+        // Popup aberto pelo botão Voltar do checkout — navega de volta
+        window.history.back();
+      }
+    },
+    [onClose, forceShow]
+  );
 
   const handleCopy = () => {
     navigator.clipboard.writeText(COUPON_CODE).catch(() => {});
@@ -128,7 +143,16 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
     const coupon: AppliedCoupon = { code: COUPON_CODE, discountPct: COUPON_DISCOUNT_PCT };
     localStorage.setItem(STORAGE_KEY_COUPON, JSON.stringify(coupon));
     setApplied(true);
-    setTimeout(() => closePopup(false), 1200);
+    if (onApply) {
+      // Modo checkout: aplica diretamente no estado do pai (sem reload)
+      setTimeout(() => {
+        onApply(coupon);
+        closePopup(false);
+      }, 900);
+    } else {
+      // Modo produto: fecha e o checkout lê do localStorage
+      setTimeout(() => closePopup(false), 1200);
+    }
   };
 
   if (!visible) return null;

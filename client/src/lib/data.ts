@@ -944,6 +944,7 @@ export interface ShippingOption {
   label: string;
   price: number;
   days: string;
+  logo?: string;
 }
 
 export const shippingOptions: Record<number, ShippingOption[]> = {

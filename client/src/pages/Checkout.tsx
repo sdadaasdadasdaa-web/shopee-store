@@ -3,7 +3,7 @@
  * Formulário de dados, order bumps contextuais, opções de frete, resumo do pedido
  * Nicho: Ferramentas
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import { useCart } from "@/contexts/CartContext";
 import { trpc } from "@/lib/trpc";
@@ -13,7 +13,7 @@ import UrgencyTimer from "@/components/UrgencyTimer";
 import ScarcityBadge from "@/components/ScarcityBadge";
 import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
 import { getItemPrice } from "@/lib/pricing";
-import ExitIntentPopup, { getAppliedCoupon, clearAppliedCoupon } from "@/components/ExitIntentPopup";
+import ExitIntentPopup, { getAppliedCoupon, clearAppliedCoupon, type AppliedCoupon } from "@/components/ExitIntentPopup";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
@@ -41,6 +41,31 @@ export default function Checkout() {
 
   const [selectedShippingIdx, setSelectedShippingIdx] = useState(0);
 
+  // Frete padrão (Correios/Sedex/Jadlog) para produtos sem frete customizado
+  const defaultShippingOpts = useMemo(() => [
+    {
+      label: "Correios",
+      price: 0,
+      days: "7 a 12 dias úteis",
+      logo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/correios_614e42c9.png",
+    },
+    {
+      label: "Sedex",
+      price: 16.87,
+      days: "4 a 7 dias úteis",
+      logo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/sedex_3525a775.png",
+    },
+    {
+      label: "Jadlog",
+      price: 19.76,
+      days: "3 a 6 dias úteis",
+      logo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/jadlog_735e706a.png",
+    },
+  ], []);
+
+  // Mostra popup exit-intent
+  const [showExitPopup, setShowExitPopup] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -59,17 +84,19 @@ export default function Checkout() {
     .reduce((sum, b) => sum + b.price, 0);
 
   // Shipping cost logic
-  const shippingCost = hasCustomShipping
-    ? customShippingOpts[selectedShippingIdx]?.price ?? 19.85
-    : totalPrice + bumpTotal >= 99
-      ? 0
-      : 14.90;
+  const activeShippingOpts = hasCustomShipping ? customShippingOpts : defaultShippingOpts;
+  const shippingCost = activeShippingOpts[selectedShippingIdx]?.price ?? 0;
 
   // Cupom de desconto aplicado via exit-intent popup
-  const appliedCoupon = useMemo(() => getAppliedCoupon(), []);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => getAppliedCoupon());
   const couponDiscount = appliedCoupon
     ? Math.round(((totalPrice + bumpTotal) * appliedCoupon.discountPct) / 100 * 100) / 100
     : 0;
+
+  // Callback quando o usuário aplica o cupom no popup
+  const handleCouponApply = useCallback((coupon: AppliedCoupon) => {
+    setAppliedCoupon(coupon);
+  }, []);
 
   const finalTotal = totalPrice + bumpTotal + shippingCost - couponDiscount;
 
@@ -316,9 +343,21 @@ export default function Checkout() {
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
-            <Link href="/carrinho" className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button
+              type="button"
+              onClick={() => {
+                const alreadyShown = sessionStorage.getItem("exit_intent_shown");
+                if (!alreadyShown) {
+                  setShowExitPopup(true);
+                  sessionStorage.setItem("exit_intent_shown", "1");
+                } else {
+                  window.history.back();
+                }
+              }}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
               <ChevronLeft className="w-5 h-5" />
-            </Link>
+            </button>
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EE4D2D" }}>
                 <ShoppingCart className="w-5 h-5 text-white" />
@@ -529,57 +568,60 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* SHIPPING OPTIONS (only for products with custom shipping) */}
-                {hasCustomShipping && (
-                  <div className="bg-white rounded-sm p-4 md:p-6">
-                    <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
-                      <Truck className="w-5 h-5" style={{ color: "#EE4D2D" }} />
-                      Opções de Frete
-                    </h2>
-                    <div className="space-y-2">
-                      {customShippingOpts.map((opt, idx) => {
-                        const isFree = opt.price === 0;
-                        const isSelected = selectedShippingIdx === idx;
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setSelectedShippingIdx(idx)}
-                            className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left ${
-                              isSelected
-                                ? isFree ? "border-green-500 bg-green-50" : "border-[#EE4D2D] bg-orange-50"
-                                : "border-gray-200 hover:border-orange-200"
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                                isSelected ? (isFree ? "border-green-500" : "border-[#EE4D2D]") : "border-gray-300"
-                              }`}>
-                                {isSelected && (
-                                  <div className="w-2 h-2 rounded-full" style={{ background: isFree ? "#22c55e" : "#EE4D2D" }} />
-                                )}
-                              </div>
-                              <div>
-                                <p className={`text-sm font-bold ${isFree ? "text-green-700" : "text-gray-800"}`}>
-                                  {opt.label}
-                                  {isFree && (
-                                    <span className="ml-2 text-[10px] font-bold text-white px-1.5 py-0.5 rounded bg-green-500">
-                                      GRÁTIS
-                                    </span>
-                                  )}
-                                </p>
-                                <p className="text-xs text-gray-500">{opt.days}</p>
-                              </div>
+                {/* SHIPPING OPTIONS — sempre visível */}
+                <div className="bg-white rounded-sm p-4 md:p-6">
+                  <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <Truck className="w-5 h-5" style={{ color: "#EE4D2D" }} />
+                    Opções de Frete
+                  </h2>
+                  <div className="space-y-2">
+                    {activeShippingOpts.map((opt, idx) => {
+                      const isFree = opt.price === 0;
+                      const isSelected = selectedShippingIdx === idx;
+                      const logo = opt.logo;
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSelectedShippingIdx(idx)}
+                          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left ${
+                            isSelected
+                              ? isFree ? "border-green-500 bg-green-50" : "border-[#EE4D2D] bg-orange-50"
+                              : "border-gray-200 hover:border-orange-200"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                              isSelected ? (isFree ? "border-green-500" : "border-[#EE4D2D]") : "border-gray-300"
+                            }`}>
+                              {isSelected && (
+                                <div className="w-2 h-2 rounded-full" style={{ background: isFree ? "#22c55e" : "#EE4D2D" }} />
+                              )}
                             </div>
-                            <span className={`text-sm font-extrabold ${isFree ? "text-green-600" : ""}`} style={!isFree ? { color: "#EE4D2D" } : {}}>
-                              {isFree ? "R$ 0,00" : formatPrice(opt.price)}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                            {/* Logo da transportadora */}
+                            {logo && (
+                              <img src={logo} alt={opt.label} className="h-6 w-auto object-contain shrink-0" />
+                            )}
+                            <div>
+                              <p className={`text-sm font-bold ${isFree ? "text-green-700" : "text-gray-800"}`}>
+                                {opt.label}
+                                {isFree && (
+                                  <span className="ml-2 text-[10px] font-bold text-white px-1.5 py-0.5 rounded bg-green-500">
+                                    GRÁTIS
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs text-gray-500">{opt.days}</p>
+                            </div>
+                          </div>
+                          <span className={`text-sm font-extrabold ${isFree ? "text-green-600" : ""}`} style={!isFree ? { color: "#EE4D2D" } : {}}>
+                            {isFree ? "Grátis" : formatPrice(opt.price)}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
 
                 {/* ORDER BUMP */}
                 <div className="bg-white rounded-sm overflow-hidden border-2 border-dashed" style={{ borderColor: "#EE4D2D" }}>
@@ -860,9 +902,9 @@ export default function Checkout() {
                     <div className="flex justify-between text-gray-600">
                       <span>
                         Frete
-                        {hasCustomShipping && customShippingOpts[selectedShippingIdx] && (
+                        {activeShippingOpts[selectedShippingIdx] && (
                           <span className="text-[10px] text-gray-400 ml-1">
-                            ({customShippingOpts[selectedShippingIdx].label})
+                            ({activeShippingOpts[selectedShippingIdx].label})
                           </span>
                         )}
                       </span>
@@ -870,14 +912,9 @@ export default function Checkout() {
                         {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
                       </span>
                     </div>
-                    {!hasCustomShipping && shippingCost > 0 && (
+                    {activeShippingOpts[selectedShippingIdx] && (
                       <p className="text-[10px] text-gray-400">
-                        Frete grátis para compras acima de R$ 99,00
-                      </p>
-                    )}
-                    {hasCustomShipping && customShippingOpts[selectedShippingIdx] && (
-                      <p className="text-[10px] text-gray-400">
-                        Entrega em {customShippingOpts[selectedShippingIdx].days}
+                        Entrega em {activeShippingOpts[selectedShippingIdx].days}
                       </p>
                     )}
                     {couponDiscount > 0 && appliedCoupon && (
@@ -943,8 +980,13 @@ export default function Checkout() {
         </form>
       </main>
 
-      {/* Exit-intent popup: aparece quando o usuário tenta sair do checkout */}
-      <ExitIntentPopup enabled={true} />
+      {/* Exit-intent popup: aparece ao clicar em Voltar, via mouseleave (desktop) ou popstate (mobile) */}
+      <ExitIntentPopup
+        enabled={true}
+        forceShow={showExitPopup}
+        onApply={handleCouponApply}
+        onClose={() => setShowExitPopup(false)}
+      />
     </div>
   );
 }
