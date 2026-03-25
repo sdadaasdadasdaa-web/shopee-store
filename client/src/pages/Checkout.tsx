@@ -14,6 +14,7 @@ import ScarcityBadge from "@/components/ScarcityBadge";
 import { getUtmifyTrackingParams } from "@/components/UtmifyTracker";
 import { getItemPrice } from "@/lib/pricing";
 import ExitIntentPopup, { getAppliedCoupon, clearAppliedCoupon, type AppliedCoupon } from "@/components/ExitIntentPopup";
+import WelcomeDiscountPopup from "@/components/WelcomeDiscountPopup";
 
 export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
@@ -63,7 +64,15 @@ export default function Checkout() {
     },
   ], []);
 
-  // Mostra popup exit-intent
+  // Popup de boas-vindas: aparece automaticamente ao entrar no checkout (1x por sessão)
+  // Também serve como exit-intent quando o usuário clica em Voltar
+  const [showWelcomePopup, setShowWelcomePopup] = useState(() => {
+    // Mostra imediatamente se o cupom ainda não foi aplicado nesta sessão
+    const alreadyShown = sessionStorage.getItem("exit_intent_shown");
+    const alreadyApplied = localStorage.getItem("applied_coupon");
+    return !alreadyShown && !alreadyApplied;
+  });
+  // Mostra popup exit-intent ao clicar em Voltar
   const [showExitPopup, setShowExitPopup] = useState(false);
 
   const [form, setForm] = useState({
@@ -600,7 +609,7 @@ export default function Checkout() {
                             </div>
                             {/* Logo da transportadora */}
                             {logo && (
-                              <img src={logo} alt={opt.label} className="h-6 w-auto object-contain shrink-0" />
+                              <img src={logo} alt={opt.label} className="h-10 w-auto object-contain shrink-0" style={{ maxWidth: "80px" }} />
                             )}
                             <div>
                               <p className={`text-sm font-bold ${isFree ? "text-green-700" : "text-gray-800"}`}>
@@ -980,13 +989,26 @@ export default function Checkout() {
         </form>
       </main>
 
+      {/* Popup de boas-vindas: aparece automaticamente ao entrar no checkout */}
+      {showWelcomePopup && (
+        <WelcomeDiscountPopup
+          onApply={(coupon: AppliedCoupon) => {
+            handleCouponApply(coupon);
+            setShowWelcomePopup(false);
+          }}
+          onClose={() => setShowWelcomePopup(false)}
+        />
+      )}
+
       {/* Exit-intent popup: aparece ao clicar em Voltar, via mouseleave (desktop) ou popstate (mobile) */}
-      <ExitIntentPopup
-        enabled={true}
-        forceShow={showExitPopup}
-        onApply={handleCouponApply}
-        onClose={() => setShowExitPopup(false)}
-      />
+      {!showWelcomePopup && (
+        <ExitIntentPopup
+          enabled={true}
+          forceShow={showExitPopup}
+          onApply={handleCouponApply}
+          onClose={() => setShowExitPopup(false)}
+        />
+      )}
     </div>
   );
 }

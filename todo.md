@@ -138,3 +138,5 @@
 - [x] BUG: Clicar em produto na home abre a página rolada para a seção de depoimentos em vez do topo - corrigido com ScrollToTop que executa window.scrollTo(0,0) a cada mudança de rota
 - [x] Exit-intent no Checkout: popup ao clicar em Voltar ou tentar sair, botão "Aplicar 5%" desconta automaticamente no resumo sem recarregar página
 - [x] Frete padrão no Checkout: Correios (grátis, 7-12 dias), Sedex (R$16,87, 4-7 dias), Jadlog (R$19,76, 3-6 dias) com logos reais para todos os produtos sem frete customizado
+- [x] Aumentar logos das transportadoras no checkout (Correios, Sedex, Jadlog) — altura h-10 com maxWidth 80px
+- [x] Popup de boas-vindas no checkout: aparece automaticamente ao entrar na página com mensagem de 5% de desconto ganho (WelcomeDiscountPopup verde, 1x por sessão)
