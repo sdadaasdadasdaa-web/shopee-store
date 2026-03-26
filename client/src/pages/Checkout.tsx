@@ -348,7 +348,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
-      {/* Simplified header */}
+      {/* Header com a nova logo aplicada */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
@@ -367,11 +367,12 @@ export default function Checkout() {
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EE4D2D" }}>
-                <ShoppingCart className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-extrabold" style={{ color: "#EE4D2D" }}>AchaShop</span>
+            <Link href="/" className="flex items-center">
+              <img 
+                src="/Shopee.svg" 
+                alt="Logo" 
+                className="h-7 md:h-8 w-auto object-contain" 
+              />
             </Link>
             <span className="text-gray-300">|</span>
             <span className="text-base font-semibold text-gray-700">Checkout</span>
@@ -763,7 +764,7 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Depoimentos no Checkout (só foto perfil, sem foto de depoimento) */}
+                {/* Depoimentos no Checkout */}
                 {(productIds.includes(22) || productIds.includes(23)) && (
                   <div className="bg-white rounded-sm p-4">
                     <h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -793,16 +794,6 @@ export default function Checkout() {
                               <p className="text-[11px] text-gray-600">"Melhor compra do ano! Ferve água em menos de 2 min. Funciona com qualquer panela. Produto top!"</p>
                             </div>
                           </div>
-                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil4_c80044cb.png" alt="Fernanda" className="w-10 h-10 rounded-full object-cover shrink-0" />
-                            <div>
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <p className="text-xs font-bold text-gray-800">Fernanda L.</p>
-                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
-                              </div>
-                              <p className="text-[11px] text-gray-600">"Compacto, leve e potente. Desliga sozinho, trava de segurança ótima. Funciona com qualquer panela!"</p>
-                            </div>
-                          </div>
                         </>
                       ) : (
                         <>
@@ -814,16 +805,6 @@ export default function Checkout() {
                                 <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
                               </div>
                               <p className="text-[11px] text-gray-600">"Qualidade da solda excelente, arco estável. Modo MIG sem gás é perfeito. Kit completo!"</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/pasted_file_Cj83si_image_8a4d29e7.png" alt="Marcos" className="w-10 h-10 rounded-full object-cover shrink-0" />
-                            <div>
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <p className="text-xs font-bold text-gray-800">Marcos A.</p>
-                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
-                              </div>
-                              <p className="text-[11px] text-gray-600">"Melhor custo-benefício! Bivolt automática, display digital. Dá conta de tudo!"</p>
                             </div>
                           </div>
                         </>
@@ -852,7 +833,7 @@ export default function Checkout() {
                         />
                         <div className="min-w-0 flex-1">
                           <p className="text-xs text-gray-700 line-clamp-2">{item.product.name}</p>
-                              <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="flex items-center gap-1.5 mt-0.5">
                             <span className="text-xs text-gray-400">Qtd:</span>
                             <button
                               type="button"
@@ -921,11 +902,6 @@ export default function Checkout() {
                         {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
                       </span>
                     </div>
-                    {activeShippingOpts[selectedShippingIdx] && (
-                      <p className="text-[10px] text-gray-400">
-                        Entrega em {activeShippingOpts[selectedShippingIdx].days}
-                      </p>
-                    )}
                     {couponDiscount > 0 && appliedCoupon && (
                       <div className="flex justify-between text-[#00BFA5] font-semibold">
                         <span className="flex items-center gap-1">
@@ -941,22 +917,6 @@ export default function Checkout() {
                         {formatPrice(finalTotal)}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      ou 3x de {formatPrice(finalTotal / 3)} sem juros
-                    </p>
-                  </div>
-
-                  {/* Payment method indicator */}
-                  <div className="mt-4 p-3 rounded-lg bg-green-50 border border-green-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-600" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                      </svg>
-                      <span className="text-sm font-bold text-green-700">Pagamento via PIX</span>
-                    </div>
-                    <p className="text-[10px] text-green-600">
-                      Após finalizar, você receberá o QR Code PIX para pagamento instantâneo.
-                    </p>
                   </div>
 
                   <button
@@ -989,7 +949,7 @@ export default function Checkout() {
         </form>
       </main>
 
-      {/* Popup de boas-vindas: aparece automaticamente ao entrar no checkout */}
+      {/* Popups */}
       {showWelcomePopup && (
         <WelcomeDiscountPopup
           onApply={(coupon: AppliedCoupon) => {
@@ -1000,7 +960,6 @@ export default function Checkout() {
         />
       )}
 
-      {/* Exit-intent popup: aparece ao clicar em Voltar, via mouseleave (desktop) ou popstate (mobile) */}
       {!showWelcomePopup && (
         <ExitIntentPopup
           enabled={true}
