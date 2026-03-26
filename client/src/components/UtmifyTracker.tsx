@@ -1,22 +1,13 @@
 /*
  * UTMify Tracker — Integração para SPA (React + wouter)
- * 
- * Estratégia de tracking em 2 camadas:
- * 
- * 1. PIXEL CLIENT-SIDE (pixel.js):
- *    - Carregado via <script> no index.html
- *    - Dispara PageView na primeira carga, ViewContent, e detecta IC automaticamente
- *    - Pode ser bloqueado por ad blockers
- * 
- * 2. PROXY SERVER-SIDE (este módulo):
- *    - Envia eventos via tRPC → backend → tracking.utmify.com.br
- *    - NÃO pode ser bloqueado por ad blockers (vai pelo nosso servidor)
- *    - Garante que PageView e IC são sempre registrados
- *    - Salva o lead no localStorage para uso posterior
- * 
- * O utms/latest.js salva UTMs no localStorage:
- *   utm_source, utm_campaign, utm_medium, utm_content, utm_term, xcod, src
- *   (NÃO salva sck — precisamos salvar manualmente)
+ * * Estratégia de tracking em 2 camadas:
+ * * 1. PIXEL CLIENT-SIDE (pixel.js):
+ * - Carregado via <script> no index.html
+ * - Dispara PageView na primeira carga, ViewContent, e detecta IC automaticamente
+ * * 2. PROXY SERVER-SIDE (este módulo):
+ * - Envia eventos via tRPC → backend → tracking.utmify.com.br
+ * - Garante que PageView e IC são sempre registrados
+ * - Salva o lead no localStorage para uso posterior
  */
 import { useEffect, useRef } from "react";
 import { useLocation } from "wouter";
@@ -47,7 +38,7 @@ function persistSckFromUrl() {
     const sck = urlParams.get("sck");
     if (sck) {
       localStorage.setItem("sck", sck);
-      // Setar expiração de 7 dias (mesmo padrão do utms/latest.js)
+      // Setar expiração de 7 dias
       const exp = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       localStorage.setItem("sck_exp", exp.toISOString());
     }
@@ -58,8 +49,6 @@ function persistSckFromUrl() {
 
 /**
  * Hook que dispara PageView via proxy server-side em cada navegação SPA.
- * Na primeira carga, o pixel.js tenta enviar diretamente, mas nosso proxy
- * garante que o evento é registrado mesmo se o pixel for bloqueado.
  */
 export function useUtmifyPageView() {
   const [location] = useLocation();
@@ -81,7 +70,6 @@ export function useUtmifyPageView() {
     const isFirst = isFirstLoad.current;
     isFirstLoad.current = false;
 
-    // Pequeno delay para garantir que o DOM e o título foram atualizados
     const timer = setTimeout(() => {
       const lead = getUtmifyLead();
 
@@ -102,19 +90,12 @@ export function useUtmifyPageView() {
         {
           onSuccess: (data) => {
             if (data.success && data.lead?._id) {
-              // Salvar/atualizar o lead no localStorage
               localStorage.setItem("lead", JSON.stringify(data.lead));
-              console.log(
-                `[UTMify Proxy] PageView registrado para: ${window.location.pathname} (lead: ${data.lead._id})`
-              );
             }
-          },
-          onError: (err) => {
-            console.warn("[UTMify Proxy] Erro ao enviar PageView:", err.message);
           },
         }
       );
-    }, isFirst ? 1500 : 500); // Mais delay na primeira carga para dar tempo ao pixel
+    }, isFirst ? 1500 : 500);
 
     return () => clearTimeout(timer);
   }, [location]);
@@ -122,7 +103,6 @@ export function useUtmifyPageView() {
 
 /**
  * Envia um evento de InitiateCheckout via proxy server-side.
- * Chamado quando o usuário clica em "Comprar Agora" ou vai para o checkout.
  */
 export function useSendInitiateCheckout() {
   const sendEventMutation = trpc.tracking.sendEvent.useMutation();
@@ -143,37 +123,13 @@ export function useSendInitiateCheckout() {
           pageTitle: document.title,
           sourceUrl: window.location.href,
         },
-      },
-      {
-        onSuccess: (data) => {
-          if (data.success && data.lead?._id) {
-            localStorage.setItem("lead", JSON.stringify(data.lead));
-            console.log(
-              `[UTMify Proxy] InitiateCheckout registrado (lead: ${data.lead._id})`
-            );
-          }
-        },
-        onError: (err) => {
-          console.warn("[UTMify Proxy] Erro ao enviar IC:", err.message);
-        },
       }
     );
   };
 }
 
 /**
- * Utilitário para ler os parâmetros UTM salvos pelo script utms/latest.js
- * e pelo pixel UTMify. Esses valores são necessários para o backend
- * enviar eventos de venda para a UTMify.
- * 
- * O script utms/latest.js salva UTMs no localStorage com as chaves:
- * utm_source, utm_campaign, utm_medium, utm_content, utm_term, xcod, src
- * (com expiração de 7 dias)
- * 
- * O pixel salva o lead no localStorage com key "lead", que contém
- * parameters com src/sck.
- * 
- * O utms/latest.js também seta window.utmParams com todos os valores.
+ * Utilitário para ler os parâmetros UTM incluindo XCOD e UTM_ID
  */
 export function getUtmifyTrackingParams(): {
   src: string | null;
@@ -183,39 +139,33 @@ export function getUtmifyTrackingParams(): {
   utm_medium: string | null;
   utm_content: string | null;
   utm_term: string | null;
+  utm_id: string | null;
+  xcod: string | null;
 } {
-  // 1. Ler da URL atual (prioridade máxima)
   const urlParams = new URLSearchParams(window.location.search);
   
-  // 2. Ler do localStorage (onde utms/latest.js salva diretamente)
   const lsGet = (key: string): string | null => {
     try {
       const val = localStorage.getItem(key);
-      // Verificar se não expirou
       const expKey = `${key}_exp`;
       const exp = localStorage.getItem(expKey);
-      if (exp && new Date(exp) < new Date()) {
-        return null; // expirado
-      }
+      if (exp && new Date(exp) < new Date()) return null;
       return val || null;
     } catch {
       return null;
     }
   };
 
-  // 3. Ler do lead no localStorage (onde o pixel salva src/sck)
   const lead = getUtmifyLead();
   const leadParams = lead?.parameters || {};
-
-  // 4. Ler de window.utmParams (setado pelo utms/latest.js)
   const utmParams = (window as any).utmParams;
+
   const wpGet = (key: string): string | null => {
     if (!utmParams) return null;
     if (typeof utmParams.get === "function") return utmParams.get(key) || null;
     return utmParams[key] || null;
   };
 
-  // Prioridade: URL params > localStorage (utms/latest.js) > window.utmParams > lead localStorage
   return {
     src: urlParams.get("src") || lsGet("src") || wpGet("src") || leadParams.src || null,
     sck: urlParams.get("sck") || lsGet("sck") || wpGet("sck") || leadParams.sck || null,
@@ -224,12 +174,11 @@ export function getUtmifyTrackingParams(): {
     utm_medium: urlParams.get("utm_medium") || lsGet("utm_medium") || wpGet("utm_medium") || leadParams.utm_medium || null,
     utm_content: urlParams.get("utm_content") || lsGet("utm_content") || wpGet("utm_content") || leadParams.utm_content || null,
     utm_term: urlParams.get("utm_term") || lsGet("utm_term") || wpGet("utm_term") || leadParams.utm_term || null,
+    utm_id: urlParams.get("utm_id") || lsGet("utm_id") || wpGet("utm_id") || leadParams.utm_id || null,
+    xcod: urlParams.get("xcod") || lsGet("xcod") || wpGet("xcod") || leadParams.xcod || null,
   };
 }
 
-/**
- * Componente wrapper que ativa o tracking em todas as páginas
- */
 export default function UtmifyTracker() {
   useUtmifyPageView();
   return null;
