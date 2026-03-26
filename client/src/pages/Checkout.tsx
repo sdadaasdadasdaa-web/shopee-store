@@ -65,14 +65,11 @@ export default function Checkout() {
   ], []);
 
   // Popup de boas-vindas: aparece automaticamente ao entrar no checkout (1x por sessão)
-  // Também serve como exit-intent quando o usuário clica em Voltar
   const [showWelcomePopup, setShowWelcomePopup] = useState(() => {
-    // Mostra imediatamente se o cupom ainda não foi aplicado nesta sessão
     const alreadyShown = sessionStorage.getItem("exit_intent_shown");
     const alreadyApplied = localStorage.getItem("applied_coupon");
     return !alreadyShown && !alreadyApplied;
   });
-  // Mostra popup exit-intent ao clicar em Voltar
   const [showExitPopup, setShowExitPopup] = useState(false);
 
   const [form, setForm] = useState({
@@ -92,17 +89,14 @@ export default function Checkout() {
     .filter((b) => selectedBumps.has(b.id))
     .reduce((sum, b) => sum + b.price, 0);
 
-  // Shipping cost logic
   const activeShippingOpts = hasCustomShipping ? customShippingOpts : defaultShippingOpts;
   const shippingCost = activeShippingOpts[selectedShippingIdx]?.price ?? 0;
 
-  // Cupom de desconto aplicado via exit-intent popup
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => getAppliedCoupon());
   const couponDiscount = appliedCoupon
     ? Math.round(((totalPrice + bumpTotal) * appliedCoupon.discountPct) / 100 * 100) / 100
     : 0;
 
-  // Callback quando o usuário aplica o cupom no popup
   const handleCouponApply = useCallback((coupon: AppliedCoupon) => {
     setAppliedCoupon(coupon);
   }, []);
@@ -112,7 +106,6 @@ export default function Checkout() {
   const formatPrice = (price: number) =>
     price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  // Máscaras de formatação automática
   const maskCpf = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
     return digits
@@ -140,7 +133,6 @@ export default function Checkout() {
     if (name === "phone") maskedValue = maskPhone(value);
     else if (name === "cep") maskedValue = maskCep(value);
     setForm((prev) => ({ ...prev, [name]: maskedValue }));
-    // Clear error on change
     if (formErrors[name]) {
       setFormErrors((prev) => {
         const next = { ...prev };
@@ -165,9 +157,7 @@ export default function Checkout() {
             state: data.uf || prev.state,
           }));
         }
-      } catch {
-        // Silently fail
-      }
+      } catch { /* ignore */ }
     }
   };
 
@@ -180,10 +170,8 @@ export default function Checkout() {
     });
   };
 
-  // tRPC mutation for creating PIX payment
   const createPixMutation = trpc.payment.createPix.useMutation({
     onSuccess: (data) => {
-      // Save PIX data to localStorage for the payment page
       if (data.pix) {
         localStorage.setItem(
           `pix_${data.transactionId}`,
@@ -195,38 +183,28 @@ export default function Checkout() {
         );
       }
       clearCart();
-      clearAppliedCoupon(); // Limpar cupom após uso
-      // Navigate to payment page with transaction ID
+      clearAppliedCoupon();
       navigate(`/pagamento/${data.transactionId}`);
     },
     onError: (error) => {
       const msg = error.message;
-      console.error("[Checkout] Erro ao criar PIX:", msg);
       if (msg.includes("CPF")) {
         setFormErrors((prev) => ({ ...prev, cpf: "CPF inválido. Verifique e tente novamente." }));
-        // Scroll para o campo de CPF
         const cpfEl = document.querySelector('[name="cpf"]') as HTMLElement;
         if (cpfEl) {
           cpfEl.scrollIntoView({ behavior: "smooth", block: "center" });
           setTimeout(() => cpfEl.focus(), 400);
         }
-      } else if (msg.includes("Credenciais") || msg.includes("gateway")) {
-        alert("Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.");
-      } else if (msg.includes("indisponível") || msg.includes("Servidor")) {
-        alert("Servidor de pagamento temporariamente indisponível. Tente novamente em alguns minutos.");
       } else {
         alert("Ocorreu um erro ao gerar o PIX. Por favor, verifique seus dados e tente novamente.");
       }
     },
   });
 
-  // Validação de CPF com dígitos verificadores
   const isValidCpf = (raw: string): boolean => {
     const digits = raw.replace(/\D/g, "");
     if (digits.length !== 11) return false;
-    // Rejeitar sequências iguais (000.000.000-00, 111... etc)
     if (/^(\d)\1{10}$/.test(digits)) return false;
-    // Calcular dígitos verificadores
     let sum = 0;
     for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
     let rest = (sum * 10) % 11;
@@ -258,21 +236,10 @@ export default function Checkout() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
-      // Scroll para o primeiro campo com erro
       const fieldOrder = ["name", "email", "phone", "cpf", "cep", "street", "number", "neighborhood", "city", "state"];
       const firstError = fieldOrder.find((f) => {
-        const errs: Record<string, string> = {};
-        if (!form.name.trim()) errs.name = "x";
-        if (!form.email.trim() || !form.email.includes("@")) errs.email = "x";
-        if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 10) errs.phone = "x";
-        if (!cpf.trim() || !isValidCpf(cpf)) errs.cpf = "x";
-        if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) errs.cep = "x";
-        if (!form.street.trim()) errs.street = "x";
-        if (!form.number.trim()) errs.number = "x";
-        if (!form.neighborhood.trim()) errs.neighborhood = "x";
-        if (!form.city.trim()) errs.city = "x";
-        if (!form.state.trim()) errs.state = "x";
-        return errs[f];
+        if (f === "cpf") return !cpf.trim() || !isValidCpf(cpf);
+        return !(form as any)[f].trim();
       });
       if (firstError) {
         const el = document.querySelector(`[name="${firstError}"]`) as HTMLElement;
@@ -284,11 +251,10 @@ export default function Checkout() {
       return;
     }
 
-    // Build items array (cart items + selected bumps)
     const paymentItems = [
       ...items.map((item) => ({
         title: item.product.name,
-        unitPrice: Math.round(getItemPrice(item) * 100), // centavos
+        unitPrice: Math.round(getItemPrice(item) * 100),
         quantity: item.quantity,
         tangible: true,
         externalRef: `product-${item.product.id}`,
@@ -304,19 +270,33 @@ export default function Checkout() {
         })),
     ];
 
-    // Aplicar desconto do cupom como item negativo
     if (couponDiscount > 0 && appliedCoupon) {
       paymentItems.push({
         title: `Cupom ${appliedCoupon.code} (-${appliedCoupon.discountPct}%)`,
-        unitPrice: -Math.round(couponDiscount * 100), // valor negativo em centavos
+        unitPrice: -Math.round(couponDiscount * 100),
         quantity: 1,
         tangible: false,
         externalRef: `coupon-${appliedCoupon.code}`,
       });
     }
 
-    // Capturar UTM parameters (URL + localStorage + cookies) para enviar à UTMify
     const trackingParams = getUtmifyTrackingParams();
+
+    // ==========================================
+    // DISPARO DO PIXEL UTMIFY (NOVO)
+    // ==========================================
+    if ((window as any).utmify) {
+      (window as any).utmify.send('checkout', {
+        email: form.email,
+        phone: form.phone,
+        firstname: form.name.split(' ')[0],
+        lastname: form.name.split(' ').slice(1).join(' '),
+        total: finalTotal,
+        product_id: productIds.length > 0 ? productIds[0] : null,
+        product_name: items.length > 0 ? items[0].product.name : 'Múltiplos Produtos'
+      });
+    }
+    // ==========================================
 
     createPixMutation.mutate({
       customer: {
@@ -348,7 +328,6 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
-      {/* Header com a logo shopee.png aplicada */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
@@ -388,7 +367,6 @@ export default function Checkout() {
         <form onSubmit={handleSubmit}>
           <div className="container py-4 md:py-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Form */}
               <div className="lg:col-span-2 space-y-4">
                 <UrgencyTimer variant="checkout" durationMinutes={30} />
                 {(productIds.includes(22) || productIds.includes(23)) && (
