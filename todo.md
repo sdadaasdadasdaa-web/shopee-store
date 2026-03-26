@@ -141,3 +141,4 @@
 - [x] Aumentar logos das transportadoras no checkout (Correios, Sedex, Jadlog) — altura h-10 com maxWidth 80px
 - [x] Popup de boas-vindas no checkout: aparece automaticamente ao entrar na página com mensagem de 5% de desconto ganho (WelcomeDiscountPopup verde, 1x por sessão)
 - [x] Adicionar banner infográfico na página do produto 29 (entre preço e especificações técnicas) com botão "Ver banner completo" que abre em modal
+- [x] Trocar banner do produto 29 por nova imagem de alta qualidade (LPS33), exibir cortado com botão expandir, reordenar seções (Specs > Banner > Envio > Depoimentos), remover Descrição

@@ -626,16 +626,7 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Banner Infográfico — apenas para produto 29 (Rolo de Pintura) */}
-          {product.id === 29 && (
-            <ProductBannerModal
-              bannerUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/LPS(31)_67b6b459.webp"
-              bannerAlt="Banner infográfico do Rolo de Pintura com Reservatório Vonder"
-              showButton={true}
-            />
-          )}
-
-          {/* Specifications */}
+          {/* Specifications — vem primeiro */}
           {product.specifications && product.specifications.length > 0 && (
             <div className="bg-white rounded-sm mt-3 p-4 md:p-6">
               <h2 className="text-base md:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -662,35 +653,21 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {/* Description */}
+          {/* Banner Infográfico — apenas para produto 29 (Rolo de Pintura), após especificações */}
+          {product.id === 29 && (
+            <ProductBannerModal
+              bannerUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/banner-rolo-pintura-hq_ecb249bf.webp"
+              bannerAlt="Banner infográfico do Rolo de Pintura com Reservatório Vonder"
+            />
+          )}
+
+          {/* Shipping info — separado da descrição */}
           <div className="bg-white rounded-sm mt-3 p-4 md:p-6">
             <h2 className="text-base md:text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
               <div className="w-1 h-5 rounded-full" style={{ background: "#EE4D2D" }} />
-              Descrição do Produto
+              Informações de Envio
             </h2>
-            <div className="relative">
-              <p className={`text-sm text-gray-600 leading-relaxed whitespace-pre-line ${
-                !showFullDesc ? "line-clamp-4 md:line-clamp-none" : ""
-              }`}>
-                {product.description}
-              </p>
-              {!showFullDesc && (
-                <button
-                  onClick={() => setShowFullDesc(true)}
-                  className="md:hidden mt-2 text-sm font-semibold"
-                  style={{ color: "#EE4D2D" }}
-                >
-                  Ver descrição completa
-                </button>
-              )}
-            </div>
-
-            {/* Shipping info */}
-            <div className="mt-6 p-4 bg-gray-50 rounded border border-gray-100">
-              <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                <Package className="w-4 h-4" style={{ color: "#EE4D2D" }} />
-                Informações de Envio
-              </h3>
+            <div className="p-4 bg-gray-50 rounded border border-gray-100">
               {shippingOptions[product.id] ? (
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
