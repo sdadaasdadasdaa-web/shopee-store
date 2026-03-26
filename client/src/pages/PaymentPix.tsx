@@ -90,12 +90,13 @@ export default function PaymentPix() {
     return (
       <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
         <header className="bg-white border-b border-gray-100">
-          <div className="container flex items-center gap-3 py-3">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EE4D2D" }}>
-                <ShoppingCart className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-extrabold" style={{ color: "#EE4D2D" }}>AchaShop</span>
+          <div className="container flex items-center py-3">
+            <Link href="/" className="flex items-center">
+              <img 
+                src="/shopee.png" 
+                alt="Logo" 
+                className="h-8 w-auto object-contain" 
+              />
             </Link>
           </div>
         </header>
@@ -162,7 +163,7 @@ export default function PaymentPix() {
     );
   }
 
-  // No PIX data in localStorage but transaction exists (e.g. direct URL access or page refresh)
+  // No PIX data in localStorage but transaction exists
   if (!pixData?.qrCode && statusQuery.data && statusQuery.data.status === "pending") {
     return (
       <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
@@ -194,14 +195,15 @@ export default function PaymentPix() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
-      {/* Header */}
+      {/* Header com a nova logo shopee.png */}
       <header className="bg-white border-b border-gray-100">
         <div className="container flex items-center gap-3 py-3">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EE4D2D" }}>
-              <ShoppingCart className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-extrabold" style={{ color: "#EE4D2D" }}>AchaShop</span>
+          <Link href="/" className="flex items-center">
+            <img 
+              src="/shopee.png" 
+              alt="Logo" 
+              className="h-8 w-auto object-contain" 
+            />
           </Link>
           <span className="text-gray-300">|</span>
           <span className="text-base font-semibold text-gray-700">Pagamento PIX</span>
@@ -231,7 +233,7 @@ export default function PaymentPix() {
             </div>
           )}
 
-          {/* QR Code - Generated from PIX code using qrcode.react */}
+          {/* QR Code */}
           {pixData?.qrCode && (
             <div className="flex justify-center mb-6">
               <div className="p-4 bg-white border-2 border-gray-200 rounded-lg">
