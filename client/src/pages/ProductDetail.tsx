@@ -656,7 +656,7 @@ export default function ProductDetail() {
           {/* Banner Infográfico — apenas para produto 29 (Rolo de Pintura), após especificações */}
           {product.id === 29 && (
             <ProductBannerModal
-              bannerUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/banner-rolo-pintura-hq_ecb249bf.webp"
+              bannerUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/banner-rolo-pintura-v3_1e641c8d.webp"
               bannerAlt="Banner infográfico do Rolo de Pintura com Reservatório Vonder"
             />
           )}
