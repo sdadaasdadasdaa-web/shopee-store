@@ -52,9 +52,6 @@ export default function Header({ onSearch }: HeaderProps) {
         {!isHome && (
           <button
             onClick={() => {
-              // Se o exit-intent empurrou um estado extra no histórico, precisamos voltar 2 passos
-              // para pular o estado extra e ir para a página anterior real.
-              // Detectamos isso verificando se o estado atual tem exitIntent.
               const state = window.history.state;
               if (state && state.exitIntent) {
                 window.history.go(-2);
@@ -68,14 +65,13 @@ export default function Header({ onSearch }: HeaderProps) {
           </button>
         )}
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center">
-            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" style={{ color: "#EE4D2D" }} />
-          </div>
-          <span className="hidden sm:block text-white text-xl md:text-2xl font-extrabold tracking-tight">
-            AchaShop
-          </span>
+        {/* Logo - Agora apenas com imagem */}
+        <Link href="/" className="flex items-center shrink-0">
+          <img 
+            src="/logo.png" 
+            alt="Logo" 
+            className="h-9 md:h-12 w-auto object-contain" 
+          />
         </Link>
 
         {/* Search bar */}
