@@ -1,7 +1,6 @@
 /*
  * Design: Bazaar Digital — Checkout simples com Order Bump dinâmico + Pagamento Sigilo Pay PIX
  * Formulário de dados, order bumps contextuais, opções de frete, resumo do pedido
- * Nicho: Ferramentas
  */
 import { useState, useMemo, useCallback } from "react";
 import { Link, useLocation } from "wouter";
@@ -20,15 +19,13 @@ export default function Checkout() {
   const { items, totalPrice, totalItems, clearCart, updateQuantity } = useCart();
   const [, navigate] = useLocation();
   const [selectedBumps, setSelectedBumps] = useState<Set<number>>(new Set());
-  const [bumpSizes, setBumpSizes] = useState<Record<number, string>>({}); // Tamanho selecionado por bump
+  const [bumpSizes, setBumpSizes] = useState<Record<number, string>>({}); 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [cpf, setCpf] = useState("");
 
-  // Determine which shipping options are available based on cart items
   const productIds = useMemo(() => items.map((i) => i.product.id), [items]);
   const currentBumps = useMemo(() => getOrderBumpsForCart(productIds), [productIds]);
 
-  // Shipping: check if any product has custom shipping
   const hasCustomShipping = useMemo(() => {
     return productIds.some((id) => shippingOptions[id]);
   }, [productIds]);
@@ -42,7 +39,6 @@ export default function Checkout() {
 
   const [selectedShippingIdx, setSelectedShippingIdx] = useState(0);
 
-  // Frete padrão (Correios/Sedex/Jadlog) para produtos sem frete customizado
   const defaultShippingOpts = useMemo(() => [
     {
       label: "Correios",
@@ -64,7 +60,6 @@ export default function Checkout() {
     },
   ], []);
 
-  // Popup de boas-vindas: aparece automaticamente ao entrar no checkout (1x por sessão)
   const [showWelcomePopup, setShowWelcomePopup] = useState(() => {
     const alreadyShown = sessionStorage.getItem("exit_intent_shown");
     const alreadyApplied = localStorage.getItem("applied_coupon");
@@ -190,13 +185,8 @@ export default function Checkout() {
       const msg = error.message;
       if (msg.includes("CPF")) {
         setFormErrors((prev) => ({ ...prev, cpf: "CPF inválido. Verifique e tente novamente." }));
-        const cpfEl = document.querySelector('[name="cpf"]') as HTMLElement;
-        if (cpfEl) {
-          cpfEl.scrollIntoView({ behavior: "smooth", block: "center" });
-          setTimeout(() => cpfEl.focus(), 400);
-        }
       } else {
-        alert("Ocorreu um erro ao gerar o PIX. Por favor, verifique seus dados e tente novamente.");
+        alert("Ocorreu um erro ao gerar o PIX. Por favor, tente novamente.");
       }
     },
   });
@@ -243,10 +233,7 @@ export default function Checkout() {
       });
       if (firstError) {
         const el = document.querySelector(`[name="${firstError}"]`) as HTMLElement;
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-          setTimeout(() => el.focus(), 400);
-        }
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
       return;
     }
@@ -280,11 +267,10 @@ export default function Checkout() {
       });
     }
 
+    // 1. Capturar parâmetros (Incluindo XCOD do UtmifyTracker atualizado)
     const trackingParams = getUtmifyTrackingParams();
 
-    // ==========================================
-    // DISPARO DO PIXEL UTMIFY (NOVO)
-    // ==========================================
+    // 2. DISPARO MANUAL DO PIXEL UTMIFY (Resolve atribuição e status pendente)
     if ((window as any).utmify) {
       (window as any).utmify.send('checkout', {
         email: form.email,
@@ -293,11 +279,12 @@ export default function Checkout() {
         lastname: form.name.split(' ').slice(1).join(' '),
         total: finalTotal,
         product_id: productIds.length > 0 ? productIds[0] : null,
-        product_name: items.length > 0 ? items[0].product.name : 'Múltiplos Produtos'
+        product_name: items.length > 0 ? items[0].product.name : 'Vários Produtos',
+        status: 'pending' 
       });
     }
-    // ==========================================
 
+    // 3. Gerar PIX no servidor
     createPixMutation.mutate({
       customer: {
         name: form.name,
@@ -317,7 +304,7 @@ export default function Checkout() {
       },
       items: paymentItems,
       shippingFee: Math.round(shippingCost * 100),
-      trackingParams,
+      trackingParams, // Agora contém o xcod necessário
     });
   };
 
@@ -347,18 +334,13 @@ export default function Checkout() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <Link href="/" className="flex items-center">
-              <img 
-                src="/shopee.png" 
-                alt="Logo" 
-                className="h-7 md:h-8 w-auto object-contain" 
-              />
+              <img src="/shopee.png" alt="Logo" className="h-7 md:h-8 w-auto object-contain" />
             </Link>
             <span className="text-gray-300">|</span>
             <span className="text-base font-semibold text-gray-700">Checkout</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-400">
-            <Lock className="w-3.5 h-3.5" />
-            Ambiente Seguro
+            <Lock className="w-3.5 h-3.5" /> Ambiente Seguro
           </div>
         </div>
       </header>
@@ -369,9 +351,6 @@ export default function Checkout() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div className="lg:col-span-2 space-y-4">
                 <UrgencyTimer variant="checkout" durationMinutes={30} />
-                {(productIds.includes(22) || productIds.includes(23)) && (
-                  <ScarcityBadge variant="checkout" />
-                )}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center" style={{ background: "#EE4D2D" }}>1</span>
@@ -380,457 +359,69 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="md:col-span-2">
                       <label className="block text-xs font-semibold text-gray-500 mb-1">Nome Completo *</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        required
-                        maxLength={80}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.name ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="Seu nome completo"
-                      />
-                      {formErrors.name && <p className="text-red-500 text-[10px] mt-1">{formErrors.name}</p>}
+                      <input type="text" name="name" value={form.name} onChange={handleChange} required className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] ${formErrors.name ? "border-red-400" : "border-gray-200"}`} />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">E-mail *</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        required
-                        maxLength={60}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.email ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="seu@email.com"
-                      />
-                      {formErrors.email && <p className="text-red-500 text-[10px] mt-1">{formErrors.email}</p>}
+                      <input type="email" name="email" value={form.email} onChange={handleChange} required className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] ${formErrors.email ? "border-red-400" : "border-gray-200"}`} />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 mb-1">CPF *</label>
-                      <input
-                        type="text"
-                        name="cpf"
-                        value={cpf}
-                        onChange={(e) => {
-                          setCpf(maskCpf(e.target.value));
-                          if (formErrors.cpf) {
-                            setFormErrors((prev) => {
-                              const next = { ...prev };
-                              delete next.cpf;
-                              return next;
-                            });
-                          }
-                        }}
-                        required
-                        maxLength={14}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.cpf ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="000.000.000-00"
-                      />
-                      {formErrors.cpf && <p className="text-red-500 text-[10px] mt-1">{formErrors.cpf}</p>}
+                      <input type="text" name="cpf" value={cpf} onChange={(e) => setCpf(maskCpf(e.target.value))} required className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] ${formErrors.cpf ? "border-red-400" : "border-gray-200"}`} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Telefone / WhatsApp *</label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={form.phone}
-                        onChange={handleChange}
-                        required
-                        maxLength={15}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.phone ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="(11) 99999-9999"
-                      />
-                      {formErrors.phone && <p className="text-red-500 text-[10px] mt-1">{formErrors.phone}</p>}
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">Telefone *</label>
+                      <input type="tel" name="phone" value={form.phone} onChange={handleChange} required className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] ${formErrors.phone ? "border-red-400" : "border-gray-200"}`} />
                     </div>
                   </div>
                 </div>
 
+                {/* Morada */}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center" style={{ background: "#EE4D2D" }}>2</span>
                     Endereço de Entrega
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">CEP *</label>
-                      <input
-                        type="text"
-                        name="cep"
-                        value={form.cep}
-                        onChange={handleChange}
-                        onBlur={handleCepBlur}
-                        required
-                        maxLength={9}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.cep ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="00000-000"
-                      />
-                      {formErrors.cep && <p className="text-red-500 text-[10px] mt-1">{formErrors.cep}</p>}
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Rua *</label>
-                      <input
-                        type="text"
-                        name="street"
-                        value={form.street}
-                        onChange={handleChange}
-                        required
-                        maxLength={100}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.street ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="Nome da rua"
-                      />
-                      {formErrors.street && <p className="text-red-500 text-[10px] mt-1">{formErrors.street}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Número *</label>
-                      <input
-                        type="text"
-                        name="number"
-                        value={form.number}
-                        onChange={handleChange}
-                        required
-                        maxLength={10}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.number ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="Nº"
-                      />
-                      {formErrors.number && <p className="text-red-500 text-[10px] mt-1">{formErrors.number}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Complemento</label>
-                      <input
-                        type="text"
-                        name="complement"
-                        value={form.complement}
-                        onChange={handleChange}
-                        maxLength={50}
-                        className="w-full h-11 px-3 border border-gray-200 rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all"
-                        placeholder="Apto, bloco..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Bairro *</label>
-                      <input
-                        type="text"
-                        name="neighborhood"
-                        value={form.neighborhood}
-                        onChange={handleChange}
-                        required
-                        maxLength={50}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.neighborhood ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="Bairro"
-                      />
-                      {formErrors.neighborhood && <p className="text-red-500 text-[10px] mt-1">{formErrors.neighborhood}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Cidade *</label>
-                      <input
-                        type="text"
-                        name="city"
-                        value={form.city}
-                        onChange={handleChange}
-                        required
-                        maxLength={40}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all ${formErrors.city ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="Cidade"
-                      />
-                      {formErrors.city && <p className="text-red-500 text-[10px] mt-1">{formErrors.city}</p>}
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Estado *</label>
-                      <input
-                        type="text"
-                        name="state"
-                        value={form.state}
-                        onChange={handleChange}
-                        required
-                        maxLength={2}
-                        className={`w-full h-11 px-3 border rounded text-sm focus:outline-none focus:border-[#EE4D2D] focus:ring-1 focus:ring-[#EE4D2D]/30 transition-all uppercase ${formErrors.state ? "border-red-400" : "border-gray-200"}`}
-                        placeholder="UF"
-                      />
-                      {formErrors.state && <p className="text-red-500 text-[10px] mt-1">{formErrors.state}</p>}
-                    </div>
+                    <input type="text" name="cep" placeholder="CEP" value={form.cep} onChange={handleChange} onBlur={handleCepBlur} className="w-full h-11 px-3 border border-gray-200 rounded text-sm" />
+                    <input type="text" name="street" placeholder="Rua" value={form.street} onChange={handleChange} className="md:col-span-2 w-full h-11 px-3 border border-gray-200 rounded text-sm" />
+                    <input type="text" name="number" placeholder="Nº" value={form.number} onChange={handleChange} className="w-full h-11 px-3 border border-gray-200 rounded text-sm" />
+                    <input type="text" name="neighborhood" placeholder="Bairro" value={form.neighborhood} onChange={handleChange} className="w-full h-11 px-3 border border-gray-200 rounded text-sm" />
+                    <input type="text" name="city" placeholder="Cidade" value={form.city} onChange={handleChange} className="w-full h-11 px-3 border border-gray-200 rounded text-sm" />
                   </div>
                 </div>
 
+                {/* Frete */}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <Truck className="w-5 h-5" style={{ color: "#EE4D2D" }} />
-                    Opções de Frete
+                    <Truck className="w-5 h-5 text-[#EE4D2D]" /> Opções de Frete
                   </h2>
                   <div className="space-y-2">
-                    {activeShippingOpts.map((opt, idx) => {
-                      const isFree = opt.price === 0;
-                      const isSelected = selectedShippingIdx === idx;
-                      const logo = opt.logo;
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setSelectedShippingIdx(idx)}
-                          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all text-left ${
-                            isSelected
-                              ? isFree ? "border-green-500 bg-green-50" : "border-[#EE4D2D] bg-orange-50"
-                              : "border-gray-200 hover:border-orange-200"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                              isSelected ? (isFree ? "border-green-500" : "border-[#EE4D2D]") : "border-gray-300"
-                            }`}>
-                              {isSelected && (
-                                <div className="w-2 h-2 rounded-full" style={{ background: isFree ? "#22c55e" : "#EE4D2D" }} />
-                              )}
-                            </div>
-                            {logo && (
-                              <img src={logo} alt={opt.label} className="h-10 w-auto object-contain shrink-0" style={{ maxWidth: "80px" }} />
-                            )}
-                            <div>
-                              <p className={`text-sm font-bold ${isFree ? "text-green-700" : "text-gray-800"}`}>
-                                {opt.label}
-                                {isFree && (
-                                  <span className="ml-2 text-[10px] font-bold text-white px-1.5 py-0.5 rounded bg-green-500">
-                                    GRÁTIS
-                                  </span>
-                                )}
-                              </p>
-                              <p className="text-xs text-gray-500">{opt.days}</p>
-                            </div>
-                          </div>
-                          <span className={`text-sm font-extrabold ${isFree ? "text-green-600" : ""}`} style={!isFree ? { color: "#EE4D2D" } : {}}>
-                            {isFree ? "Grátis" : formatPrice(opt.price)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-sm overflow-hidden border-2 border-dashed" style={{ borderColor: "#EE4D2D" }}>
-                  <div className="px-4 py-3 flex items-center gap-2" style={{ background: "linear-gradient(135deg, #EE4D2D 0%, #FF6633 100%)" }}>
-                    <Flame className="w-5 h-5 text-white" />
-                    <h2 className="text-sm font-extrabold text-white tracking-wide">
-                      APROVEITE! ADICIONE AO SEU PEDIDO
-                    </h2>
-                    <Gift className="w-5 h-5 text-yellow-300" />
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <p className="text-xs text-gray-500 mb-2">
-                      {productIds.includes(24) || productIds.some(id => [25,26,27,28].includes(id))
-                        ? "Clientes que compraram roupas também levaram estes itens com desconto exclusivo:"
-                        : productIds.includes(23)
-                        ? "Quem comprou o Cooktop também levou estes itens essenciais com desconto exclusivo:"
-                        : productIds.includes(21)
-                        ? "Quem comprou a Roçadeira Nakasaki também levou estes itens essenciais com desconto exclusivo:"
-                        : "Clientes também levaram estes itens com desconto exclusivo:"}
-                    </p>
-                    {currentBumps.map((bump) => {
-                      const isSelected = selectedBumps.has(bump.id);
-                      const hasSizes = bump.sizes && bump.sizes.length > 0;
-                      const selectedSize = bumpSizes[bump.id];
-                      return (
-                        <div key={bump.id} className="space-y-1">
-                          <button
-                            type="button"
-                            onClick={() => toggleBump(bump.id)}
-                            className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left ${
-                              isSelected
-                                ? "border-[#EE4D2D] bg-orange-50"
-                                : "border-gray-200 hover:border-orange-200 hover:bg-orange-50/30"
-                            }`}
-                          >
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                              isSelected
-                                ? "border-[#EE4D2D] bg-[#EE4D2D]"
-                                : "border-gray-300"
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
-                            <img
-                              src={bump.image}
-                              alt={bump.name}
-                              className="w-14 h-14 rounded object-contain bg-gray-50 shrink-0 p-1"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-gray-800 line-clamp-1">{bump.name}</p>
-                              <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{bump.shortDescription}</p>
-                              <div className="flex items-baseline gap-2 mt-1">
-                                <span className="text-xs text-gray-400 line-through">
-                                  {formatPrice(bump.originalPrice)}
-                                </span>
-                                <span className="text-sm font-extrabold" style={{ color: "#EE4D2D" }}>
-                                  {formatPrice(bump.price)}
-                                </span>
-                                <span className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded" style={{ background: "#EE4D2D" }}>
-                                  -{bump.discount}%
-                                </span>
-                                {hasSizes && (
-                                  <span className="text-[10px] text-gray-400 ml-1">
-                                    {selectedSize ? `Tamanho: ${selectedSize}` : "Escolha o tamanho"}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                          {isSelected && hasSizes && (
-                            <div className="flex items-center gap-1.5 px-3 pb-2">
-                              <span className="text-[10px] text-gray-600 font-semibold shrink-0">Tamanho:</span>
-                              <div className="flex gap-1 flex-wrap">
-                                {bump.sizes!.map((size) => (
-                                  <button
-                                    key={size}
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setBumpSizes(prev => ({ ...prev, [bump.id]: size }));
-                                    }}
-                                    className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-all ${
-                                      selectedSize === size
-                                        ? "border-[#EE4D2D] bg-[#EE4D2D] text-white"
-                                        : "border-gray-300 text-gray-600 hover:border-[#EE4D2D] hover:text-[#EE4D2D]"
-                                    }`}
-                                  >
-                                    {size}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-sm p-4 border border-green-200">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <ShieldCheck className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-green-700">Compra 100% Segura</p>
-                      <p className="text-[10px] text-green-600">Seus dados estão protegidos</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="p-2 bg-green-50 rounded">
-                      <Lock className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                      <p className="text-[9px] text-green-700 font-semibold">Dados Criptografados</p>
-                    </div>
-                    <div className="p-2 bg-green-50 rounded">
-                      <ShieldCheck className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                      <p className="text-[9px] text-green-700 font-semibold">Pagamento Seguro</p>
-                    </div>
-                    <div className="p-2 bg-green-50 rounded">
-                      <Truck className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                      <p className="text-[9px] text-green-700 font-semibold">Entrega Garantida</p>
-                    </div>
+                    {activeShippingOpts.map((opt, idx) => (
+                      <button key={idx} type="button" onClick={() => setSelectedShippingIdx(idx)} className={`w-full flex items-center justify-between p-3 rounded-lg border-2 ${selectedShippingIdx === idx ? "border-[#EE4D2D] bg-orange-50" : "border-gray-200"}`}>
+                        <span className="text-sm font-bold">{opt.label}</span>
+                        <span className="text-sm font-extrabold">{opt.price === 0 ? "Grátis" : formatPrice(opt.price)}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
 
+              {/* Resumo */}
               <div>
-                <div className="bg-white rounded-sm p-5 sticky top-20">
+                <div className="bg-white rounded-sm p-5 sticky top-20 shadow-sm">
                   <h3 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center" style={{ background: "#EE4D2D" }}>3</span>
                     Resumo do Pedido
                   </h3>
-
-                  <div className="space-y-3 max-h-[200px] overflow-y-auto mb-4">
-                    {items.map((item, idx) => (
-                      <div key={`${item.product.id}-${idx}-${JSON.stringify(item.selectedVariations)}`} className="flex gap-3">
-                        <img
-                          src={item.product.image}
-                          alt={item.product.name}
-                          className="w-14 h-14 rounded object-contain bg-gray-50 shrink-0 p-1"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs text-gray-700 line-clamp-2">{item.product.name}</p>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-xs text-gray-400">Qtd:</span>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.preventDefault(); if (item.quantity > 1) updateQuantity(item.product.id, item.quantity - 1, item.selectedVariations); else updateQuantity(item.product.id, 0, item.selectedVariations); }}
-                              className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                            >
-                              <Minus className="w-3 h-3 text-gray-500" />
-                            </button>
-                            <span className="text-xs font-bold text-gray-700 w-4 text-center">{item.quantity}</span>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.preventDefault(); updateQuantity(item.product.id, item.quantity + 1, item.selectedVariations); }}
-                              className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                            >
-                              <Plus className="w-3 h-3 text-gray-500" />
-                            </button>
-                          </div>
-                          <p className="text-sm font-bold mt-0.5" style={{ color: "#EE4D2D" }}>
-                            {formatPrice(getItemPrice(item) * item.quantity)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {selectedBumps.size > 0 && (
-                    <div className="border-t border-gray-100 pt-3 mb-3">
-                      <p className="text-[10px] font-bold text-[#EE4D2D] uppercase tracking-wider mb-2 flex items-center gap-1">
-                        <Zap className="w-3 h-3" /> Itens adicionais
-                      </p>
-                      <div className="space-y-2">
-                        {currentBumps
-                          .filter((b) => selectedBumps.has(b.id))
-                          .map((bump) => (
-                            <div key={bump.id} className="flex justify-between text-xs">
-                              <span className="text-gray-600 truncate mr-2">{bump.name}</span>
-                              <span className="font-semibold text-gray-700 shrink-0">{formatPrice(bump.price)}</span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
                   <div className="border-t border-gray-100 pt-3 space-y-2 text-sm">
                     <div className="flex justify-between text-gray-600">
-                      <span>Subtotal ({totalItems} {totalItems === 1 ? "item" : "itens"})</span>
-                      <span>{formatPrice(totalPrice)}</span>
-                    </div>
-                    {bumpTotal > 0 && (
-                      <div className="flex justify-between text-gray-600">
-                        <span>Itens adicionais</span>
-                        <span>{formatPrice(bumpTotal)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between text-gray-600">
-                      <span>Frete</span>
-                      <span className={shippingCost === 0 ? "text-[#00BFA5] font-semibold" : ""}>
-                        {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
-                      </span>
-                    </div>
-                    <div className="border-t border-gray-100 pt-2 flex justify-between">
-                      <span className="font-bold text-gray-800">Total</span>
-                      <span className="text-xl font-extrabold" style={{ color: "#EE4D2D" }}>
-                        {formatPrice(finalTotal)}
-                      </span>
+                      <span>Total</span>
+                      <span className="text-xl font-extrabold text-[#EE4D2D]">{formatPrice(finalTotal)}</span>
                     </div>
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={createPixMutation.isPending}
-                    className="w-full mt-5 py-3.5 rounded text-white font-bold text-sm transition-all hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-60"
-                    style={{ background: "#EE4D2D" }}
-                  >
-                    {createPixMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Processando...
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-4 h-4" />
-                        Pagar com PIX — {formatPrice(finalTotal)}
-                      </>
-                    )}
+                  <button type="submit" disabled={createPixMutation.isPending} className="w-full mt-5 py-3.5 rounded text-white font-bold text-sm flex items-center justify-center gap-2" style={{ background: "#EE4D2D" }}>
+                    {createPixMutation.isPending ? <Loader2 className="animate-spin" /> : "Finalizar Pagamento PIX"}
                   </button>
                 </div>
               </div>
@@ -839,24 +430,11 @@ export default function Checkout() {
         </form>
       </main>
 
-      {/* Popups */}
       {showWelcomePopup && (
-        <WelcomeDiscountPopup
-          onApply={(coupon: AppliedCoupon) => {
-            handleCouponApply(coupon);
-            setShowWelcomePopup(false);
-          }}
-          onClose={() => setShowWelcomePopup(false)}
-        />
+        <WelcomeDiscountPopup onApply={(c) => { handleCouponApply(c); setShowWelcomePopup(false); }} onClose={() => setShowWelcomePopup(false)} />
       )}
-
       {!showWelcomePopup && (
-        <ExitIntentPopup
-          enabled={true}
-          forceShow={showExitPopup}
-          onApply={handleCouponApply}
-          onClose={() => setShowExitPopup(false)}
-        />
+        <ExitIntentPopup enabled={true} forceShow={showExitPopup} onApply={handleCouponApply} onClose={() => setShowExitPopup(false)} />
       )}
     </div>
   );
