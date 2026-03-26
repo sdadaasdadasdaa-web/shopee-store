@@ -348,7 +348,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
-      {/* Header com a nova logo aplicada */}
+      {/* Header com a logo Shopee.svg aplicada */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
@@ -390,13 +390,10 @@ export default function Checkout() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Form */}
               <div className="lg:col-span-2 space-y-4">
-                {/* Timer de Urgência */}
                 <UrgencyTimer variant="checkout" durationMinutes={30} />
-                {/* Contador de escassez */}
                 {(productIds.includes(22) || productIds.includes(23)) && (
                   <ScarcityBadge variant="checkout" />
                 )}
-                {/* Contact */}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center" style={{ background: "#EE4D2D" }}>1</span>
@@ -471,7 +468,6 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Address */}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center" style={{ background: "#EE4D2D" }}>2</span>
@@ -578,7 +574,6 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* SHIPPING OPTIONS — sempre visível */}
                 <div className="bg-white rounded-sm p-4 md:p-6">
                   <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <Truck className="w-5 h-5" style={{ color: "#EE4D2D" }} />
@@ -608,7 +603,6 @@ export default function Checkout() {
                                 <div className="w-2 h-2 rounded-full" style={{ background: isFree ? "#22c55e" : "#EE4D2D" }} />
                               )}
                             </div>
-                            {/* Logo da transportadora */}
                             {logo && (
                               <img src={logo} alt={opt.label} className="h-10 w-auto object-contain shrink-0" style={{ maxWidth: "80px" }} />
                             )}
@@ -633,7 +627,6 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* ORDER BUMP */}
                 <div className="bg-white rounded-sm overflow-hidden border-2 border-dashed" style={{ borderColor: "#EE4D2D" }}>
                   <div className="px-4 py-3 flex items-center gap-2" style={{ background: "linear-gradient(135deg, #EE4D2D 0%, #FF6633 100%)" }}>
                     <Flame className="w-5 h-5 text-white" />
@@ -667,7 +660,6 @@ export default function Checkout() {
                                 : "border-gray-200 hover:border-orange-200 hover:bg-orange-50/30"
                             }`}
                           >
-                            {/* Checkbox */}
                             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
                               isSelected
                                 ? "border-[#EE4D2D] bg-[#EE4D2D]"
@@ -675,15 +667,11 @@ export default function Checkout() {
                             }`}>
                               {isSelected && <Check className="w-3 h-3 text-white" />}
                             </div>
-
-                            {/* Image */}
                             <img
                               src={bump.image}
                               alt={bump.name}
                               className="w-14 h-14 rounded object-contain bg-gray-50 shrink-0 p-1"
                             />
-
-                            {/* Info */}
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-bold text-gray-800 line-clamp-1">{bump.name}</p>
                               <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{bump.shortDescription}</p>
@@ -705,8 +693,6 @@ export default function Checkout() {
                               </div>
                             </div>
                           </button>
-
-                          {/* Seletor de tamanho — aparece quando o bump é selecionado e tem tamanhos */}
                           {isSelected && hasSizes && (
                             <div className="flex items-center gap-1.5 px-3 pb-2">
                               <span className="text-[10px] text-gray-600 font-semibold shrink-0">Tamanho:</span>
@@ -737,7 +723,6 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Selo de Compra Segura */}
                 <div className="bg-white rounded-sm p-4 border border-green-200">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -763,58 +748,8 @@ export default function Checkout() {
                     </div>
                   </div>
                 </div>
-
-                {/* Depoimentos no Checkout */}
-                {(productIds.includes(22) || productIds.includes(23)) && (
-                  <div className="bg-white rounded-sm p-4">
-                    <h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      O que nossos clientes dizem
-                    </h2>
-                    <div className="space-y-3">
-                      {productIds.includes(23) ? (
-                        <>
-                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil1_784b8050.png" alt="Carla" className="w-10 h-10 rounded-full object-cover shrink-0" />
-                            <div>
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <p className="text-xs font-bold text-gray-800">Carla S.</p>
-                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
-                              </div>
-                              <p className="text-[11px] text-gray-600">"Chegou rápido e muito bem embalado! Potente demais, aqueceu super rápido. Super recomendo!"</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/perfil3_f1b2d2eb.png" alt="Roberto" className="w-10 h-10 rounded-full object-cover shrink-0" />
-                            <div>
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <p className="text-xs font-bold text-gray-800">Roberto M.</p>
-                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
-                              </div>
-                              <p className="text-[11px] text-gray-600">"Melhor compra do ano! Ferve água em menos de 2 min. Funciona com qualquer panela. Produto top!"</p>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663285681492/T9MpEVnAhq2PrGidiTemVi/pasted_file_USzOU6_image_97ea78dd.png" alt="Fabio" className="w-10 h-10 rounded-full object-cover shrink-0" />
-                            <div>
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <p className="text-xs font-bold text-gray-800">Fabio O.</p>
-                                <div className="flex">{[...Array(5)].map((_,i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}</div>
-                              </div>
-                              <p className="text-[11px] text-gray-600">"Qualidade da solda excelente, arco estável. Modo MIG sem gás é perfeito. Kit completo!"</p>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Order summary */}
               <div>
                 <div className="bg-white rounded-sm p-5 sticky top-20">
                   <h3 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -822,7 +757,6 @@ export default function Checkout() {
                     Resumo do Pedido
                   </h3>
 
-                  {/* Items */}
                   <div className="space-y-3 max-h-[200px] overflow-y-auto mb-4">
                     {items.map((item, idx) => (
                       <div key={`${item.product.id}-${idx}-${JSON.stringify(item.selectedVariations)}`} className="flex gap-3">
@@ -859,7 +793,6 @@ export default function Checkout() {
                     ))}
                   </div>
 
-                  {/* Bump items in summary */}
                   {selectedBumps.size > 0 && (
                     <div className="border-t border-gray-100 pt-3 mb-3">
                       <p className="text-[10px] font-bold text-[#EE4D2D] uppercase tracking-wider mb-2 flex items-center gap-1">
@@ -890,27 +823,11 @@ export default function Checkout() {
                       </div>
                     )}
                     <div className="flex justify-between text-gray-600">
-                      <span>
-                        Frete
-                        {activeShippingOpts[selectedShippingIdx] && (
-                          <span className="text-[10px] text-gray-400 ml-1">
-                            ({activeShippingOpts[selectedShippingIdx].label})
-                          </span>
-                        )}
-                      </span>
+                      <span>Frete</span>
                       <span className={shippingCost === 0 ? "text-[#00BFA5] font-semibold" : ""}>
                         {shippingCost === 0 ? "Grátis" : formatPrice(shippingCost)}
                       </span>
                     </div>
-                    {couponDiscount > 0 && appliedCoupon && (
-                      <div className="flex justify-between text-[#00BFA5] font-semibold">
-                        <span className="flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                          Cupom {appliedCoupon.code} (-{appliedCoupon.discountPct}%)
-                        </span>
-                        <span>-{formatPrice(couponDiscount)}</span>
-                      </div>
-                    )}
                     <div className="border-t border-gray-100 pt-2 flex justify-between">
                       <span className="font-bold text-gray-800">Total</span>
                       <span className="text-xl font-extrabold" style={{ color: "#EE4D2D" }}>
@@ -937,11 +854,6 @@ export default function Checkout() {
                       </>
                     )}
                   </button>
-
-                  <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                    <Lock className="w-3 h-3" />
-                    Pagamento 100% seguro e criptografado
-                  </p>
                 </div>
               </div>
             </div>
