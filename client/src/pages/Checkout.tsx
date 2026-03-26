@@ -348,7 +348,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
-      {/* Header com a logo Shopee.svg aplicada */}
+      {/* Header com a logo shopee.png aplicada */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="container flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
@@ -369,7 +369,7 @@ export default function Checkout() {
             </button>
             <Link href="/" className="flex items-center">
               <img 
-                src="/Shopee.svg" 
+                src="/shopee.png" 
                 alt="Logo" 
                 className="h-7 md:h-8 w-auto object-contain" 
               />
