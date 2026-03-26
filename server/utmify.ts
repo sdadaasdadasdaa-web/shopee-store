@@ -23,7 +23,6 @@ interface UtmifyProduct {
   priceInCents: number;
 }
 
-// ADICIONADO: xcod e utm_id para rastreio de campanhas
 interface UtmifyTrackingParameters {
   src: string | null;
   sck: string | null;
@@ -74,43 +73,29 @@ export async function sendUtmifyOrder(payload: UtmifyOrderPayload): Promise<{ su
       },
       timeout: 10000,
     });
-
-    console.log(`[UTMify] Order ${payload.orderId} sent with status ${payload.status} — API response: ${response.status}`);
     return { success: true };
   } catch (error: any) {
     const errorMsg = error?.response?.data?.message || error?.message || "Unknown error";
-    console.error(`[UTMify] Failed to send order ${payload.orderId}: msg=${errorMsg}`);
     return { success: false, error: errorMsg };
   }
 }
 
 /**
- * Envia evento de "Pedido Pendente" (PIX gerado)
+ * Envia evento de "Pedido Pendente"
  */
 export async function sendUtmifyPendingOrder(params: {
   orderId: string;
   customer: { name: string; email: string; phone: string; cpf: string };
   products: { id: string; name: string; quantity: number; priceInCents: number }[];
   totalInCents: number;
-  trackingParams?: {
-    src?: string | null;
-    sck?: string | null;
-    utm_source?: string | null;
-    utm_campaign?: string | null;
-    utm_medium?: string | null;
-    utm_content?: string | null;
-    utm_term?: string | null;
-    utm_id?: string | null;
-    xcod?: string | null;
-  };
+  trackingParams?: any;
 }): Promise<{ success: boolean; error?: string }> {
   const now = new Date();
-
   const payload: UtmifyOrderPayload = {
     orderId: params.orderId,
     platform: "AchaShop",
     paymentMethod: "pix",
-    status: "waiting_payment", // Isso marca como Pendente no Dashboard
+    status: "waiting_payment",
     createdAt: formatDateUTC(now),
     approvedDate: null,
     refundedAt: null,
@@ -138,7 +123,7 @@ export async function sendUtmifyPendingOrder(params: {
       utm_content: params.trackingParams?.utm_content ?? null,
       utm_term: params.trackingParams?.utm_term ?? null,
       utm_id: params.trackingParams?.utm_id ?? null,
-      xcod: params.trackingParams?.xcod ?? null, // CRÍTICO PARA CAMPANHAS
+      xcod: params.trackingParams?.xcod ?? null,
     },
     commission: {
       totalPriceInCents: params.totalInCents,
@@ -147,7 +132,6 @@ export async function sendUtmifyPendingOrder(params: {
       currency: "BRL",
     },
   };
-
   return sendUtmifyOrder(payload);
 }
 
@@ -160,20 +144,9 @@ export async function sendUtmifyPaidOrder(params: {
   customer: { name: string; email: string; phone: string; cpf: string };
   products: { id: string; name: string; quantity: number; priceInCents: number }[];
   totalInCents: number;
-  trackingParams?: {
-    src?: string | null;
-    sck?: string | null;
-    utm_source?: string | null;
-    utm_campaign?: string | null;
-    utm_medium?: string | null;
-    utm_content?: string | null;
-    utm_term?: string | null;
-    utm_id?: string | null;
-    xcod?: string | null;
-  };
+  trackingParams?: any;
 }): Promise<{ success: boolean; error?: string }> {
   const now = new Date();
-
   const payload: UtmifyOrderPayload = {
     orderId: params.orderId,
     platform: "AchaShop",
@@ -206,7 +179,7 @@ export async function sendUtmifyPaidOrder(params: {
       utm_content: params.trackingParams?.utm_content ?? null,
       utm_term: params.trackingParams?.utm_term ?? null,
       utm_id: params.trackingParams?.utm_id ?? null,
-      xcod: params.trackingParams?.xcod ?? null, // CRÍTICO PARA CAMPANHAS
+      xcod: params.trackingParams?.xcod ?? null,
     },
     commission: {
       totalPriceInCents: params.totalInCents,
@@ -215,8 +188,31 @@ export async function sendUtmifyPaidOrder(params: {
       currency: "BRL",
     },
   };
-
   return sendUtmifyOrder(payload);
 }
 
-// ... Restante do código de tracking (PageView, etc.) permanece igual
+// ============================================================
+// FUNÇÃO QUE ESTAVA FALTANDO E CAUSOU O ERRO DE BUILD
+// ============================================================
+
+export async function sendUtmifyTrackingEvent(params: {
+  type: "PageView" | "InitiateCheckout" | "ViewContent";
+  lead: { _id?: string; pixelId: string; userAgent: string; locale: string; ip?: string; parameters?: any };
+  event: { pageTitle: string; sourceUrl: string };
+  clientIp?: string;
+}): Promise<{ success: boolean; lead?: any; error?: string }> {
+  try {
+    const response = await axios.post(
+      `${UTMIFY_TRACKING_URL}/events`,
+      {
+        type: params.type,
+        lead: { ...params.lead, pixelId: PIXEL_ID, ip: params.clientIp },
+        event: params.event,
+      },
+      { headers: { "Content-Type": "application/json" }, timeout: 10000 }
+    );
+    return { success: true, lead: response.data.lead };
+  } catch (error: any) {
+    return { success: false, error: error?.message };
+  }
+}
